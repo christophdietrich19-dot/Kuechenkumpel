@@ -11,16 +11,11 @@
 <body>
   <div id="welcomeScreen" class="welcome-screen">
     <div class="welcome-card">
-      <div class="mascot mascot-large" aria-hidden="true">
-        <div class="pot-lid"></div>
-        <div class="pot-body">
-          <span class="eye eye-left"></span>
-          <span class="eye eye-right"></span>
-          <span class="mouth"></span>
-        </div>
-        <div class="pot-steam steam-one"></div>
-        <div class="pot-steam steam-two"></div>
-      </div>
+      <img
+        class="mascot-image mascot-large"
+        src="assets/images/kochtopf-hallo.png"
+        alt="Küchenkumpel winkt freundlich"
+      />
 
       <p class="eyebrow">Dein kleiner Küchenretter</p>
 
@@ -52,16 +47,11 @@
           </p>
         </div>
 
-        <div class="mascot mascot-small" aria-hidden="true">
-          <div class="pot-lid"></div>
-          <div class="pot-body">
-            <span class="eye eye-left"></span>
-            <span class="eye eye-right"></span>
-            <span class="mouth"></span>
-          </div>
-          <div class="pot-steam steam-one"></div>
-          <div class="pot-steam steam-two"></div>
-        </div>
+        <img
+          class="mascot-image mascot-small"
+          src="assets/images/kochtopf-standard.png"
+          alt="Küchenkumpel Kochtopf"
+        />
       </div>
 
       <div id="buddyMessage" class="buddy-message">
@@ -71,12 +61,18 @@
     </section>
 
     <section id="start" class="card ingredient-card">
-      <div class="card-title">
+      <div class="card-title card-title-with-image">
         <div>
           <p class="eyebrow">Zutaten</p>
           <h3>Was hast du zuhause?</h3>
           <p>Tippen oder einfach unten antippen.</p>
         </div>
+
+        <img
+          class="section-mascot"
+          src="assets/images/kochtopf-kochen.png"
+          alt="Küchenkumpel kocht"
+        />
       </div>
 
       <div class="input-row">
@@ -110,14 +106,11 @@
           </p>
         </div>
 
-        <div class="mascot mascot-mini mascot-tired" aria-hidden="true">
-          <div class="pot-lid"></div>
-          <div class="pot-body">
-            <span class="eye eye-left"></span>
-            <span class="eye eye-right"></span>
-            <span class="mouth"></span>
-          </div>
-        </div>
+        <img
+          class="section-mascot rescue-mascot"
+          src="assets/images/kochtopf-kein-bock.png"
+          alt="Müder Küchenkumpel"
+        />
       </div>
 
       <button id="noMoodButton" class="secondary-button full-button" type="button">
@@ -134,11 +127,17 @@
     </section>
 
     <section class="recommendation-section">
-      <div class="section-heading">
+      <div class="section-heading section-heading-with-image">
         <div>
           <p class="eyebrow">Bester Treffer</p>
           <h3>Küchenkumpel empfiehlt</h3>
         </div>
+
+        <img
+          class="section-mascot"
+          src="assets/images/kochtopf-idee.png"
+          alt="Küchenkumpel hat eine Idee"
+        />
       </div>
 
       <div id="topRecommendation"></div>
@@ -160,14 +159,11 @@
     <footer id="about" class="app-footer">
       <div class="footer-inner">
         <div class="footer-brand">
-          <div class="mascot mascot-footer" aria-hidden="true">
-            <div class="pot-lid"></div>
-            <div class="pot-body">
-              <span class="eye eye-left"></span>
-              <span class="eye eye-right"></span>
-              <span class="mouth"></span>
-            </div>
-          </div>
+          <img
+            class="footer-mascot"
+            src="assets/images/kochtopf-standard.png"
+            alt="Küchenkumpel Logo"
+          />
 
           <div>
             <p class="footer-kicker">Küchenkumpel</p>
