@@ -11,8 +11,10 @@
 <body>
   <div id="welcomeScreen" class="welcome-screen">
     <div class="welcome-card">
+      <div class="welcome-glow"></div>
+
       <img
-        class="mascot-image mascot-large"
+        class="mascot-image welcome-mascot"
         src="assets/images/kochtopf-hallo.png"
         alt="Küchenkumpel winkt freundlich"
       />
@@ -22,16 +24,20 @@
       <h1>Küchenkumpel</h1>
 
       <p class="welcome-text">
-        Sag mir, was im Kühlschrank liegt. Ich mach dir was draus.
+        Sag mir, was noch da ist. Ich mach dir was draus.
+      </p>
+
+      <p class="welcome-extra">
+        Für Reste, Hunger und diese „Was ess ich jetzt?“-Momente.
       </p>
 
       <button id="startAppButton" class="primary-button large-button" type="button">
-        Küchenkumpel starten
+        Loskochen
       </button>
 
       <label class="skip-welcome">
         <input id="hideWelcomeCheckbox" type="checkbox" />
-        Startbildschirm nicht mehr anzeigen
+        Beim nächsten Mal direkt loslegen
       </label>
     </div>
   </div>
@@ -43,20 +49,29 @@
           <p class="eyebrow">Aus Kühlschrank-Chaos wird Abendessen</p>
           <h2>Küchenkumpel</h2>
           <p>
-            Gib deine Zutaten ein, markiere was weg muss und lass dir einfache Ideen zeigen.
+            Zeig mir, was da ist. Ich mach daraus eine Idee fürs Essen.
           </p>
         </div>
 
         <img
-          class="mascot-image mascot-small"
+          class="mascot-image hero-mascot"
           src="assets/images/kochtopf-standard.png"
           alt="Küchenkumpel Kochtopf"
         />
       </div>
 
       <div id="buddyMessage" class="buddy-message">
-        <strong>Küchenkumpel sagt:</strong>
-        <span>Okay, was liegt heute im Kühlschrank?</span>
+        <img
+          class="buddy-mascot"
+          src="assets/images/kochtopf-idee.png"
+          alt=""
+          aria-hidden="true"
+        />
+
+        <div>
+          <strong>Küchenkumpel sagt:</strong>
+          <span>Okay, was liegt heute im Kühlschrank?</span>
+        </div>
       </div>
     </section>
 
@@ -65,7 +80,7 @@
         <div>
           <p class="eyebrow">Zutaten</p>
           <h3>Was hast du zuhause?</h3>
-          <p>Tippen oder einfach unten antippen.</p>
+          <p>Schreib rein, was da ist, oder tipp unten auf die Zutaten.</p>
         </div>
 
         <img
@@ -91,7 +106,11 @@
       <div id="quickIngredients" class="quick-ingredients"></div>
 
       <div class="selected-area">
-        <h4>Ausgewählt</h4>
+        <div class="selected-heading">
+          <h4>Ausgewählt</h4>
+          <p>Tippe auf die Uhr, wenn etwas bald weg muss.</p>
+        </div>
+
         <div id="selectedIngredients" class="selected-ingredients"></div>
       </div>
     </section>
@@ -102,7 +121,7 @@
           <p class="eyebrow">Notfallmodus</p>
           <h3>Ich hab keinen Bock</h3>
           <p>
-            Zeigt dir schnelle Sachen mit wenig Aufwand und möglichst wenig Abwasch.
+            Keine Energie zum Kochen? Dann suchen wir dir etwas Schnelles mit wenig Aufwand.
           </p>
         </div>
 
@@ -134,7 +153,7 @@
         </div>
 
         <img
-          class="section-mascot"
+          class="section-mascot idea-mascot"
           src="assets/images/kochtopf-idee.png"
           alt="Küchenkumpel hat eine Idee"
         />
@@ -178,14 +197,20 @@
           <strong>Christoph Dietrich</strong>
         </div>
 
-        <a
-          class="footer-link"
-          href="https://christophdietrich19-dot.github.io/cd-christoph-it/"
-          target="_blank"
-          rel="noopener"
-        >
-          Portfolio ansehen
-        </a>
+        <div class="footer-actions">
+          <a
+            class="footer-link"
+            href="https://christophdietrich19-dot.github.io/cd-christoph-it/"
+            target="_blank"
+            rel="noopener"
+          >
+            Portfolio ansehen
+          </a>
+
+          <button id="showWelcomeButton" class="footer-reset-button" type="button">
+            Begrüßung wieder anzeigen
+          </button>
+        </div>
       </div>
     </footer>
   </main>

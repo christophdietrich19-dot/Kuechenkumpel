@@ -1,6 +1,7 @@
 const welcomeScreen = document.getElementById("welcomeScreen");
 const startAppButton = document.getElementById("startAppButton");
 const hideWelcomeCheckbox = document.getElementById("hideWelcomeCheckbox");
+const showWelcomeButton = document.getElementById("showWelcomeButton");
 
 const ingredientInput = document.getElementById("ingredientInput");
 const addIngredientButton = document.getElementById("addIngredientButton");
@@ -537,7 +538,19 @@ function getMatches() {
 }
 
 function updateBuddyTextOnly(text) {
-  buddyMessage.innerHTML = `<strong>Küchenkumpel sagt:</strong><span>${text}</span>`;
+  buddyMessage.innerHTML = `
+    <img
+      class="buddy-mascot"
+      src="assets/images/kochtopf-idee.png"
+      alt=""
+      aria-hidden="true"
+    />
+
+    <div>
+      <strong>Küchenkumpel sagt:</strong>
+      <span>${text}</span>
+    </div>
+  `;
 }
 
 function updateBuddyMessage() {
@@ -853,6 +866,13 @@ function startApp() {
   welcomeScreen.classList.add("hidden");
 }
 
+function showWelcomeAgain() {
+  localStorage.removeItem("kuechenkumpelHideWelcome");
+  hideWelcomeCheckbox.checked = false;
+  welcomeScreen.classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function setActiveNav(targetId) {
   navLinks.forEach((link) => {
     link.classList.toggle("active", link.dataset.nav === targetId);
@@ -903,6 +923,7 @@ filterButtons.forEach((button) => {
 
 noMoodButton.addEventListener("click", toggleNoMoodMode);
 startAppButton.addEventListener("click", startApp);
+showWelcomeButton.addEventListener("click", showWelcomeAgain);
 
 closeModalButton.addEventListener("click", closeRecipeModal);
 modalBackdrop.addEventListener("click", closeRecipeModal);
