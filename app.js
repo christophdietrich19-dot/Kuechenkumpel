@@ -609,8 +609,18 @@ function renderSelectedIngredients() {
 
     chip.innerHTML = `
       <span>${capitalize(ingredient.name)}</span>
-      <button class="clock-button" type="button" title="Muss weg markieren">${ingredient.urgent ? "⏰" : "○"}</button>
-      <button class="chip-button" type="button" title="Entfernen">×</button>
+      <button
+        class="clock-button ${ingredient.urgent ? "active" : ""}"
+        type="button"
+        title="${ingredient.urgent ? "Muss-weg-Markierung entfernen" : "Als muss weg markieren"}"
+        aria-label="${ingredient.urgent ? "Muss-weg-Markierung entfernen" : "Als muss weg markieren"}"
+      >${ingredient.urgent ? "⏰" : "🕒"}</button>
+      <button
+        class="chip-button"
+        type="button"
+        title="Entfernen"
+        aria-label="Zutat entfernen"
+      >×</button>
     `;
 
     chip.querySelector(".clock-button").addEventListener("click", () => {

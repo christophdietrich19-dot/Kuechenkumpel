@@ -525,9 +525,9 @@ p {
 .ingredient-chip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 10px;
   max-width: 100%;
-  padding: 9px 10px;
+  padding: 9px 10px 9px 14px;
   border-radius: 999px;
   background: #fff0d9;
   border: 1px solid #fdba74;
@@ -546,27 +546,44 @@ p {
 .ingredient-chip.urgent {
   background: #fef3c7;
   border-color: #f59e0b;
+  box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.14);
 }
 
 .chip-button,
 .clock-button {
   flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.82);
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(214, 157, 85, 0.25);
   color: #9a3412;
   font-weight: 900;
-}
-
-.chip-button {
-  width: 24px;
-  height: 24px;
+  line-height: 1;
+  box-shadow: 0 4px 10px rgba(67, 43, 24, 0.05);
 }
 
 .clock-button {
-  width: 26px;
-  height: 26px;
+  font-size: 1rem;
+}
+
+.clock-button.active {
+  background: linear-gradient(145deg, #fef3c7, #fde68a);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #9a3412;
+}
+
+.chip-button {
+  font-size: 1.08rem;
+}
+
+.chip-button:hover,
+.clock-button:hover {
+  transform: translateY(-1px);
 }
 
 /* RESCUE */
