@@ -11,7 +11,16 @@
 <body>
   <div id="welcomeScreen" class="welcome-screen">
     <div class="welcome-card">
-      <div class="pot-mascot big">🍲</div>
+      <div class="mascot mascot-large" aria-hidden="true">
+        <div class="pot-lid"></div>
+        <div class="pot-body">
+          <span class="eye eye-left"></span>
+          <span class="eye eye-right"></span>
+          <span class="mouth"></span>
+        </div>
+        <div class="pot-steam steam-one"></div>
+        <div class="pot-steam steam-two"></div>
+      </div>
 
       <p class="eyebrow">Dein kleiner Küchenretter</p>
 
@@ -35,7 +44,7 @@
   <main class="app" id="app">
     <section class="hero-section">
       <div class="hero-top">
-        <div>
+        <div class="hero-copy">
           <p class="eyebrow">Aus Kühlschrank-Chaos wird Abendessen</p>
           <h2>Küchenkumpel</h2>
           <p>
@@ -43,7 +52,16 @@
           </p>
         </div>
 
-        <div class="pot-mascot">🍲</div>
+        <div class="mascot mascot-small" aria-hidden="true">
+          <div class="pot-lid"></div>
+          <div class="pot-body">
+            <span class="eye eye-left"></span>
+            <span class="eye eye-right"></span>
+            <span class="mouth"></span>
+          </div>
+          <div class="pot-steam steam-one"></div>
+          <div class="pot-steam steam-two"></div>
+        </div>
       </div>
 
       <div id="buddyMessage" class="buddy-message">
@@ -52,9 +70,10 @@
       </div>
     </section>
 
-    <section id="start" class="card">
+    <section id="start" class="card ingredient-card">
       <div class="card-title">
         <div>
+          <p class="eyebrow">Zutaten</p>
           <h3>Was hast du zuhause?</h3>
           <p>Tippen oder einfach unten antippen.</p>
         </div>
@@ -87,11 +106,18 @@
           <p class="eyebrow">Notfallmodus</p>
           <h3>Ich hab keinen Bock</h3>
           <p>
-            Zeigt dir nur schnelle Sachen mit wenig Aufwand und möglichst wenig Abwasch.
+            Zeigt dir schnelle Sachen mit wenig Aufwand und möglichst wenig Abwasch.
           </p>
         </div>
 
-        <div class="pot-mascot tired">🍲</div>
+        <div class="mascot mascot-mini mascot-tired" aria-hidden="true">
+          <div class="pot-lid"></div>
+          <div class="pot-body">
+            <span class="eye eye-left"></span>
+            <span class="eye eye-right"></span>
+            <span class="mouth"></span>
+          </div>
+        </div>
       </div>
 
       <button id="noMoodButton" class="secondary-button full-button" type="button">
@@ -100,25 +126,11 @@
     </section>
 
     <section class="filters">
-      <button class="filter-button active" data-filter="all" type="button">
-        Alles
-      </button>
-
-      <button class="filter-button" data-filter="schnell" type="button">
-        Schnell
-      </button>
-
-      <button class="filter-button" data-filter="günstig" type="button">
-        Günstig
-      </button>
-
-      <button class="filter-button" data-filter="muss weg" type="button">
-        Muss weg
-      </button>
-
-      <button class="filter-button" data-filter="vegetarisch" type="button">
-        Vegetarisch
-      </button>
+      <button class="filter-button active" data-filter="all" type="button">Alles</button>
+      <button class="filter-button" data-filter="schnell" type="button">Schnell</button>
+      <button class="filter-button" data-filter="günstig" type="button">Günstig</button>
+      <button class="filter-button" data-filter="muss weg" type="button">Muss weg</button>
+      <button class="filter-button" data-filter="vegetarisch" type="button">Vegetarisch</button>
     </section>
 
     <section class="recommendation-section">
@@ -147,14 +159,27 @@
 
     <footer id="about" class="app-footer">
       <div class="footer-inner">
-        <div class="footer-icon">🍲</div>
+        <div class="footer-brand">
+          <div class="mascot mascot-footer" aria-hidden="true">
+            <div class="pot-lid"></div>
+            <div class="pot-body">
+              <span class="eye eye-left"></span>
+              <span class="eye eye-right"></span>
+              <span class="mouth"></span>
+            </div>
+          </div>
 
-        <p class="footer-claim">Aus Kühlschrank-Chaos wird Abendessen.</p>
+          <div>
+            <p class="footer-kicker">Küchenkumpel</p>
+            <p class="footer-claim">Aus Kühlschrank-Chaos wird Abendessen.</p>
+          </div>
+        </div>
 
-        <div class="footer-credit-block">
-          <p class="footer-credit">Küchenkumpel</p>
-          <p class="footer-made">entwickelt von</p>
-          <p class="footer-name">Christoph Dietrich</p>
+        <div class="footer-divider"></div>
+
+        <div class="footer-signature">
+          <p>entwickelt von</p>
+          <strong>Christoph Dietrich</strong>
         </div>
 
         <a
@@ -163,7 +188,7 @@
           target="_blank"
           rel="noopener"
         >
-          Weitere Projekte auf meiner Website
+          Portfolio ansehen
         </a>
       </div>
     </footer>
@@ -171,17 +196,17 @@
 
   <nav class="bottom-nav" aria-label="App Navigation">
     <a href="#start" class="nav-link active" data-nav="start">
-      <span>🏠</span>
+      <span class="nav-icon">⌂</span>
       Start
     </a>
 
     <a href="#recipes" class="nav-link" data-nav="recipes">
-      <span>🍽️</span>
+      <span class="nav-icon">◌</span>
       Rezepte
     </a>
 
     <a href="#about" class="nav-link" data-nav="about">
-      <span>ℹ️</span>
+      <span class="nav-icon">i</span>
       Über
     </a>
   </nav>

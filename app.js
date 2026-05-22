@@ -20,6 +20,13 @@ const modalBackdrop = document.getElementById("modalBackdrop");
 const closeModalButton = document.getElementById("closeModalButton");
 const modalContent = document.getElementById("modalContent");
 
+const navLinks = document.querySelectorAll(".nav-link");
+const navSections = [
+  document.getElementById("start"),
+  document.getElementById("recipes"),
+  document.getElementById("about")
+];
+
 let selectedIngredients = [];
 let activeFilter = "all";
 let noMoodMode = false;
@@ -43,7 +50,31 @@ const quickIngredients = [
   { name: "hähnchen", label: "🍗 Hähnchen" }
 ];
 
-const recipes = [
+function createDishesText(value) {
+  if (value === "wenig") {
+    return "Ein bisschen Abwasch, aber kein Drama.";
+  }
+
+  if (value === "mittel") {
+    return "Geht klar. Kein Küchen-Tatort.";
+  }
+
+  return "Lecker, aber danach will die Spüle kurz reden.";
+}
+
+function createCostText(value) {
+  if (value === "günstig") {
+    return "Tut dem Konto nicht weh.";
+  }
+
+  if (value === "normal") {
+    return "Solide Mitte. Kein Sparmenü, kein Festbankett.";
+  }
+
+  return "Etwas feiner. Für Tage, an denen der Kühlschrank kurz angeben darf.";
+}
+
+const baseRecipes = [
   {
     id: 1,
     title: "Cremige Käse-Nudeln",
@@ -273,50 +304,55 @@ const recipes = [
       "Reis dazugeben und alles zusammen warm werden lassen.",
       "Würzen und nach Wunsch mit Joghurt-Dip, Ei oder Käse ergänzen. Simpel, aber stabil."
     ]
-  },
+  }
+];
 
-  ...[
-    ["Tomatenreis", ["reis", "tomaten", "zwiebel"], ["paprika", "käse", "kräuter"], ["günstig", "vegetarisch", "vorrat"], "25 Minuten", "wenig", "günstig", "macht satt", "Alltagsküche", "Simpel, warm und macht satt. Kein Drama, nur Essen."],
-    ["Curry-Reis mit Gemüse", ["reis", "gemüse", "curry"], ["sahne", "milch", "kokosmilch"], ["vegetarisch", "modern", "muss weg"], "25 Minuten", "mittel", "normal", "macht satt", "frisch", "Wenn der Kühlschrank müde aussieht, hilft Curry erstaunlich oft."],
-    ["Reis mit Thunfisch und Mais", ["reis", "thunfisch", "mais"], ["joghurt", "zwiebel", "gurke"], ["schnell", "proteinreich", "vorrat"], "20 Minuten", "wenig", "normal", "macht satt", "Alltagsküche", "Nicht schick, aber sehr zuverlässig. Wie ein guter alter Hoodie."],
-    ["Reis-Bohnen-Pfanne", ["reis", "bohnen", "tomaten"], ["mais", "paprika", "käse"], ["günstig", "vorrat", "proteinreich"], "25 Minuten", "wenig", "günstig", "richtig deftig", "Alltagsküche", "Günstig, sattmachend und stärker als sie aussieht."],
-    ["Bratkartoffeln mit Ei", ["kartoffeln", "eier", "zwiebel"], ["speck", "käse", "gewürzgurke"], ["günstig", "herzhaft", "klassisch"], "30 Minuten", "mittel", "günstig", "richtig deftig", "Soulfood", "Das ist bodenständig. Das ist ehrlich. Das ist eine gute Entscheidung."],
-    ["Kartoffel-Gemüse-Pfanne", ["kartoffeln", "gemüse", "zwiebel"], ["eier", "käse", "quark"], ["muss weg", "günstig", "vegetarisch"], "30 Minuten", "mittel", "günstig", "macht satt", "Alltagsküche", "Die Pfanne sagt: Wir räumen heute den Kühlschrank auf."],
-    ["Kartoffelauflauf", ["kartoffeln", "käse", "milch"], ["sahne", "gemüse", "schinken"], ["herzhaft", "ofen", "soulfood"], "40 Minuten", "mittel", "normal", "richtig deftig", "Soulfood", "Käse drauf und plötzlich ist alles ein bisschen besser."],
-    ["Ofenkartoffeln mit Quark", ["kartoffeln", "quark"], ["joghurt", "kräuter", "gurke", "knoblauch"], ["günstig", "vegetarisch", "wenig abwasch"], "35 Minuten", "wenig", "günstig", "macht satt", "Alltagsküche", "Wenig Theater, viel Sättigung. Genau mein Tempo."],
-    ["Kartoffelsuppe", ["kartoffeln", "möhren", "zwiebel"], ["würstchen", "sahne", "lauch"], ["günstig", "klassisch", "muss weg"], "35 Minuten", "mittel", "günstig", "macht satt", "Alltagsküche", "Warm, günstig und macht innen kurz das Licht an."],
-    ["Bauernfrühstück", ["kartoffeln", "eier", "zwiebel"], ["speck", "schinken", "käse"], ["herzhaft", "günstig", "deftig"], "30 Minuten", "mittel", "normal", "richtig deftig", "Soulfood", "Das ist kein Frühstück. Das ist eine Ansage."],
-    ["Tomaten-Omelett", ["eier", "tomaten", "zwiebel"], ["käse", "paprika", "kräuter"], ["schnell", "vegetarisch", "günstig"], "15 Minuten", "wenig", "günstig", "leicht bis satt", "frisch", "Schnell gemacht und trotzdem nicht traurig. Gute Kombi."],
-    ["Käse-Omelett", ["eier", "käse"], ["zwiebel", "tomaten", "schinken"], ["schnell", "kein bock", "proteinreich"], "12 Minuten", "wenig", "günstig", "macht satt", "Kein-Bock-Retter", "Ei und Käse regeln mehr Probleme, als man denkt."],
-    ["Gemüse-Rührei", ["eier", "gemüse", "zwiebel"], ["käse", "brot", "kräuter"], ["schnell", "muss weg", "proteinreich"], "15 Minuten", "wenig", "günstig", "macht satt", "frisch", "Das Gemüse verschwindet nicht. Es wird einfach Teil vom Plan."],
-    ["Shakshuka einfach", ["eier", "tomaten", "zwiebel"], ["paprika", "feta", "chili"], ["modern", "vegetarisch", "proteinreich"], "25 Minuten", "wenig", "normal", "macht satt", "frisch", "Sieht nach mehr aus, als es Arbeit macht. Mag ich."],
-    ["Ei im Toastloch", ["brot", "eier"], ["käse", "schinken", "tomaten"], ["schnell", "günstig", "kein bock"], "10 Minuten", "wenig", "günstig", "leicht bis satt", "Kein-Bock-Retter", "Kleines Essen, großer Trick. Der Toast hat heute Hauptrolle."],
-    ["Käsetoast aus der Pfanne", ["brot", "käse"], ["tomaten", "schinken", "zwiebel"], ["schnell", "günstig", "kein bock"], "10 Minuten", "wenig", "günstig", "macht satt", "Kein-Bock-Retter", "Wenn nichts mehr geht, geht Käsetoast. Küchenregel Nummer eins."],
-    ["Brotpizza", ["brot", "tomaten", "käse"], ["schinken", "mais", "paprika"], ["schnell", "muss weg", "günstig"], "15 Minuten", "wenig", "günstig", "macht satt", "Soulfood", "Kein Pizzateig? Kein Problem. Brot macht heute Überstunden."],
-    ["Überbackene Brötchenhälften", ["brötchen", "käse"], ["gemüse", "schinken", "tomaten"], ["muss weg", "schnell", "ofen"], "18 Minuten", "wenig", "günstig", "macht satt", "Alltagsküche", "Alte Brötchen, neuer Auftritt. Käse sei Dank."],
-    ["Herzhafte Arme Ritter", ["brot", "eier", "milch", "käse"], ["schinken", "kräuter", "tomaten"], ["günstig", "reste", "herzhaft"], "18 Minuten", "mittel", "günstig", "macht satt", "Soulfood", "Aus altem Brot wird plötzlich was, worauf man sich freut."],
-    ["Knoblauchbrot mit Dip", ["brot", "knoblauch"], ["butter", "öl", "joghurt", "quark"], ["schnell", "günstig", "beilage"], "12 Minuten", "wenig", "günstig", "leicht", "Kein-Bock-Retter", "Nicht das ganze Abendessen, aber ein sehr guter Anfang."],
-    ["Alles-muss-weg-Gemüsepfanne", ["gemüse", "zwiebel"], ["reis", "nudeln", "eier", "käse"], ["muss weg", "vegetarisch", "günstig"], "25 Minuten", "mittel", "günstig", "macht satt", "frisch", "Heute kriegt jedes traurige Gemüse nochmal Applaus."],
-    ["Gemüseauflauf", ["gemüse", "käse", "milch"], ["sahne", "kartoffeln", "nudeln"], ["muss weg", "ofen", "vegetarisch"], "35 Minuten", "mittel", "normal", "richtig deftig", "Soulfood", "Gemüse unten, Käse oben. So verkauft man Vernunft."],
-    ["Gemüsesuppe", ["gemüse", "brühe"], ["kartoffeln", "reis", "nudeln"], ["muss weg", "günstig", "leicht"], "30 Minuten", "mittel", "günstig", "leicht bis satt", "frisch", "Alles rein, warm machen, fertig. Der Topf übernimmt."],
-    ["Ofengemüse", ["gemüse", "öl"], ["kartoffeln", "quark", "feta"], ["muss weg", "vegetarisch", "wenig abwasch"], "35 Minuten", "wenig", "günstig", "macht satt", "frisch", "Schneiden, würzen, ab in den Ofen. Mehr Motivation war nicht nötig."],
-    ["Paprika-Ei-Pfanne", ["paprika", "eier", "zwiebel"], ["käse", "tomaten", "brot"], ["schnell", "muss weg", "vegetarisch"], "18 Minuten", "wenig", "günstig", "macht satt", "frisch", "Die Paprika hatte noch Pläne. Heute erfüllt sie sie."],
-    ["Zucchini-Tomaten-Pfanne", ["zucchini", "tomaten", "zwiebel"], ["reis", "nudeln", "käse"], ["vegetarisch", "muss weg", "leicht"], "20 Minuten", "wenig", "günstig", "leicht bis satt", "frisch", "Leicht, frisch und ohne großes Küchen-Drama."],
-    ["Gemüse-Curry", ["gemüse", "curry", "reis"], ["sahne", "milch", "kokosmilch"], ["modern", "vegetarisch", "muss weg"], "30 Minuten", "mittel", "normal", "macht satt", "frisch", "Curry ist wie ein Zaubertrick für Restegemüse."],
-    ["Hack-Nudel-Pfanne", ["hackfleisch", "nudeln", "tomaten"], ["käse", "zwiebel", "paprika"], ["herzhaft", "schnell", "macht satt"], "25 Minuten", "mittel", "normal", "richtig deftig", "Soulfood", "Das ist Feierabendküche mit stabiler Schulterbreite."],
-    ["Hack-Reis-Pfanne", ["hackfleisch", "reis", "gemüse"], ["tomaten", "käse", "mais"], ["herzhaft", "alltag"], "30 Minuten", "mittel", "normal", "richtig deftig", "Alltagsküche", "Macht satt, macht Sinn, macht nicht unnötig kompliziert."],
-    ["Hähnchen-Curry einfach", ["hähnchen", "reis", "curry"], ["gemüse", "sahne", "kokosmilch"], ["proteinreich", "modern", "macht satt"], "30 Minuten", "mittel", "etwas teurer", "macht satt", "frisch", "Ein bisschen Curry, ein bisschen Hähnchen, direkt bessere Laune."],
-    ["Hähnchen-Gemüse-Pfanne", ["hähnchen", "gemüse"], ["reis", "nudeln", "joghurt"], ["proteinreich", "muss weg", "alltag"], "30 Minuten", "mittel", "etwas teurer", "macht satt", "Alltagsküche", "Gemüse muss weg, Hähnchen hilft. Teamwork in der Pfanne."],
-    ["Wurst-Kartoffel-Pfanne", ["wurst", "kartoffeln", "zwiebel"], ["eier", "paprika", "gurke"], ["herzhaft", "günstig", "deftig"], "30 Minuten", "mittel", "normal", "richtig deftig", "Soulfood", "Nicht fein, aber ehrlich. Und ehrlich macht manchmal am sattesten."],
-    ["Bohnen-Chili einfach", ["bohnen", "tomaten", "mais"], ["reis", "käse", "hackfleisch"], ["vorrat", "günstig", "proteinreich"], "30 Minuten", "wenig", "günstig", "richtig deftig", "Alltagsküche", "Der Vorratsschrank zeigt heute, was er kann."],
-    ["Linsen-Dal einfach", ["linsen", "curry", "tomaten"], ["reis", "joghurt", "gemüse"], ["vorrat", "vegetarisch", "proteinreich"], "30 Minuten", "mittel", "günstig", "macht satt", "frisch", "Günstig, warm und deutlich besser, als es trocken im Schrank aussah."],
-    ["Tomatensuppe aus Vorrat", ["tomaten", "zwiebel", "brühe"], ["sahne", "brot", "käse"], ["vorrat", "günstig", "vegetarisch"], "20 Minuten", "wenig", "günstig", "leicht bis satt", "Alltagsküche", "Dosentomaten können mehr, als nur traurig im Schrank stehen."],
-    ["TK-Gemüse-Reis-Pfanne", ["tk-gemüse", "reis"], ["eier", "sojasoße", "hähnchen"], ["schnell", "vorrat", "günstig"], "20 Minuten", "wenig", "günstig", "macht satt", "Kein-Bock-Retter", "Tiefkühlfach auf, Plan gefunden. So einfach darf es sein."],
-    ["Frischkäse-Pasta", ["nudeln", "frischkäse", "gemüse"], ["tomaten", "knoblauch", "käse"], ["schnell", "vegetarisch", "cremig"], "20 Minuten", "wenig", "normal", "macht satt", "Soulfood", "Cremig ohne großes Theater. Genau dafür ist Frischkäse da."],
-    ["Quark-Kartoffeln", ["kartoffeln", "quark"], ["kräuter", "gurke", "knoblauch"], ["günstig", "vegetarisch", "klassisch"], "30 Minuten", "wenig", "günstig", "macht satt", "Alltagsküche", "Klassiker aus gutem Grund. Satt, günstig, entspannt."],
-    ["Pfannkuchen einfach", ["mehl", "milch", "eier"], ["zucker", "apfel", "quark"], ["süß", "günstig", "einfach"], "25 Minuten", "mittel", "günstig", "macht satt", "Soulfood", "Süß, einfach und irgendwie immer eine kleine Belohnung."],
-    ["Haferflocken-Porridge", ["haferflocken", "milch"], ["wasser", "banane", "apfel", "zimt"], ["frühstück", "günstig", "schnell"], "10 Minuten", "wenig", "günstig", "leicht bis satt", "frisch", "Warm, schnell und deutlich freundlicher als leerer Magen."]
-  ].map((item, index) => ({
+const additionalRecipes = [
+  ["Tomatenreis", ["reis", "tomaten", "zwiebel"], ["paprika", "käse", "kräuter"], ["günstig", "vegetarisch", "vorrat"], "25 Minuten", "wenig", "günstig", "macht satt", "Alltagsküche", "Simpel, warm und macht satt. Kein Drama, nur Essen."],
+  ["Curry-Reis mit Gemüse", ["reis", "gemüse", "curry"], ["sahne", "milch", "kokosmilch"], ["vegetarisch", "modern", "muss weg"], "25 Minuten", "mittel", "normal", "macht satt", "frisch", "Wenn der Kühlschrank müde aussieht, hilft Curry erstaunlich oft."],
+  ["Reis mit Thunfisch und Mais", ["reis", "thunfisch", "mais"], ["joghurt", "zwiebel", "gurke"], ["schnell", "proteinreich", "vorrat"], "20 Minuten", "wenig", "normal", "macht satt", "Alltagsküche", "Nicht schick, aber sehr zuverlässig. Wie ein guter alter Hoodie."],
+  ["Reis-Bohnen-Pfanne", ["reis", "bohnen", "tomaten"], ["mais", "paprika", "käse"], ["günstig", "vorrat", "proteinreich"], "25 Minuten", "wenig", "günstig", "richtig deftig", "Alltagsküche", "Günstig, sattmachend und stärker als sie aussieht."],
+  ["Bratkartoffeln mit Ei", ["kartoffeln", "eier", "zwiebel"], ["speck", "käse", "gewürzgurke"], ["günstig", "herzhaft", "klassisch"], "30 Minuten", "mittel", "günstig", "richtig deftig", "Soulfood", "Das ist bodenständig. Das ist ehrlich. Das ist eine gute Entscheidung."],
+  ["Kartoffel-Gemüse-Pfanne", ["kartoffeln", "gemüse", "zwiebel"], ["eier", "käse", "quark"], ["muss weg", "günstig", "vegetarisch"], "30 Minuten", "mittel", "günstig", "macht satt", "Alltagsküche", "Die Pfanne sagt: Wir räumen heute den Kühlschrank auf."],
+  ["Kartoffelauflauf", ["kartoffeln", "käse", "milch"], ["sahne", "gemüse", "schinken"], ["herzhaft", "ofen", "soulfood"], "40 Minuten", "mittel", "normal", "richtig deftig", "Soulfood", "Käse drauf und plötzlich ist alles ein bisschen besser."],
+  ["Ofenkartoffeln mit Quark", ["kartoffeln", "quark"], ["joghurt", "kräuter", "gurke", "knoblauch"], ["günstig", "vegetarisch", "wenig abwasch"], "35 Minuten", "wenig", "günstig", "macht satt", "Alltagsküche", "Wenig Theater, viel Sättigung. Genau mein Tempo."],
+  ["Kartoffelsuppe", ["kartoffeln", "möhren", "zwiebel"], ["würstchen", "sahne", "lauch"], ["günstig", "klassisch", "muss weg"], "35 Minuten", "mittel", "günstig", "macht satt", "Alltagsküche", "Warm, günstig und macht innen kurz das Licht an."],
+  ["Bauernfrühstück", ["kartoffeln", "eier", "zwiebel"], ["speck", "schinken", "käse"], ["herzhaft", "günstig", "deftig"], "30 Minuten", "mittel", "normal", "richtig deftig", "Soulfood", "Das ist kein Frühstück. Das ist eine Ansage."],
+  ["Tomaten-Omelett", ["eier", "tomaten", "zwiebel"], ["käse", "paprika", "kräuter"], ["schnell", "vegetarisch", "günstig"], "15 Minuten", "wenig", "günstig", "leicht bis satt", "frisch", "Schnell gemacht und trotzdem nicht traurig. Gute Kombi."],
+  ["Käse-Omelett", ["eier", "käse"], ["zwiebel", "tomaten", "schinken"], ["schnell", "kein bock", "proteinreich"], "12 Minuten", "wenig", "günstig", "macht satt", "Kein-Bock-Retter", "Ei und Käse regeln mehr Probleme, als man denkt."],
+  ["Gemüse-Rührei", ["eier", "gemüse", "zwiebel"], ["käse", "brot", "kräuter"], ["schnell", "muss weg", "proteinreich"], "15 Minuten", "wenig", "günstig", "macht satt", "frisch", "Das Gemüse verschwindet nicht. Es wird einfach Teil vom Plan."],
+  ["Shakshuka einfach", ["eier", "tomaten", "zwiebel"], ["paprika", "feta", "chili"], ["modern", "vegetarisch", "proteinreich"], "25 Minuten", "wenig", "normal", "macht satt", "frisch", "Sieht nach mehr aus, als es Arbeit macht. Mag ich."],
+  ["Ei im Toastloch", ["brot", "eier"], ["käse", "schinken", "tomaten"], ["schnell", "günstig", "kein bock"], "10 Minuten", "wenig", "günstig", "leicht bis satt", "Kein-Bock-Retter", "Kleines Essen, großer Trick. Der Toast hat heute Hauptrolle."],
+  ["Käsetoast aus der Pfanne", ["brot", "käse"], ["tomaten", "schinken", "zwiebel"], ["schnell", "günstig", "kein bock"], "10 Minuten", "wenig", "günstig", "macht satt", "Kein-Bock-Retter", "Wenn nichts mehr geht, geht Käsetoast. Küchenregel Nummer eins."],
+  ["Brotpizza", ["brot", "tomaten", "käse"], ["schinken", "mais", "paprika"], ["schnell", "muss weg", "günstig"], "15 Minuten", "wenig", "günstig", "macht satt", "Soulfood", "Kein Pizzateig? Kein Problem. Brot macht heute Überstunden."],
+  ["Überbackene Brötchenhälften", ["brötchen", "käse"], ["gemüse", "schinken", "tomaten"], ["muss weg", "schnell", "ofen"], "18 Minuten", "wenig", "günstig", "macht satt", "Alltagsküche", "Alte Brötchen, neuer Auftritt. Käse sei Dank."],
+  ["Herzhafte Arme Ritter", ["brot", "eier", "milch", "käse"], ["schinken", "kräuter", "tomaten"], ["günstig", "reste", "herzhaft"], "18 Minuten", "mittel", "günstig", "macht satt", "Soulfood", "Aus altem Brot wird plötzlich was, worauf man sich freut."],
+  ["Knoblauchbrot mit Dip", ["brot", "knoblauch"], ["butter", "öl", "joghurt", "quark"], ["schnell", "günstig", "beilage"], "12 Minuten", "wenig", "günstig", "leicht", "Kein-Bock-Retter", "Nicht das ganze Abendessen, aber ein sehr guter Anfang."],
+  ["Alles-muss-weg-Gemüsepfanne", ["gemüse", "zwiebel"], ["reis", "nudeln", "eier", "käse"], ["muss weg", "vegetarisch", "günstig"], "25 Minuten", "mittel", "günstig", "macht satt", "frisch", "Heute kriegt jedes traurige Gemüse nochmal Applaus."],
+  ["Gemüseauflauf", ["gemüse", "käse", "milch"], ["sahne", "kartoffeln", "nudeln"], ["muss weg", "ofen", "vegetarisch"], "35 Minuten", "mittel", "normal", "richtig deftig", "Soulfood", "Gemüse unten, Käse oben. So verkauft man Vernunft."],
+  ["Gemüsesuppe", ["gemüse", "brühe"], ["kartoffeln", "reis", "nudeln"], ["muss weg", "günstig", "leicht"], "30 Minuten", "mittel", "günstig", "leicht bis satt", "frisch", "Alles rein, warm machen, fertig. Der Topf übernimmt."],
+  ["Ofengemüse", ["gemüse", "öl"], ["kartoffeln", "quark", "feta"], ["muss weg", "vegetarisch", "wenig abwasch"], "35 Minuten", "wenig", "günstig", "macht satt", "frisch", "Schneiden, würzen, ab in den Ofen. Mehr Motivation war nicht nötig."],
+  ["Paprika-Ei-Pfanne", ["paprika", "eier", "zwiebel"], ["käse", "tomaten", "brot"], ["schnell", "muss weg", "vegetarisch"], "18 Minuten", "wenig", "günstig", "macht satt", "frisch", "Die Paprika hatte noch Pläne. Heute erfüllt sie sie."],
+  ["Zucchini-Tomaten-Pfanne", ["zucchini", "tomaten", "zwiebel"], ["reis", "nudeln", "käse"], ["vegetarisch", "muss weg", "leicht"], "20 Minuten", "wenig", "günstig", "leicht bis satt", "frisch", "Leicht, frisch und ohne großes Küchen-Drama."],
+  ["Gemüse-Curry", ["gemüse", "curry", "reis"], ["sahne", "milch", "kokosmilch"], ["modern", "vegetarisch", "muss weg"], "30 Minuten", "mittel", "normal", "macht satt", "frisch", "Curry ist wie ein Zaubertrick für Restegemüse."],
+  ["Hack-Nudel-Pfanne", ["hackfleisch", "nudeln", "tomaten"], ["käse", "zwiebel", "paprika"], ["herzhaft", "schnell", "macht satt"], "25 Minuten", "mittel", "normal", "richtig deftig", "Soulfood", "Das ist Feierabendküche mit stabiler Schulterbreite."],
+  ["Hack-Reis-Pfanne", ["hackfleisch", "reis", "gemüse"], ["tomaten", "käse", "mais"], ["herzhaft", "alltag"], "30 Minuten", "mittel", "normal", "richtig deftig", "Alltagsküche", "Macht satt, macht Sinn, macht nicht unnötig kompliziert."],
+  ["Hähnchen-Curry einfach", ["hähnchen", "reis", "curry"], ["gemüse", "sahne", "kokosmilch"], ["proteinreich", "modern", "macht satt"], "30 Minuten", "mittel", "etwas teurer", "macht satt", "frisch", "Ein bisschen Curry, ein bisschen Hähnchen, direkt bessere Laune."],
+  ["Hähnchen-Gemüse-Pfanne", ["hähnchen", "gemüse"], ["reis", "nudeln", "joghurt"], ["proteinreich", "muss weg", "alltag"], "30 Minuten", "mittel", "etwas teurer", "macht satt", "Alltagsküche", "Gemüse muss weg, Hähnchen hilft. Teamwork in der Pfanne."],
+  ["Wurst-Kartoffel-Pfanne", ["wurst", "kartoffeln", "zwiebel"], ["eier", "paprika", "gurke"], ["herzhaft", "günstig", "deftig"], "30 Minuten", "mittel", "normal", "richtig deftig", "Soulfood", "Nicht fein, aber ehrlich. Und ehrlich macht manchmal am sattesten."],
+  ["Bohnen-Chili einfach", ["bohnen", "tomaten", "mais"], ["reis", "käse", "hackfleisch"], ["vorrat", "günstig", "proteinreich"], "30 Minuten", "wenig", "günstig", "richtig deftig", "Alltagsküche", "Der Vorratsschrank zeigt heute, was er kann."],
+  ["Linsen-Dal einfach", ["linsen", "curry", "tomaten"], ["reis", "joghurt", "gemüse"], ["vorrat", "vegetarisch", "proteinreich"], "30 Minuten", "mittel", "günstig", "macht satt", "frisch", "Günstig, warm und deutlich besser, als es trocken im Schrank aussah."],
+  ["Tomatensuppe aus Vorrat", ["tomaten", "zwiebel", "brühe"], ["sahne", "brot", "käse"], ["vorrat", "günstig", "vegetarisch"], "20 Minuten", "wenig", "günstig", "leicht bis satt", "Alltagsküche", "Dosentomaten können mehr, als nur traurig im Schrank stehen."],
+  ["TK-Gemüse-Reis-Pfanne", ["tk-gemüse", "reis"], ["eier", "sojasoße", "hähnchen"], ["schnell", "vorrat", "günstig"], "20 Minuten", "wenig", "günstig", "macht satt", "Kein-Bock-Retter", "Tiefkühlfach auf, Plan gefunden. So einfach darf es sein."],
+  ["Frischkäse-Pasta", ["nudeln", "frischkäse", "gemüse"], ["tomaten", "knoblauch", "käse"], ["schnell", "vegetarisch", "cremig"], "20 Minuten", "wenig", "normal", "macht satt", "Soulfood", "Cremig ohne großes Theater. Genau dafür ist Frischkäse da."],
+  ["Quark-Kartoffeln", ["kartoffeln", "quark"], ["kräuter", "gurke", "knoblauch"], ["günstig", "vegetarisch", "klassisch"], "30 Minuten", "wenig", "günstig", "macht satt", "Alltagsküche", "Klassiker aus gutem Grund. Satt, günstig, entspannt."],
+  ["Pfannkuchen einfach", ["mehl", "milch", "eier"], ["zucker", "apfel", "quark"], ["süß", "günstig", "einfach"], "25 Minuten", "mittel", "günstig", "macht satt", "Soulfood", "Süß, einfach und irgendwie immer eine kleine Belohnung."],
+  ["Haferflocken-Porridge", ["haferflocken", "milch"], ["wasser", "banane", "apfel", "zimt"], ["frühstück", "günstig", "schnell"], "10 Minuten", "wenig", "günstig", "leicht bis satt", "frisch", "Warm, schnell und deutlich freundlicher als leerer Magen."]
+];
+
+const recipes = [
+  ...baseRecipes,
+  ...additionalRecipes.map((item, index) => ({
     id: index + 11,
     title: item[0],
     main: item[1],
@@ -341,32 +377,19 @@ const recipes = [
   }))
 ];
 
-function createDishesText(value) {
-  if (value === "wenig") {
-    return "Ein bisschen Abwasch, aber kein Drama.";
-  }
-
-  if (value === "mittel") {
-    return "Geht klar. Kein Küchen-Tatort.";
-  }
-
-  return "Lecker, aber danach will die Spüle kurz reden.";
-}
-
-function createCostText(value) {
-  if (value === "günstig") {
-    return "Tut dem Konto nicht weh.";
-  }
-
-  if (value === "normal") {
-    return "Solide Mitte. Kein Sparmenü, kein Festbankett.";
-  }
-
-  return "Etwas feiner. Für Tage, an denen der Kühlschrank kurz angeben darf.";
-}
-
 function normalize(value) {
   return value.trim().toLowerCase();
+}
+
+function capitalize(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function formatList(items) {
+  if (items.length === 0) return "";
+  if (items.length === 1) return capitalize(items[0]);
+  if (items.length === 2) return `${capitalize(items[0])} und ${items[1]}`;
+  return `${items.slice(0, -1).map(capitalize).join(", ")} und ${items[items.length - 1]}`;
 }
 
 function ingredientExists(name) {
@@ -418,33 +441,28 @@ function getSelectedNames() {
 }
 
 function getUrgentNames() {
-  return selectedIngredients.filter((ingredient) => ingredient.urgent).map((ingredient) => ingredient.name);
+  return selectedIngredients
+    .filter((ingredient) => ingredient.urgent)
+    .map((ingredient) => ingredient.name);
 }
 
 function hasIngredient(recipeIngredient, selectedNames) {
-  if (selectedNames.includes(recipeIngredient)) {
+  if (selectedNames.includes(recipeIngredient)) return true;
+
+  if (recipeIngredient === "milch" && selectedNames.includes("sahne")) return true;
+  if (recipeIngredient === "sahne" && selectedNames.includes("milch")) return true;
+  if (recipeIngredient === "tomaten" && selectedNames.includes("dosentomaten")) return true;
+
+  if (
+    recipeIngredient === "gemüse" &&
+    selectedNames.some((name) =>
+      ["paprika", "zucchini", "möhren", "tk-gemüse"].includes(name)
+    )
+  ) {
     return true;
   }
 
-  if (recipeIngredient === "milch" && selectedNames.includes("sahne")) {
-    return true;
-  }
-
-  if (recipeIngredient === "sahne" && selectedNames.includes("milch")) {
-    return true;
-  }
-
-  if (recipeIngredient === "tomaten" && selectedNames.includes("dosentomaten")) {
-    return true;
-  }
-
-  if (recipeIngredient === "gemüse" && selectedNames.some((name) => ["paprika", "zucchini", "möhren", "tk-gemüse"].includes(name))) {
-    return true;
-  }
-
-  if (recipeIngredient === "brot" && selectedNames.includes("brötchen")) {
-    return true;
-  }
+  if (recipeIngredient === "brot" && selectedNames.includes("brötchen")) return true;
 
   return false;
 }
@@ -453,9 +471,15 @@ function scoreRecipe(recipe) {
   const selectedNames = getSelectedNames();
   const urgentNames = getUrgentNames();
 
-  const matchingMain = recipe.main.filter((ingredient) => hasIngredient(ingredient, selectedNames));
-  const missingMain = recipe.main.filter((ingredient) => !hasIngredient(ingredient, selectedNames));
-  const matchingOptional = recipe.optional.filter((ingredient) => hasIngredient(ingredient, selectedNames));
+  const matchingMain = recipe.main.filter((ingredient) =>
+    hasIngredient(ingredient, selectedNames)
+  );
+  const missingMain = recipe.main.filter(
+    (ingredient) => !hasIngredient(ingredient, selectedNames)
+  );
+  const matchingOptional = recipe.optional.filter((ingredient) =>
+    hasIngredient(ingredient, selectedNames)
+  );
 
   let score = matchingMain.length * 4 + matchingOptional.length;
 
@@ -472,7 +496,14 @@ function scoreRecipe(recipe) {
   if (noMoodMode) {
     if (recipe.tags.includes("kein bock")) score += 8;
     if (recipe.dishes === "wenig") score += 3;
-    if (recipe.time.includes("10") || recipe.time.includes("12") || recipe.time.includes("15") || recipe.time.includes("20")) score += 2;
+    if (
+      recipe.time.includes("10") ||
+      recipe.time.includes("12") ||
+      recipe.time.includes("15") ||
+      recipe.time.includes("20")
+    ) {
+      score += 2;
+    }
     if (recipe.tags.includes("ofen")) score -= 4;
   }
 
@@ -505,6 +536,10 @@ function getMatches() {
     .sort((a, b) => b.score - a.score);
 }
 
+function updateBuddyTextOnly(text) {
+  buddyMessage.innerHTML = `<strong>Küchenkumpel sagt:</strong><span>${text}</span>`;
+}
+
 function updateBuddyMessage() {
   const urgentNames = getUrgentNames();
 
@@ -522,19 +557,7 @@ function updateBuddyMessage() {
     message = "Okay, das sieht schon nach Abendessen aus.";
   }
 
-  buddyMessage.innerHTML = `<strong>Küchenkumpel sagt:</strong><span>${message}</span>`;
-}
-
-function formatList(items) {
-  if (items.length === 0) return "";
-  if (items.length === 1) return capitalize(items[0]);
-  if (items.length === 2) return `${capitalize(items[0])} und ${items[1]}`;
-
-  return `${items.slice(0, -1).map(capitalize).join(", ")} und ${items[items.length - 1]}`;
-}
-
-function capitalize(value) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  updateBuddyTextOnly(message);
 }
 
 function renderQuickIngredients() {
@@ -562,7 +585,8 @@ function renderSelectedIngredients() {
   selectedIngredientsContainer.innerHTML = "";
 
   if (selectedIngredients.length === 0) {
-    selectedIngredientsContainer.innerHTML = `<div class="empty-small">Noch nichts ausgewählt. Der Kühlschrank schweigt.</div>`;
+    selectedIngredientsContainer.innerHTML =
+      `<div class="empty-small">Noch nichts ausgewählt. Der Kühlschrank schweigt.</div>`;
     return;
   }
 
@@ -585,6 +609,74 @@ function renderSelectedIngredients() {
     });
 
     selectedIngredientsContainer.appendChild(chip);
+  });
+}
+
+function createRecipeCard(match, isRecommendation) {
+  const { recipe, matchingMain, missingMain, matchingOptional } = match;
+  const cardClass = isRecommendation ? "recommendation-card" : "recipe-card";
+
+  const missingText = missingMain.length > 0
+    ? `Fehlt noch: ${formatList(missingMain)}`
+    : "Du hast alles Wichtige. Sehr stabil.";
+
+  const optionalText = matchingOptional.length > 0
+    ? `Extra passt auch: ${formatList(matchingOptional)}`
+    : "Extras sind nice, aber kein Muss.";
+
+  return `
+    <article class="${cardClass}">
+      <h4>${recipe.title}</h4>
+      <p class="recipe-saying">${recipe.saying}</p>
+
+      <div class="recipe-meta">
+        <span class="meta-pill">Zeit · ${recipe.time}</span>
+        <span class="meta-pill">Abwasch · ${recipe.dishes}</span>
+        <span class="meta-pill">Kosten · ${recipe.cost}</span>
+        <span class="meta-pill">Sättigung · ${recipe.filling}</span>
+        <span class="meta-pill">Gefühl · ${recipe.feeling}</span>
+      </div>
+
+      <div class="match-info">
+        <div class="match-line">
+          Passt: ${matchingMain.length > 0 ? formatList(matchingMain) : "noch nicht viel, aber wir versuchen es."}
+        </div>
+
+        <div class="missing-line">
+          ${missingText}
+        </div>
+
+        <div class="match-line">
+          ${optionalText}
+        </div>
+      </div>
+
+      <div class="recipe-actions">
+        <button class="small-button" data-open-recipe="${recipe.id}" type="button">
+          Rezept ansehen
+        </button>
+
+        <button class="ghost-button" data-copy-missing="${recipe.id}" type="button">
+          Fehlendes kopieren
+        </button>
+      </div>
+    </article>
+  `;
+}
+
+function attachRecipeActionEvents() {
+  document.querySelectorAll("[data-open-recipe]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const recipeId = Number(button.dataset.openRecipe);
+      openRecipeModal(recipeId);
+    });
+  });
+
+  document.querySelectorAll("[data-copy-missing]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const recipeId = Number(button.dataset.copyMissing);
+      copyMissingIngredients(recipeId);
+    });
   });
 }
 
@@ -627,75 +719,22 @@ function renderRecipeResults() {
   }
 
   const visibleMatches = matches.slice(1, 13);
-
   resultCounter.textContent = `${matches.length} Idee${matches.length === 1 ? "" : "n"} gefunden.`;
 
+  if (visibleMatches.length === 0) {
+    recipeResults.innerHTML = `
+      <div class="empty-state">
+        Im Moment ist das hier der beste Treffer. Gib noch ein paar Zutaten dazu, dann kommen mehr Vorschläge.
+      </div>
+    `;
+    return;
+  }
+
   recipeResults.innerHTML = visibleMatches.map((match) => createRecipeCard(match, false)).join("");
-
-  document.querySelectorAll("[data-open-recipe]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const recipeId = Number(button.dataset.openRecipe);
-      openRecipeModal(recipeId);
-    });
-  });
-}
-
-function createRecipeCard(match, isRecommendation) {
-  const { recipe, matchingMain, missingMain, matchingOptional } = match;
-
-  const cardClass = isRecommendation ? "recommendation-card" : "recipe-card";
-
-  const missingText = missingMain.length > 0
-    ? `Fehlt noch: ${formatList(missingMain)}`
-    : "Du hast alles Wichtige. Sehr stabil.";
-
-  const optionalText = matchingOptional.length > 0
-    ? `Extra passt auch: ${formatList(matchingOptional)}`
-    : "Extras sind nice, aber kein Muss.";
-
-  return `
-    <article class="${cardClass}">
-      <h4>${recipe.title}</h4>
-      <p class="recipe-saying">${recipe.saying}</p>
-
-      <div class="recipe-meta">
-        <span class="meta-pill">⏱️ ${recipe.time}</span>
-        <span class="meta-pill">🧽 Abwasch: ${recipe.dishes}</span>
-        <span class="meta-pill">💶 Kosten: ${recipe.cost}</span>
-        <span class="meta-pill">🍽️ ${recipe.filling}</span>
-        <span class="meta-pill">💛 ${recipe.feeling}</span>
-      </div>
-
-      <div class="match-info">
-        <div class="match-line">
-          Passt: ${matchingMain.length > 0 ? formatList(matchingMain) : "noch nicht viel, aber wir versuchen es."}
-        </div>
-
-        <div class="missing-line">
-          ${missingText}
-        </div>
-
-        <div class="match-line">
-          ${optionalText}
-        </div>
-      </div>
-
-      <div class="recipe-actions">
-        <button class="small-button" data-open-recipe="${recipe.id}" type="button">
-          Rezept ansehen
-        </button>
-
-        <button class="ghost-button" type="button" onclick="copyMissingIngredients(${recipe.id})">
-          Fehlendes kopieren
-        </button>
-      </div>
-    </article>
-  `;
 }
 
 function openRecipeModal(recipeId) {
   const recipe = recipes.find((item) => item.id === recipeId);
-
   if (!recipe) return;
 
   modalContent.innerHTML = `
@@ -703,11 +742,11 @@ function openRecipeModal(recipeId) {
     <p class="recipe-saying">${recipe.saying}</p>
 
     <div class="recipe-meta">
-      <span class="meta-pill">⏱️ ${recipe.time}</span>
-      <span class="meta-pill">🧽 Abwasch: ${recipe.dishes}</span>
-      <span class="meta-pill">💶 Kosten: ${recipe.cost}</span>
-      <span class="meta-pill">🍽️ ${recipe.filling}</span>
-      <span class="meta-pill">💛 ${recipe.feeling}</span>
+      <span class="meta-pill">Zeit · ${recipe.time}</span>
+      <span class="meta-pill">Abwasch · ${recipe.dishes}</span>
+      <span class="meta-pill">Kosten · ${recipe.cost}</span>
+      <span class="meta-pill">Sättigung · ${recipe.filling}</span>
+      <span class="meta-pill">Gefühl · ${recipe.feeling}</span>
     </div>
 
     <div class="detail-box">
@@ -741,7 +780,6 @@ function closeRecipeModal() {
 
 function copyMissingIngredients(recipeId) {
   const recipe = recipes.find((item) => item.id === recipeId);
-
   if (!recipe) return;
 
   const selectedNames = getSelectedNames();
@@ -754,18 +792,18 @@ function copyMissingIngredients(recipeId) {
 
   const text = missing.join(", ");
 
-  navigator.clipboard
-    .writeText(text)
-    .then(() => {
-      updateBuddyTextOnly(`Kopiert: ${formatList(missing)}. Der Einkaufszettel kann kommen.`);
-    })
-    .catch(() => {
-      updateBuddyTextOnly(`Fehlt noch: ${formatList(missing)}. Kopieren hat leider gezickt.`);
-    });
-}
-
-function updateBuddyTextOnly(text) {
-  buddyMessage.innerHTML = `<strong>Küchenkumpel sagt:</strong><span>${text}</span>`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        updateBuddyTextOnly(`Kopiert: ${formatList(missing)}. Der Einkaufszettel kann kommen.`);
+      })
+      .catch(() => {
+        updateBuddyTextOnly(`Fehlt noch: ${formatList(missing)}. Kopieren hat leider gezickt.`);
+      });
+  } else {
+    updateBuddyTextOnly(`Fehlt noch: ${formatList(missing)}.`);
+  }
 }
 
 function setActiveFilter(filter) {
@@ -782,7 +820,9 @@ function toggleNoMoodMode() {
   noMoodMode = !noMoodMode;
 
   noMoodButton.classList.toggle("active", noMoodMode);
-  noMoodButton.textContent = noMoodMode ? "Kein-Bock-Modus ist aktiv" : "Rette mein Abendessen";
+  noMoodButton.textContent = noMoodMode
+    ? "Kein-Bock-Modus ist aktiv"
+    : "Rette mein Abendessen";
 
   updateBuddyMessage();
   renderAll();
@@ -793,6 +833,8 @@ function renderAll() {
   renderSelectedIngredients();
   renderRecommendations();
   renderRecipeResults();
+  attachRecipeActionEvents();
+  updateActiveNavByScroll();
 }
 
 function initWelcomeScreen() {
@@ -809,6 +851,38 @@ function startApp() {
   }
 
   welcomeScreen.classList.add("hidden");
+}
+
+function setActiveNav(targetId) {
+  navLinks.forEach((link) => {
+    link.classList.toggle("active", link.dataset.nav === targetId);
+  });
+}
+
+function updateActiveNavByScroll() {
+  let currentId = "start";
+  const triggerPoint = window.scrollY + window.innerHeight * 0.4;
+
+  navSections.forEach((section) => {
+    if (section && section.offsetTop <= triggerPoint) {
+      currentId = section.id;
+    }
+  });
+
+  setActiveNav(currentId);
+}
+
+function initNav() {
+  navLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      setActiveNav(link.dataset.nav);
+      setTimeout(updateActiveNavByScroll, 350);
+    });
+  });
+
+  window.addEventListener("scroll", updateActiveNavByScroll);
+  window.addEventListener("load", updateActiveNavByScroll);
+  window.addEventListener("resize", updateActiveNavByScroll);
 }
 
 addIngredientButton.addEventListener("click", () => {
@@ -828,7 +902,6 @@ filterButtons.forEach((button) => {
 });
 
 noMoodButton.addEventListener("click", toggleNoMoodMode);
-
 startAppButton.addEventListener("click", startApp);
 
 closeModalButton.addEventListener("click", closeRecipeModal);
@@ -841,4 +914,6 @@ document.addEventListener("keydown", (event) => {
 });
 
 initWelcomeScreen();
+updateBuddyMessage();
 renderAll();
+initNav();
