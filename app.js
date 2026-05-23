@@ -3,6 +3,17 @@ const startAppButton = document.getElementById("startAppButton");
 const hideWelcomeCheckbox = document.getElementById("hideWelcomeCheckbox");
 const showWelcomeButton = document.getElementById("showWelcomeButton");
 
+const rememberThemeCheckbox = document.getElementById("rememberThemeCheckbox");
+const themeOptionButtons = document.querySelectorAll("[data-theme-option]");
+
+const welcomeMascot = document.getElementById("welcomeMascot");
+const heroMascot = document.getElementById("heroMascot");
+const sectionMascot = document.getElementById("sectionMascot");
+const rescueMascot = document.getElementById("rescueMascot");
+const ideaMascot = document.getElementById("ideaMascot");
+const footerMascot = document.getElementById("footerMascot");
+const themeHeroText = document.getElementById("themeHeroText");
+
 const ingredientInput = document.getElementById("ingredientInput");
 const addIngredientButton = document.getElementById("addIngredientButton");
 const quickIngredientsContainer = document.getElementById("quickIngredients");
@@ -33,6 +44,104 @@ let activeFilter = "all";
 let noMoodMode = false;
 let currentModalRecipeId = null;
 let currentModalPortions = 2;
+let activeTheme = "standard";
+
+const THEME_KEY = "kuechenkumpelTheme";
+const HIDE_WELCOME_KEY = "kuechenkumpelHideWelcome";
+
+const themeSettings = {
+  standard: {
+    label: "Standard",
+    heroText: "Zeig mir, was da ist. Ich mach daraus eine Idee fürs Essen.",
+    mascots: {
+      welcome: "assets/images/kochtopf-hallo.png",
+      hero: "assets/images/kochtopf-standard.png",
+      section: "assets/images/kochtopf-kochen.png",
+      rescue: "assets/images/kochtopf-kein-bock.png",
+      idea: "assets/images/kochtopf-idee.png",
+      footer: "assets/images/kochtopf-standard.png",
+      buddy: "assets/images/kochtopf-idee.png"
+    }
+  },
+  fruehling: {
+    label: "Frühling",
+    heroText: "Frisch, freundlich und ein bisschen grüner im Topf.",
+    mascots: {
+      welcome: "assets/images/kochtopf-hallo.png",
+      hero: "assets/images/kochtopf-standard.png",
+      section: "assets/images/kochtopf-kochen.png",
+      rescue: "assets/images/kochtopf-kein-bock.png",
+      idea: "assets/images/kochtopf-idee.png",
+      footer: "assets/images/kochtopf-standard.png",
+      buddy: "assets/images/kochtopf-idee.png"
+    }
+  },
+  ostern: {
+    label: "Ostern",
+    heroText: "Heute wird es bunt, einfach und lecker.",
+    mascots: {
+      welcome: "assets/images/kochtopf-hallo.png",
+      hero: "assets/images/kochtopf-standard.png",
+      section: "assets/images/kochtopf-kochen.png",
+      rescue: "assets/images/kochtopf-kein-bock.png",
+      idea: "assets/images/kochtopf-idee.png",
+      footer: "assets/images/kochtopf-standard.png",
+      buddy: "assets/images/kochtopf-idee.png"
+    }
+  },
+  sommer: {
+    label: "Sommer",
+    heroText: "Schnell, frisch und bitte ohne Küchen-Marathon.",
+    mascots: {
+      welcome: "assets/images/kochtopf-hallo.png",
+      hero: "assets/images/kochtopf-standard.png",
+      section: "assets/images/kochtopf-kochen.png",
+      rescue: "assets/images/kochtopf-kein-bock.png",
+      idea: "assets/images/kochtopf-idee.png",
+      footer: "assets/images/kochtopf-standard.png",
+      buddy: "assets/images/kochtopf-idee.png"
+    }
+  },
+  herbst: {
+    label: "Herbst",
+    heroText: "Gemütlich, warm und perfekt für Pfanne, Topf und Ofen.",
+    mascots: {
+      welcome: "assets/images/kochtopf-hallo.png",
+      hero: "assets/images/kochtopf-standard.png",
+      section: "assets/images/kochtopf-kochen.png",
+      rescue: "assets/images/kochtopf-kein-bock.png",
+      idea: "assets/images/kochtopf-idee.png",
+      footer: "assets/images/kochtopf-standard.png",
+      buddy: "assets/images/kochtopf-idee.png"
+    }
+  },
+  halloween: {
+    label: "Halloween",
+    heroText: "Gruselig leerer Kühlschrank? Keine Sorge, ich rette das.",
+    mascots: {
+      welcome: "assets/images/kochtopf-hallo.png",
+      hero: "assets/images/kochtopf-standard.png",
+      section: "assets/images/kochtopf-kochen.png",
+      rescue: "assets/images/kochtopf-kein-bock.png",
+      idea: "assets/images/kochtopf-idee.png",
+      footer: "assets/images/kochtopf-standard.png",
+      buddy: "assets/images/kochtopf-idee.png"
+    }
+  },
+  weihnachten: {
+    label: "Weihnachten",
+    heroText: "Heute wird es warm, gemütlich und ein bisschen festlich.",
+    mascots: {
+      welcome: "assets/images/kochtopf-hallo.png",
+      hero: "assets/images/kochtopf-standard.png",
+      section: "assets/images/kochtopf-kochen.png",
+      rescue: "assets/images/kochtopf-kein-bock.png",
+      idea: "assets/images/kochtopf-idee.png",
+      footer: "assets/images/kochtopf-standard.png",
+      buddy: "assets/images/kochtopf-idee.png"
+    }
+  }
+};
 
 const quickIngredients = [
   { name: "nudeln", label: "🍝 Nudeln" },
@@ -47,26 +156,39 @@ const quickIngredients = [
   { name: "gemüse", label: "🥦 Gemüse" },
   { name: "milch", label: "🥛 Milch" },
   { name: "sahne", label: "🥛 Sahne" },
+  { name: "frischkäse", label: "🥄 Frischkäse" },
+  { name: "schmand", label: "🥄 Schmand" },
   { name: "quark", label: "🥣 Quark" },
+  { name: "joghurt", label: "🥣 Joghurt" },
   { name: "thunfisch", label: "🐟 Thunfisch" },
   { name: "hackfleisch", label: "🥩 Hack" },
   { name: "hähnchen", label: "🍗 Hähnchen" },
   { name: "bohnen", label: "🫘 Bohnen" },
   { name: "mais", label: "🌽 Mais" },
   { name: "linsen", label: "🥣 Linsen" },
-  { name: "haferflocken", label: "🥣 Haferflocken" }
+  { name: "haferflocken", label: "🥣 Haferflocken" },
+  { name: "mehl", label: "🌾 Mehl" },
+  { name: "brühe", label: "🍲 Brühe" },
+  { name: "knoblauch", label: "🧄 Knoblauch" },
+  { name: "öl", label: "🫒 Öl" }
 ];
 
 const recipeSearchProfiles = {
   1: {
     main: ["nudeln", "käse", "milch"],
     optional: ["sahne", "zwiebel", "knoblauch", "tomaten", "paprika", "brokkoli"],
-    tags: ["schnell", "günstig", "vegetarisch", "kein bock", "cremig"]
+    tags: ["schnell", "günstig", "vegetarisch", "kein bock", "cremig"],
+    substitutes: {
+      milch: ["sahne"]
+    }
   },
   2: {
     main: ["nudeln", "tomaten", "zwiebel"],
     optional: ["knoblauch", "käse", "paprika", "zucchini", "pilze"],
-    tags: ["schnell", "günstig", "vegetarisch", "alltag"]
+    tags: ["schnell", "günstig", "vegetarisch", "alltag"],
+    substitutes: {
+      tomaten: ["dosentomaten", "passierte tomaten"]
+    }
   },
   3: {
     main: ["nudeln", "eier", "käse"],
@@ -76,22 +198,31 @@ const recipeSearchProfiles = {
   4: {
     main: ["nudeln", "thunfisch"],
     optional: ["tomaten", "frischkäse", "mais", "zwiebel", "käse"],
-    tags: ["schnell", "proteinreich", "vorrat"]
+    tags: ["schnell", "proteinreich", "vorrat"],
+    substitutes: {
+      tomaten: ["dosentomaten", "passierte tomaten"]
+    }
   },
   5: {
     main: ["nudeln", "gemüse", "zwiebel"],
-    optional: ["käse", "eier", "sahne", "frischkäse", "paprika", "tomaten"],
+    optional: ["käse", "eier", "sahne", "frischkäse", "paprika", "tomaten", "schmand"],
     tags: ["muss weg", "vegetarisch", "günstig", "reste"]
   },
   6: {
     main: ["nudeln", "schinken", "käse"],
     optional: ["milch", "sahne", "zwiebel", "erbsen"],
-    tags: ["schnell", "herzhaft", "soulfood"]
+    tags: ["schnell", "herzhaft", "soulfood"],
+    substitutes: {
+      schinken: ["wurst", "speck"]
+    }
   },
   7: {
     main: ["nudeln", "öl", "knoblauch"],
     optional: ["chili", "käse", "petersilie", "tomaten"],
-    tags: ["schnell", "günstig", "kein bock", "vegetarisch"]
+    tags: ["schnell", "günstig", "kein bock", "vegetarisch"],
+    substitutes: {
+      öl: ["butter"]
+    }
   },
   8: {
     main: ["nudeln", "gemüse", "käse"],
@@ -100,13 +231,16 @@ const recipeSearchProfiles = {
   },
   9: {
     main: ["nudeln", "frischkäse", "gemüse"],
-    optional: ["tomaten", "knoblauch", "käse", "sahne"],
+    optional: ["tomaten", "knoblauch", "käse", "sahne", "schmand", "quark", "joghurt"],
     tags: ["schnell", "vegetarisch", "cremig"]
   },
   10: {
     main: ["nudeln", "tomaten", "käse"],
     optional: ["zwiebel", "milch", "sahne", "knoblauch", "gemüse"],
-    tags: ["ofen", "vegetarisch", "soulfood"]
+    tags: ["ofen", "vegetarisch", "soulfood"],
+    substitutes: {
+      tomaten: ["dosentomaten", "passierte tomaten"]
+    }
   },
   11: {
     main: ["reis", "eier", "gemüse", "zwiebel"],
@@ -121,7 +255,10 @@ const recipeSearchProfiles = {
   13: {
     main: ["reis", "tomaten", "zwiebel"],
     optional: ["paprika", "käse", "kräuter", "knoblauch"],
-    tags: ["günstig", "vegetarisch", "vorrat"]
+    tags: ["günstig", "vegetarisch", "vorrat"],
+    substitutes: {
+      tomaten: ["dosentomaten", "passierte tomaten"]
+    }
   },
   14: {
     main: ["reis", "gemüse", "curry"],
@@ -136,7 +273,10 @@ const recipeSearchProfiles = {
   16: {
     main: ["reis", "bohnen", "tomaten"],
     optional: ["mais", "paprika", "käse", "zwiebel"],
-    tags: ["günstig", "vorrat", "proteinreich"]
+    tags: ["günstig", "vorrat", "proteinreich"],
+    substitutes: {
+      tomaten: ["dosentomaten", "passierte tomaten"]
+    }
   },
   17: {
     main: ["tk-gemüse", "reis"],
@@ -171,7 +311,10 @@ const recipeSearchProfiles = {
   23: {
     main: ["kartoffeln", "käse", "milch"],
     optional: ["sahne", "gemüse", "schinken", "zwiebel"],
-    tags: ["herzhaft", "ofen", "soulfood"]
+    tags: ["herzhaft", "ofen", "soulfood"],
+    substitutes: {
+      milch: ["sahne"]
+    }
   },
   24: {
     main: ["kartoffeln", "quark"],
@@ -191,27 +334,42 @@ const recipeSearchProfiles = {
   27: {
     main: ["wurst", "kartoffeln", "zwiebel"],
     optional: ["eier", "paprika", "käse"],
-    tags: ["herzhaft", "günstig", "deftig"]
+    tags: ["herzhaft", "günstig", "deftig"],
+    substitutes: {
+      wurst: ["schinken", "speck"]
+    }
   },
   28: {
     main: ["kartoffeln", "gemüse", "öl"],
     optional: ["quark", "joghurt", "feta", "käse", "knoblauch"],
-    tags: ["muss weg", "vegetarisch", "wenig abwasch", "ofen"]
+    tags: ["muss weg", "vegetarisch", "wenig abwasch", "ofen"],
+    substitutes: {
+      öl: ["butter"]
+    }
   },
   29: {
     main: ["gemüse", "käse", "milch"],
     optional: ["sahne", "kartoffeln", "nudeln", "eier"],
-    tags: ["muss weg", "ofen", "vegetarisch"]
+    tags: ["muss weg", "ofen", "vegetarisch"],
+    substitutes: {
+      milch: ["sahne"]
+    }
   },
   30: {
     main: ["brötchen", "käse"],
     optional: ["brot", "gemüse", "schinken", "tomaten", "wurst", "zwiebel"],
-    tags: ["muss weg", "schnell", "ofen"]
+    tags: ["muss weg", "schnell", "ofen"],
+    substitutes: {
+      brötchen: ["brot", "toast", "baguette"]
+    }
   },
   31: {
     main: ["eier", "tomaten", "zwiebel"],
     optional: ["käse", "paprika", "kräuter"],
-    tags: ["schnell", "vegetarisch", "günstig"]
+    tags: ["schnell", "vegetarisch", "günstig"],
+    substitutes: {
+      tomaten: ["dosentomaten"]
+    }
   },
   32: {
     main: ["eier", "käse"],
@@ -226,32 +384,51 @@ const recipeSearchProfiles = {
   34: {
     main: ["eier", "tomaten", "zwiebel"],
     optional: ["paprika", "feta", "käse", "chili", "brot"],
-    tags: ["modern", "vegetarisch", "proteinreich"]
+    tags: ["modern", "vegetarisch", "proteinreich"],
+    substitutes: {
+      tomaten: ["dosentomaten", "passierte tomaten"]
+    }
   },
   35: {
     main: ["brot", "eier"],
     optional: ["käse", "schinken", "tomaten"],
-    tags: ["schnell", "günstig", "kein bock"]
+    tags: ["schnell", "günstig", "kein bock"],
+    substitutes: {
+      brot: ["toast", "brötchen"]
+    }
   },
   36: {
     main: ["brot", "käse"],
     optional: ["tomaten", "schinken", "zwiebel"],
-    tags: ["schnell", "günstig", "kein bock"]
+    tags: ["schnell", "günstig", "kein bock"],
+    substitutes: {
+      brot: ["toast", "brötchen"]
+    }
   },
   37: {
     main: ["brot", "tomaten", "käse"],
     optional: ["schinken", "mais", "paprika", "zwiebel"],
-    tags: ["schnell", "muss weg", "günstig"]
+    tags: ["schnell", "muss weg", "günstig"],
+    substitutes: {
+      brot: ["toast", "brötchen"],
+      tomaten: ["dosentomaten"]
+    }
   },
   38: {
     main: ["brot", "eier", "milch", "käse"],
     optional: ["schinken", "kräuter", "tomaten"],
-    tags: ["günstig", "reste", "herzhaft"]
+    tags: ["günstig", "reste", "herzhaft"],
+    substitutes: {
+      brot: ["toast", "brötchen"]
+    }
   },
   39: {
     main: ["brot", "knoblauch"],
     optional: ["butter", "öl", "joghurt", "quark", "gurke"],
-    tags: ["schnell", "günstig", "beilage", "kein bock"]
+    tags: ["schnell", "günstig", "beilage", "kein bock"],
+    substitutes: {
+      brot: ["toast", "brötchen"]
+    }
   },
   40: {
     main: ["mehl", "milch", "eier"],
@@ -260,7 +437,7 @@ const recipeSearchProfiles = {
   },
   41: {
     main: ["gemüse", "zwiebel"],
-    optional: ["reis", "nudeln", "eier", "käse", "knoblauch"],
+    optional: ["reis", "nudeln", "eier", "käse", "knoblauch", "schmand"],
     tags: ["muss weg", "vegetarisch", "günstig"]
   },
   42: {
@@ -271,17 +448,26 @@ const recipeSearchProfiles = {
   43: {
     main: ["bohnen", "tomaten", "mais"],
     optional: ["reis", "brot", "käse", "hackfleisch"],
-    tags: ["vorrat", "günstig", "proteinreich"]
+    tags: ["vorrat", "günstig", "proteinreich"],
+    substitutes: {
+      tomaten: ["dosentomaten", "passierte tomaten"]
+    }
   },
   44: {
     main: ["linsen", "curry", "tomaten"],
     optional: ["reis", "joghurt", "gemüse", "zwiebel"],
-    tags: ["vorrat", "vegetarisch", "proteinreich"]
+    tags: ["vorrat", "vegetarisch", "proteinreich"],
+    substitutes: {
+      tomaten: ["dosentomaten", "passierte tomaten"]
+    }
   },
   45: {
     main: ["tomaten", "zwiebel", "brühe"],
     optional: ["sahne", "milch", "brot", "käse", "knoblauch"],
-    tags: ["vorrat", "günstig", "vegetarisch"]
+    tags: ["vorrat", "günstig", "vegetarisch"],
+    substitutes: {
+      tomaten: ["dosentomaten", "passierte tomaten"]
+    }
   },
   46: {
     main: ["paprika", "eier", "zwiebel"],
@@ -291,7 +477,10 @@ const recipeSearchProfiles = {
   47: {
     main: ["zucchini", "tomaten", "zwiebel"],
     optional: ["reis", "nudeln", "käse", "knoblauch"],
-    tags: ["vegetarisch", "muss weg", "leicht"]
+    tags: ["vegetarisch", "muss weg", "leicht"],
+    substitutes: {
+      tomaten: ["dosentomaten"]
+    }
   },
   48: {
     main: ["gemüse", "curry", "reis"],
@@ -306,38 +495,28 @@ const recipeSearchProfiles = {
   50: {
     main: ["brot", "tomaten", "käse"],
     optional: ["zwiebel", "knoblauch", "schinken", "thunfisch"],
-    tags: ["schnell", "günstig", "kein bock"]
+    tags: ["schnell", "günstig", "kein bock"],
+    substitutes: {
+      brot: ["toast", "brötchen"],
+      tomaten: ["dosentomaten"]
+    }
   }
 };
 
 function createDishesText(value) {
-  if (value === "wenig") {
-    return "Ein bisschen Abwasch, aber kein Drama.";
-  }
-
-  if (value === "mittel") {
-    return "Geht klar. Kein Küchen-Tatort.";
-  }
-
+  if (value === "wenig") return "Ein bisschen Abwasch, aber kein Drama.";
+  if (value === "mittel") return "Geht klar. Kein Küchen-Tatort.";
   return "Lecker, aber danach will die Spüle kurz reden.";
 }
 
 function createCostText(value) {
-  if (value === "günstig") {
-    return "Tut dem Konto nicht weh.";
-  }
-
-  if (value === "normal") {
-    return "Solide Mitte. Kein Sparmenü, kein Festbankett.";
-  }
-
+  if (value === "günstig") return "Tut dem Konto nicht weh.";
+  if (value === "normal") return "Solide Mitte. Kein Sparmenü, kein Festbankett.";
   return "Etwas feiner. Für Tage, an denen der Kühlschrank kurz angeben darf.";
 }
 
 function normalize(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase();
+  return String(value || "").trim().toLowerCase();
 }
 
 function normalizeSearchValue(value) {
@@ -345,12 +524,91 @@ function normalizeSearchValue(value) {
     .replaceAll("ä", "ae")
     .replaceAll("ö", "oe")
     .replaceAll("ü", "ue")
-    .replaceAll("ß", "ss");
+    .replaceAll("ß", "ss")
+    .replaceAll("-", " ")
+    .replaceAll("_", " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function canonicalIngredient(value) {
+  const text = normalizeSearchValue(value);
+
+  if (!text) return "";
+
+  if (["ei", "eier"].includes(text)) return "eier";
+  if (["kaese", "käse"].includes(text)) return "käse";
+  if (["nudel", "nudeln", "pasta", "spaghetti", "makkaroni"].includes(text)) return "nudeln";
+  if (["kartoffel", "kartoffeln"].includes(text)) return "kartoffeln";
+  if (["tomate", "tomaten"].includes(text)) return "tomaten";
+  if (["dosentomaten", "dosen tomaten"].includes(text)) return "dosentomaten";
+  if (["passierte tomaten", "tomatensosse", "tomatensoße"].includes(text)) return "passierte tomaten";
+  if (["zwiebel", "zwiebeln"].includes(text)) return "zwiebel";
+  if (["brot", "broetchen", "brötchen", "toast", "baguette"].includes(text)) return text.replace("broetchen", "brötchen");
+  if (["gemuese", "gemüse"].includes(text)) return "gemüse";
+  if (["tk gemuese", "tk gemüse", "tiefkuehlgemuese", "tiefkühlgemüse"].includes(text)) return "tk-gemüse";
+  if (["moehren", "möhren", "karotten", "mohren"].includes(text)) return "möhren";
+  if (["paprika", "zucchini", "brokkoli", "pilze", "spinat"].includes(text)) return text;
+  if (["milch", "sahne", "kokosmilch", "frischkaese", "frischkäse", "schmand", "quark", "joghurt"].includes(text)) {
+    return text.replace("frischkaese", "frischkäse");
+  }
+  if (["hack", "hackfleisch"].includes(text)) return "hackfleisch";
+  if (["haehnchen", "hähnchen", "huhn", "chicken"].includes(text)) return "hähnchen";
+  if (["bohne", "bohnen"].includes(text)) return "bohnen";
+  if (["linse", "linsen"].includes(text)) return "linsen";
+  if (["oel", "öl"].includes(text)) return "öl";
+  if (["bruehe", "brühe", "gemuesebruehe", "gemüsebrühe"].includes(text)) return "brühe";
+
+  return text;
 }
 
 function capitalize(value) {
   if (!value) return "";
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function displayIngredientName(value) {
+  const map = {
+    "eier": "Eier",
+    "käse": "Käse",
+    "nudeln": "Nudeln",
+    "kartoffeln": "Kartoffeln",
+    "tomaten": "Tomaten",
+    "dosentomaten": "Dosentomaten",
+    "passierte tomaten": "passierte Tomaten",
+    "zwiebel": "Zwiebel",
+    "brot": "Brot",
+    "brötchen": "Brötchen",
+    "toast": "Toast",
+    "baguette": "Baguette",
+    "gemüse": "Gemüse",
+    "tk-gemüse": "TK-Gemüse",
+    "möhren": "Möhren",
+    "paprika": "Paprika",
+    "zucchini": "Zucchini",
+    "brokkoli": "Brokkoli",
+    "pilze": "Pilze",
+    "milch": "Milch",
+    "sahne": "Sahne",
+    "kokosmilch": "Kokosmilch",
+    "frischkäse": "Frischkäse",
+    "schmand": "Schmand",
+    "quark": "Quark",
+    "joghurt": "Joghurt",
+    "hackfleisch": "Hackfleisch",
+    "hähnchen": "Hähnchen",
+    "thunfisch": "Thunfisch",
+    "bohnen": "Bohnen",
+    "mais": "Mais",
+    "linsen": "Linsen",
+    "haferflocken": "Haferflocken",
+    "mehl": "Mehl",
+    "brühe": "Brühe",
+    "öl": "Öl",
+    "knoblauch": "Knoblauch"
+  };
+
+  return map[value] || capitalize(value);
 }
 
 function escapeHtml(value) {
@@ -363,10 +621,12 @@ function escapeHtml(value) {
 }
 
 function formatList(items) {
-  if (!items || items.length === 0) return "";
-  if (items.length === 1) return capitalize(items[0]);
-  if (items.length === 2) return `${capitalize(items[0])} und ${items[1]}`;
-  return `${items.slice(0, -1).map(capitalize).join(", ")} und ${items[items.length - 1]}`;
+  const formatted = (items || []).map(displayIngredientName);
+
+  if (formatted.length === 0) return "";
+  if (formatted.length === 1) return formatted[0];
+  if (formatted.length === 2) return `${formatted[0]} und ${formatted[1]}`;
+  return `${formatted.slice(0, -1).join(", ")} und ${formatted[formatted.length - 1]}`;
 }
 
 function getRecipeSource() {
@@ -382,15 +642,17 @@ function buildRecipes() {
     const profile = recipeSearchProfiles[recipe.id] || {
       main: extractMainIngredients(recipe),
       optional: extractOptionalIngredients(recipe),
-      tags: buildTags(recipe)
+      tags: buildTags(recipe),
+      substitutes: {}
     };
 
     return {
       ...recipe,
       title: recipe.name,
-      main: profile.main || [],
-      optional: profile.optional || [],
+      main: (profile.main || []).map(canonicalIngredient),
+      optional: (profile.optional || []).map(canonicalIngredient),
       tags: profile.tags || [],
+      substitutes: normalizeSubstitutes(profile.substitutes || {}),
       time: recipe.timeTotal || "ca. 20 Minuten",
       dishesText: createDishesText(recipe.dishes),
       costText: createCostText(recipe.cost),
@@ -398,6 +660,16 @@ function buildRecipes() {
       saying: recipe.slogan || ""
     };
   });
+}
+
+function normalizeSubstitutes(substitutes) {
+  const normalized = {};
+
+  Object.entries(substitutes).forEach(([key, values]) => {
+    normalized[canonicalIngredient(key)] = (values || []).map(canonicalIngredient);
+  });
+
+  return normalized;
 }
 
 function extractMainIngredients(recipe) {
@@ -430,7 +702,10 @@ function simplifyIngredientName(value) {
   if (text.includes("gemüse")) return "gemüse";
   if (text.includes("milch")) return "milch";
   if (text.includes("sahne")) return "sahne";
+  if (text.includes("frischkäse")) return "frischkäse";
+  if (text.includes("schmand")) return "schmand";
   if (text.includes("quark")) return "quark";
+  if (text.includes("joghurt")) return "joghurt";
   if (text.includes("thunfisch")) return "thunfisch";
   if (text.includes("hack")) return "hackfleisch";
   if (text.includes("hähnchen")) return "hähnchen";
@@ -440,6 +715,7 @@ function simplifyIngredientName(value) {
   if (text.includes("hafer")) return "haferflocken";
   if (text.includes("knoblauch")) return "knoblauch";
   if (text.includes("öl")) return "öl";
+  if (text.includes("brühe")) return "brühe";
 
   return text.split(" ")[0];
 }
@@ -449,10 +725,17 @@ function buildTags(recipe) {
 
   if (recipe.difficulty === "einfach") tags.push("einfach");
   if (recipe.cost === "günstig") tags.push("günstig");
-  if (recipe.timeTotal && recipe.timeTotal.includes("10")) tags.push("schnell");
-  if (recipe.timeTotal && recipe.timeTotal.includes("12")) tags.push("schnell");
-  if (recipe.timeTotal && recipe.timeTotal.includes("15")) tags.push("schnell");
-  if (recipe.timeTotal && recipe.timeTotal.includes("20")) tags.push("schnell");
+
+  if (
+    recipe.timeTotal &&
+    (recipe.timeTotal.includes("10") ||
+      recipe.timeTotal.includes("12") ||
+      recipe.timeTotal.includes("15") ||
+      recipe.timeTotal.includes("20"))
+  ) {
+    tags.push("schnell");
+  }
+
   if (recipe.dishes === "wenig") tags.push("wenig abwasch");
   if (recipe.feeling === "Kein-Bock-Retter") tags.push("kein bock");
   if (recipe.category && recipe.category.includes("Vorrat")) tags.push("vorrat");
@@ -462,12 +745,51 @@ function buildTags(recipe) {
 
 const recipes = buildRecipes();
 
+function setTheme(themeName, shouldSave = false) {
+  const safeTheme = themeSettings[themeName] ? themeName : "standard";
+  activeTheme = safeTheme;
+
+  document.body.dataset.theme = safeTheme;
+
+  if (shouldSave) {
+    localStorage.setItem(THEME_KEY, safeTheme);
+  }
+
+  updateThemeButtons();
+  updateThemeMascots();
+}
+
+function updateThemeButtons() {
+  themeOptionButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.themeOption === activeTheme);
+  });
+}
+
+function updateThemeMascots() {
+  const settings = themeSettings[activeTheme] || themeSettings.standard;
+  const mascots = settings.mascots;
+
+  if (welcomeMascot) welcomeMascot.src = mascots.welcome;
+  if (heroMascot) heroMascot.src = mascots.hero;
+  if (sectionMascot) sectionMascot.src = mascots.section;
+  if (rescueMascot) rescueMascot.src = mascots.rescue;
+  if (ideaMascot) ideaMascot.src = mascots.idea;
+  if (footerMascot) footerMascot.src = mascots.footer;
+  if (themeHeroText) themeHeroText.textContent = settings.heroText;
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem(THEME_KEY) || "standard";
+  setTheme(savedTheme, false);
+}
+
 function ingredientExists(name) {
-  return selectedIngredients.some((ingredient) => ingredient.name === name);
+  const normalizedName = canonicalIngredient(name);
+  return selectedIngredients.some((ingredient) => ingredient.name === normalizedName);
 }
 
 function addIngredient(name) {
-  const normalizedName = normalize(name);
+  const normalizedName = canonicalIngredient(name);
 
   if (!normalizedName || ingredientExists(normalizedName)) {
     ingredientInput.value = "";
@@ -516,67 +838,126 @@ function getUrgentNames() {
     .map((ingredient) => ingredient.name);
 }
 
-function ingredientsMatch(a, b) {
-  const first = normalizeSearchValue(a);
-  const second = normalizeSearchValue(b);
+function isExactIngredientMatch(recipeIngredient, selectedIngredient) {
+  const recipeValue = canonicalIngredient(recipeIngredient);
+  const selectedValue = canonicalIngredient(selectedIngredient);
 
-  if (first === second) return true;
+  if (recipeValue === selectedValue) return true;
 
-  const groups = [
-    ["ei", "eier"],
-    ["kaese", "käse"],
-    ["tomate", "tomaten", "dosentomaten"],
-    ["nudel", "nudeln", "pasta", "spaghetti"],
-    ["kartoffel", "kartoffeln"],
-    ["brötchen", "broetchen", "brot", "toast", "baguette"],
-    ["gemuese", "gemüse", "paprika", "zucchini", "moehren", "möhren", "tk-gemuese", "tk-gemüse", "brokkoli", "pilze"],
-    ["milch", "sahne", "kokosmilch"],
-    ["quark", "joghurt", "schmand", "frischkaese", "frischkäse"],
-    ["hack", "hackfleisch"],
-    ["haehnchen", "hähnchen", "huhn", "chicken"],
-    ["bohne", "bohnen"],
-    ["linse", "linsen"],
-    ["oel", "öl", "butter"]
+  const strictSynonyms = [
+    ["eier", "ei"],
+    ["tomaten", "dosentomaten", "passierte tomaten"],
+    ["brot", "toast", "brötchen", "baguette"],
+    ["brötchen", "brot", "toast", "baguette"],
+    ["tk-gemüse", "gemüse"],
+    ["brühe", "gemüsebrühe"]
   ];
 
-  return groups.some((group) => group.includes(first) && group.includes(second));
+  return strictSynonyms.some((group) => group.includes(recipeValue) && group.includes(selectedValue));
 }
 
-function hasIngredient(recipeIngredient, selectedNames) {
-  return selectedNames.some((selectedName) => ingredientsMatch(recipeIngredient, selectedName));
+function isVegetableSoftMatch(recipeIngredient, selectedIngredient) {
+  const recipeValue = canonicalIngredient(recipeIngredient);
+  const selectedValue = canonicalIngredient(selectedIngredient);
+
+  const vegetables = ["gemüse", "paprika", "zucchini", "möhren", "brokkoli", "pilze", "spinat", "tk-gemüse"];
+
+  return recipeValue === "gemüse" && vegetables.includes(selectedValue);
+}
+
+function isSubstituteMatch(recipe, recipeIngredient, selectedIngredient) {
+  const recipeValue = canonicalIngredient(recipeIngredient);
+  const selectedValue = canonicalIngredient(selectedIngredient);
+  const substitutes = recipe.substitutes || {};
+
+  return Array.isArray(substitutes[recipeValue]) && substitutes[recipeValue].includes(selectedValue);
+}
+
+function getIngredientMatchType(recipe, recipeIngredient, selectedNames) {
+  for (const selectedName of selectedNames) {
+    if (isExactIngredientMatch(recipeIngredient, selectedName)) {
+      return "exact";
+    }
+  }
+
+  for (const selectedName of selectedNames) {
+    if (isVegetableSoftMatch(recipeIngredient, selectedName)) {
+      return "soft";
+    }
+  }
+
+  for (const selectedName of selectedNames) {
+    if (isSubstituteMatch(recipe, recipeIngredient, selectedName)) {
+      return "substitute";
+    }
+  }
+
+  return "missing";
+}
+
+function hasRealIngredient(recipe, recipeIngredient, selectedNames) {
+  const type = getIngredientMatchType(recipe, recipeIngredient, selectedNames);
+  return type === "exact" || type === "soft";
+}
+
+function hasAnyIngredientConnection(recipe, ingredient, selectedNames) {
+  const type = getIngredientMatchType(recipe, ingredient, selectedNames);
+  return type === "exact" || type === "soft" || type === "substitute";
 }
 
 function scoreRecipe(recipe) {
   const selectedNames = getSelectedNames();
   const urgentNames = getUrgentNames();
 
-  const matchingMain = recipe.main.filter((ingredient) =>
-    hasIngredient(ingredient, selectedNames)
-  );
+  const matchingMain = [];
+  const softMain = [];
+  const substituteMain = [];
+  const missingMain = [];
+  const matchingOptional = [];
 
-  const missingMain = recipe.main.filter(
-    (ingredient) => !hasIngredient(ingredient, selectedNames)
-  );
+  recipe.main.forEach((ingredient) => {
+    const matchType = getIngredientMatchType(recipe, ingredient, selectedNames);
 
-  const matchingOptional = recipe.optional.filter((ingredient) =>
-    hasIngredient(ingredient, selectedNames)
-  );
+    if (matchType === "exact") {
+      matchingMain.push(ingredient);
+    } else if (matchType === "soft") {
+      softMain.push(ingredient);
+    } else if (matchType === "substitute") {
+      substituteMain.push(ingredient);
+      missingMain.push(ingredient);
+    } else {
+      missingMain.push(ingredient);
+    }
+  });
 
-  let score = matchingMain.length * 4 + matchingOptional.length;
-
-  urgentNames.forEach((urgentName) => {
-    if (
-      recipe.main.some((ingredient) => ingredientsMatch(ingredient, urgentName)) ||
-      recipe.optional.some((ingredient) => ingredientsMatch(ingredient, urgentName))
-    ) {
-      score += 5;
+  recipe.optional.forEach((ingredient) => {
+    if (selectedNames.some((selectedName) => isExactIngredientMatch(ingredient, selectedName))) {
+      matchingOptional.push(ingredient);
+      return;
     }
 
-    if (
-      ingredientsMatch(urgentName, "gemüse") &&
-      recipe.main.some((ingredient) => ingredientsMatch(ingredient, "gemüse"))
-    ) {
-      score += 3;
+    if (selectedNames.some((selectedName) => isVegetableSoftMatch(ingredient, selectedName))) {
+      matchingOptional.push(ingredient);
+      return;
+    }
+  });
+
+  let score = 0;
+
+  score += matchingMain.length * 6;
+  score += softMain.length * 4;
+  score += substituteMain.length * 1;
+  score += matchingOptional.length * 1.5;
+
+  score -= missingMain.length * 2.5;
+
+  urgentNames.forEach((urgentName) => {
+    if (recipe.main.some((ingredient) => hasRealIngredient(recipe, ingredient, [urgentName]))) {
+      score += 6;
+    }
+
+    if (recipe.optional.some((ingredient) => isExactIngredientMatch(ingredient, urgentName))) {
+      score += 2;
     }
   });
 
@@ -590,11 +971,15 @@ function scoreRecipe(recipe) {
       recipe.time.includes("15") ||
       recipe.time.includes("20")
     ) {
-      score += 2;
+      score += 3;
+    }
+
+    if (recipe.time.includes("30") || recipe.time.includes("35") || recipe.time.includes("40") || recipe.time.includes("45")) {
+      score -= 4;
     }
 
     if (recipe.tags.includes("ofen")) {
-      score -= 4;
+      score -= 5;
     }
   }
 
@@ -602,13 +987,22 @@ function scoreRecipe(recipe) {
     if (recipe.tags.includes(activeFilter)) {
       score += 4;
     } else {
-      score -= 6;
+      score -= 5;
     }
+  }
+
+  const realMainMatchCount = matchingMain.length + softMain.length;
+  const hasAtLeastOneRealMain = realMainMatchCount > 0;
+  const hasTooManyMissingMain = missingMain.length >= recipe.main.length;
+
+  if (!hasAtLeastOneRealMain || hasTooManyMissingMain) {
+    score -= 8;
   }
 
   return {
     recipe,
-    matchingMain,
+    matchingMain: [...matchingMain, ...softMain],
+    substituteMain,
     missingMain,
     matchingOptional,
     score
@@ -622,16 +1016,21 @@ function getMatches() {
 
   return recipes
     .map(scoreRecipe)
-    .filter((item) => item.matchingMain.length > 0 || item.matchingOptional.length > 0)
+    .filter((item) => item.matchingMain.length > 0 || item.matchingOptional.length > 0 || item.substituteMain.length > 0)
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score);
+}
+
+function getBuddyMascotPath() {
+  const settings = themeSettings[activeTheme] || themeSettings.standard;
+  return settings.mascots.buddy;
 }
 
 function updateBuddyTextOnly(text) {
   buddyMessage.innerHTML = `
     <img
       class="buddy-mascot"
-      src="assets/images/kochtopf-idee.png"
+      src="${escapeHtml(getBuddyMascotPath())}"
       alt=""
       aria-hidden="true"
     />
@@ -674,7 +1073,7 @@ function renderQuickIngredients() {
 
     button.addEventListener("click", () => {
       if (ingredientExists(ingredient.name)) {
-        removeIngredient(ingredient.name);
+        removeIngredient(canonicalIngredient(ingredient.name));
       } else {
         addIngredient(ingredient.name);
       }
@@ -698,7 +1097,7 @@ function renderSelectedIngredients() {
     chip.className = ingredient.urgent ? "ingredient-chip urgent" : "ingredient-chip";
 
     chip.innerHTML = `
-      <span>${escapeHtml(capitalize(ingredient.name))}</span>
+      <span>${escapeHtml(displayIngredientName(ingredient.name))}</span>
 
       <button
         class="clock-button ${ingredient.urgent ? "active" : ""}"
@@ -728,15 +1127,16 @@ function renderSelectedIngredients() {
 }
 
 function createRecipeCard(match, isRecommendation) {
-  const { recipe, matchingMain, missingMain, matchingOptional } = match;
+  const { recipe, matchingMain, substituteMain, missingMain, matchingOptional } = match;
   const cardClass = isRecommendation ? "recommendation-card" : "recipe-card";
 
   const missingText = missingMain.length > 0
     ? `Fehlt noch: ${formatList(missingMain)}`
     : "Du hast alles Wichtige. Sehr stabil.";
 
-  const optionalText = matchingOptional.length > 0
-    ? `Extra passt auch: ${formatList(matchingOptional)}`
+  const optionalItems = [...matchingOptional, ...substituteMain];
+  const optionalText = optionalItems.length > 0
+    ? `Extra oder Ersatz passt auch: ${formatList(optionalItems)}`
     : "Extras sind nice, aber kein Muss.";
 
   return `
@@ -980,7 +1380,16 @@ function formatIngredientAmount(recipe, ingredient) {
     return formattedAmount;
   }
 
-  return `${formattedAmount} ${ingredient.unit}`;
+  const unit = ingredient.unit;
+
+  if (
+    ["Stück", "Dose", "Zehe", "Scheibe"].some((word) => unit.includes(word)) &&
+    !Number.isInteger(calculatedAmount)
+  ) {
+    return `ca. ${formattedAmount} ${unit}`;
+  }
+
+  return `${formattedAmount} ${unit}`;
 }
 
 function formatNumber(value) {
@@ -1002,14 +1411,14 @@ function copyMissingIngredients(recipeId) {
   if (!recipe) return;
 
   const selectedNames = getSelectedNames();
-  const missing = recipe.main.filter((ingredient) => !hasIngredient(ingredient, selectedNames));
+  const missing = recipe.main.filter((ingredient) => !hasRealIngredient(recipe, ingredient, selectedNames));
 
   if (missing.length === 0) {
     updateBuddyTextOnly("Da fehlt nichts Wichtiges. Der Einkaufszettel darf heute Pause machen.");
     return;
   }
 
-  const text = missing.join(", ");
+  const text = missing.map(displayIngredientName).join(", ");
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard
@@ -1057,7 +1466,7 @@ function renderAll() {
 }
 
 function initWelcomeScreen() {
-  const shouldHideWelcome = localStorage.getItem("kuechenkumpelHideWelcome") === "true";
+  const shouldHideWelcome = localStorage.getItem(HIDE_WELCOME_KEY) === "true";
 
   if (shouldHideWelcome) {
     welcomeScreen.classList.add("hidden");
@@ -1065,15 +1474,19 @@ function initWelcomeScreen() {
 }
 
 function startApp() {
+  if (rememberThemeCheckbox && rememberThemeCheckbox.checked) {
+    localStorage.setItem(THEME_KEY, activeTheme);
+  }
+
   if (hideWelcomeCheckbox.checked) {
-    localStorage.setItem("kuechenkumpelHideWelcome", "true");
+    localStorage.setItem(HIDE_WELCOME_KEY, "true");
   }
 
   welcomeScreen.classList.add("hidden");
 }
 
 function showWelcomeAgain() {
-  localStorage.removeItem("kuechenkumpelHideWelcome");
+  localStorage.removeItem(HIDE_WELCOME_KEY);
   hideWelcomeCheckbox.checked = false;
   welcomeScreen.classList.remove("hidden");
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1128,6 +1541,25 @@ function bindEvents() {
     });
   });
 
+  themeOptionButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const selectedTheme = button.dataset.themeOption || "standard";
+      const shouldSave = rememberThemeCheckbox ? rememberThemeCheckbox.checked : false;
+      setTheme(selectedTheme, shouldSave);
+      updateBuddyMessage();
+    });
+  });
+
+  if (rememberThemeCheckbox) {
+    rememberThemeCheckbox.addEventListener("change", () => {
+      if (rememberThemeCheckbox.checked) {
+        localStorage.setItem(THEME_KEY, activeTheme);
+      } else {
+        localStorage.removeItem(THEME_KEY);
+      }
+    });
+  }
+
   noMoodButton.addEventListener("click", toggleNoMoodMode);
   startAppButton.addEventListener("click", startApp);
   showWelcomeButton.addEventListener("click", showWelcomeAgain);
@@ -1143,6 +1575,8 @@ function bindEvents() {
 }
 
 function initApp() {
+  initTheme();
+
   if (!recipes.length) {
     updateBuddyTextOnly("Ich finde gerade keine Rezepte. Schau bitte, ob recipes.js vor app.js geladen wird.");
     return;

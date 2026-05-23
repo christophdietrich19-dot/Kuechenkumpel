@@ -18,8 +18,122 @@
   --radius: 30px;
   --nav-height: 76px;
 
+  --theme-bg-a: rgba(229, 111, 34, 0.18);
+  --theme-bg-b: rgba(54, 88, 59, 0.13);
+  --theme-gradient-start: #fff7ed;
+  --theme-gradient-mid: #fffaf0;
+  --theme-gradient-end: #fff4df;
+
+  --theme-card: rgba(255, 255, 255, 0.86);
+  --theme-card-strong: rgba(255, 255, 255, 0.93);
+  --theme-soft: #fff7ed;
+  --theme-soft-2: #ecfccb;
+  --theme-accent: #e56f22;
+  --theme-accent-dark: #b94713;
+  --theme-deep: #263f2b;
+  --theme-button: linear-gradient(135deg, #c85b24, #e56f22);
+  --theme-button-alt: linear-gradient(135deg, #36583b, #263f2b);
+
   --title-font: "Segoe Script", "Segoe Print", "Comic Sans MS", cursive;
   --body-font: Arial, Helvetica, sans-serif;
+}
+
+/* THEMES */
+
+body[data-theme="fruehling"] {
+  --theme-bg-a: rgba(126, 211, 33, 0.18);
+  --theme-bg-b: rgba(255, 179, 209, 0.2);
+  --theme-gradient-start: #f7ffe9;
+  --theme-gradient-mid: #fffaf2;
+  --theme-gradient-end: #f2ffe7;
+  --theme-soft: #f7fee7;
+  --theme-soft-2: #ffe4ef;
+  --theme-accent: #7bbf45;
+  --theme-accent-dark: #47752b;
+  --theme-deep: #254b2c;
+  --theme-button: linear-gradient(135deg, #75a843, #9bcc5a);
+  --theme-button-alt: linear-gradient(135deg, #ff8fb5, #e76592);
+}
+
+body[data-theme="ostern"] {
+  --theme-bg-a: rgba(255, 201, 87, 0.2);
+  --theme-bg-b: rgba(186, 230, 253, 0.35);
+  --theme-gradient-start: #fff8df;
+  --theme-gradient-mid: #f9fff1;
+  --theme-gradient-end: #eaf7ff;
+  --theme-soft: #fff7d6;
+  --theme-soft-2: #dff6ff;
+  --theme-accent: #f2a93b;
+  --theme-accent-dark: #b87315;
+  --theme-deep: #4a6233;
+  --theme-button: linear-gradient(135deg, #f2a93b, #f6c65f);
+  --theme-button-alt: linear-gradient(135deg, #7dbf7a, #4f8f52);
+}
+
+body[data-theme="sommer"] {
+  --theme-bg-a: rgba(255, 189, 89, 0.28);
+  --theme-bg-b: rgba(56, 189, 248, 0.22);
+  --theme-gradient-start: #fff3c7;
+  --theme-gradient-mid: #fff9e6;
+  --theme-gradient-end: #dcf8ff;
+  --theme-soft: #fff2bf;
+  --theme-soft-2: #d7f7ff;
+  --theme-accent: #f59e0b;
+  --theme-accent-dark: #b45309;
+  --theme-deep: #1f5f68;
+  --theme-button: linear-gradient(135deg, #f59e0b, #fbbf24);
+  --theme-button-alt: linear-gradient(135deg, #0ea5e9, #0284c7);
+}
+
+body[data-theme="herbst"] {
+  --theme-bg-a: rgba(180, 83, 9, 0.22);
+  --theme-bg-b: rgba(120, 53, 15, 0.16);
+  --theme-gradient-start: #fff3dc;
+  --theme-gradient-mid: #fff8ec;
+  --theme-gradient-end: #f5dfc2;
+  --theme-soft: #ffedd5;
+  --theme-soft-2: #fef3c7;
+  --theme-accent: #c26a21;
+  --theme-accent-dark: #7c2d12;
+  --theme-deep: #3f2b1d;
+  --theme-button: linear-gradient(135deg, #9a3412, #d97706);
+  --theme-button-alt: linear-gradient(135deg, #6b3f23, #3f2b1d);
+}
+
+body[data-theme="halloween"] {
+  --text: #f8efe1;
+  --muted: #d8c8b4;
+  --card: rgba(45, 31, 55, 0.82);
+  --theme-card: rgba(45, 31, 55, 0.82);
+  --theme-card-strong: rgba(59, 40, 72, 0.92);
+  --border: rgba(255, 170, 66, 0.32);
+  --theme-bg-a: rgba(249, 115, 22, 0.25);
+  --theme-bg-b: rgba(124, 58, 237, 0.2);
+  --theme-gradient-start: #211827;
+  --theme-gradient-mid: #2b1d35;
+  --theme-gradient-end: #3b2336;
+  --theme-soft: #3b2848;
+  --theme-soft-2: #4a2f22;
+  --theme-accent: #f97316;
+  --theme-accent-dark: #ffb266;
+  --theme-deep: #fff3df;
+  --theme-button: linear-gradient(135deg, #f97316, #c2410c);
+  --theme-button-alt: linear-gradient(135deg, #7c3aed, #4c1d95);
+}
+
+body[data-theme="weihnachten"] {
+  --theme-bg-a: rgba(220, 38, 38, 0.18);
+  --theme-bg-b: rgba(22, 101, 52, 0.18);
+  --theme-gradient-start: #fff7f1;
+  --theme-gradient-mid: #fffaf5;
+  --theme-gradient-end: #eaf7ef;
+  --theme-soft: #fee2e2;
+  --theme-soft-2: #dcfce7;
+  --theme-accent: #c0392b;
+  --theme-accent-dark: #7f1d1d;
+  --theme-deep: #17442a;
+  --theme-button: linear-gradient(135deg, #b91c1c, #dc2626);
+  --theme-button-alt: linear-gradient(135deg, #166534, #14532d);
 }
 
 * {
@@ -39,9 +153,14 @@ body {
   color: var(--text);
   font-family: var(--body-font);
   background:
-    radial-gradient(circle at 8% 3%, rgba(229, 111, 34, 0.18), transparent 30%),
-    radial-gradient(circle at 92% 18%, rgba(54, 88, 59, 0.13), transparent 28%),
-    linear-gradient(180deg, #fff7ed 0%, #fffaf0 52%, #fff4df 100%);
+    radial-gradient(circle at 8% 3%, var(--theme-bg-a), transparent 30%),
+    radial-gradient(circle at 92% 18%, var(--theme-bg-b), transparent 28%),
+    linear-gradient(
+      180deg,
+      var(--theme-gradient-start) 0%,
+      var(--theme-gradient-mid) 52%,
+      var(--theme-gradient-end) 100%
+    );
   padding-bottom: calc(var(--nav-height) + 26px);
 }
 
@@ -55,6 +174,12 @@ body::before {
     linear-gradient(90deg, rgba(38, 53, 42, 0.018) 1px, transparent 1px);
   background-size: 32px 32px;
   mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.42), transparent 75%);
+}
+
+body[data-theme="halloween"]::before {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px);
 }
 
 button,
@@ -99,6 +224,13 @@ img {
   user-select: none;
   -webkit-user-drag: none;
   filter: drop-shadow(0 16px 22px rgba(97, 49, 17, 0.16));
+}
+
+body[data-theme="halloween"] .mascot-image,
+body[data-theme="halloween"] .section-mascot,
+body[data-theme="halloween"] .footer-mascot,
+body[data-theme="halloween"] .buddy-mascot {
+  filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.32));
 }
 
 .welcome-mascot {
@@ -152,9 +284,9 @@ img {
   place-items: center;
   padding: 20px 16px;
   background:
-    radial-gradient(circle at top left, rgba(255, 237, 213, 0.92), transparent 34%),
-    radial-gradient(circle at bottom right, rgba(217, 249, 157, 0.52), transparent 30%),
-    linear-gradient(180deg, #fff7ed, #fffaf0);
+    radial-gradient(circle at top left, var(--theme-bg-a), transparent 34%),
+    radial-gradient(circle at bottom right, var(--theme-bg-b), transparent 30%),
+    linear-gradient(180deg, var(--theme-gradient-start), var(--theme-gradient-mid));
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -164,19 +296,25 @@ img {
 }
 
 .welcome-card {
-  width: min(100%, 540px);
+  width: min(100%, 560px);
   max-width: calc(100vw - 32px);
   position: relative;
   overflow: visible;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 247, 237, 0.92));
-  border: 1px solid rgba(214, 157, 85, 0.34);
+    linear-gradient(145deg, var(--theme-card-strong), rgba(255, 247, 237, 0.86));
+  border: 1px solid var(--border);
   border-radius: 38px;
   padding: 34px 24px 30px;
   text-align: center;
   box-shadow:
     0 30px 74px rgba(67, 43, 24, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+body[data-theme="halloween"] .welcome-card {
+  background:
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.13), transparent 38%),
+    linear-gradient(145deg, rgba(59, 40, 72, 0.96), rgba(34, 24, 43, 0.94));
 }
 
 .welcome-card::before {
@@ -202,20 +340,29 @@ img {
   z-index: 1;
 }
 
+body[data-theme="halloween"] .welcome-glow {
+  background:
+    radial-gradient(circle, rgba(249, 115, 22, 0.52), rgba(124, 58, 237, 0.2), transparent 70%);
+}
+
 .eyebrow {
   margin: 0 0 7px;
   font-size: 0.74rem;
   font-weight: 900;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--orange-dark);
+  color: var(--theme-accent-dark);
+}
+
+body[data-theme="halloween"] .eyebrow {
+  color: #ffb266;
 }
 
 h1 {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  color: var(--green-dark);
+  color: var(--theme-deep);
   font-family: var(--title-font);
   font-size: clamp(2.1rem, 6.2vw, 3.35rem);
   line-height: 1.12;
@@ -241,14 +388,15 @@ p {
 }
 
 .welcome-extra {
-  margin: 9px auto 22px;
+  margin: 9px auto 18px;
   max-width: 390px;
   color: var(--muted);
   line-height: 1.45;
   font-size: 0.94rem;
 }
 
-.skip-welcome {
+.skip-welcome,
+.remember-theme {
   display: flex;
   justify-content: center;
   gap: 8px;
@@ -258,8 +406,117 @@ p {
   font-size: 0.9rem;
 }
 
-.skip-welcome input {
-  accent-color: var(--orange);
+.skip-welcome input,
+.remember-theme input {
+  accent-color: var(--theme-accent);
+}
+
+/* THEME PICKER */
+
+.theme-picker {
+  position: relative;
+  z-index: 2;
+  margin: 18px auto 22px;
+  padding: 15px;
+  border-radius: 28px;
+  background: rgba(255, 250, 240, 0.68);
+  border: 1px solid var(--border);
+}
+
+body[data-theme="halloween"] .theme-picker {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.theme-picker-heading {
+  margin-bottom: 12px;
+}
+
+.theme-picker-heading h2 {
+  margin: 0 0 4px;
+  color: var(--theme-deep);
+  font-size: 1.05rem;
+}
+
+.theme-picker-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.theme-option {
+  min-height: 70px;
+  padding: 9px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(214, 157, 85, 0.28);
+  color: var(--text);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-align: left;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+body[data-theme="halloween"] .theme-option {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8efe1;
+}
+
+.theme-option:hover {
+  transform: translateY(-1px);
+}
+
+.theme-option.active {
+  border-color: var(--theme-accent);
+  box-shadow: 0 10px 22px rgba(67, 43, 24, 0.12);
+  outline: 3px solid rgba(229, 111, 34, 0.12);
+}
+
+.theme-preview {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  font-size: 1.25rem;
+}
+
+.theme-preview-standard {
+  background: #ffedd5;
+}
+
+.theme-preview-fruehling {
+  background: #dcfce7;
+}
+
+.theme-preview-ostern {
+  background: #fef3c7;
+}
+
+.theme-preview-sommer {
+  background: #d7f7ff;
+}
+
+.theme-preview-herbst {
+  background: #fed7aa;
+}
+
+.theme-preview-halloween {
+  background: #3b2848;
+}
+
+.theme-preview-weihnachten {
+  background: #dcfce7;
 }
 
 /* BUTTONS */
@@ -267,7 +524,7 @@ p {
 .primary-button,
 .input-row button {
   min-height: 48px;
-  background: linear-gradient(135deg, var(--terracotta), var(--orange));
+  background: var(--theme-button);
   color: #ffffff;
   border-radius: 999px;
   padding: 0 20px;
@@ -297,11 +554,18 @@ p {
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(255, 247, 237, 0.78));
+    radial-gradient(circle at top right, var(--theme-bg-a), transparent 34%),
+    linear-gradient(145deg, var(--theme-card), rgba(255, 247, 237, 0.72));
   border: 1px solid var(--border);
   border-radius: 36px;
   padding: 22px;
   box-shadow: var(--shadow);
+}
+
+body[data-theme="halloween"] .hero-section {
+  background:
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.15), transparent 35%),
+    linear-gradient(145deg, rgba(59, 40, 72, 0.88), rgba(34, 24, 43, 0.84));
 }
 
 .hero-section::after {
@@ -312,8 +576,20 @@ p {
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: rgba(229, 111, 34, 0.11);
+  background: var(--theme-bg-a);
   pointer-events: none;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: auto 18px 14px auto;
+  width: 84px;
+  height: 84px;
+  pointer-events: none;
+  opacity: 0.2;
+  background: radial-gradient(circle, var(--theme-accent), transparent 60%);
+  border-radius: 999px;
 }
 
 .hero-top {
@@ -332,7 +608,7 @@ p {
 .hero-top h2 {
   max-width: 100%;
   margin: 0 0 8px;
-  color: var(--green-dark);
+  color: var(--theme-deep);
   font-family: var(--title-font);
   font-size: clamp(2rem, 5.8vw, 3.25rem);
   line-height: 1.12;
@@ -358,11 +634,18 @@ p {
   margin-top: 18px;
   padding: 14px 15px;
   background:
-    linear-gradient(145deg, rgba(236, 252, 203, 0.88), rgba(247, 254, 231, 0.92));
+    linear-gradient(145deg, var(--theme-soft-2), rgba(247, 254, 231, 0.82));
   border: 1px solid rgba(132, 204, 22, 0.35);
   border-radius: 24px;
   color: #365314;
   line-height: 1.45;
+}
+
+body[data-theme="halloween"] .buddy-message {
+  background:
+    linear-gradient(145deg, rgba(249, 115, 22, 0.18), rgba(124, 58, 237, 0.14));
+  border-color: rgba(249, 115, 22, 0.32);
+  color: #ffedd5;
 }
 
 .buddy-message::before {
@@ -373,9 +656,14 @@ p {
   width: 18px;
   height: 18px;
   transform: rotate(45deg);
-  background: rgba(236, 252, 203, 0.9);
+  background: var(--theme-soft-2);
   border-left: 1px solid rgba(132, 204, 22, 0.28);
   border-top: 1px solid rgba(132, 204, 22, 0.28);
+}
+
+body[data-theme="halloween"] .buddy-message::before {
+  background: rgba(249, 115, 22, 0.16);
+  border-color: rgba(249, 115, 22, 0.22);
 }
 
 .buddy-message strong {
@@ -393,7 +681,7 @@ p {
 .recommendation-section,
 .results-section {
   margin-top: 16px;
-  background: var(--card);
+  background: var(--theme-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 18px;
@@ -401,9 +689,20 @@ p {
   backdrop-filter: blur(10px);
 }
 
+body[data-theme="halloween"] .card,
+body[data-theme="halloween"] .recommendation-section,
+body[data-theme="halloween"] .results-section {
+  background: rgba(45, 31, 55, 0.82);
+}
+
 .ingredient-card {
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.91), rgba(255, 250, 240, 0.87));
+    linear-gradient(145deg, var(--theme-card-strong), rgba(255, 250, 240, 0.78));
+}
+
+body[data-theme="halloween"] .ingredient-card {
+  background:
+    linear-gradient(145deg, rgba(59, 40, 72, 0.9), rgba(34, 24, 43, 0.82));
 }
 
 .card-title,
@@ -424,7 +723,7 @@ p {
 .section-heading h3,
 .rescue-card h3 {
   margin: 0;
-  color: var(--green-dark);
+  color: var(--theme-deep);
   font-size: 1.34rem;
   letter-spacing: -0.02em;
 }
@@ -450,14 +749,19 @@ p {
   min-width: 0;
   padding: 15px 16px;
   border-radius: 999px;
-  border: 1px solid rgba(214, 157, 85, 0.42);
+  border: 1px solid var(--border);
   background: rgba(255, 250, 240, 0.92);
   outline: none;
-  color: var(--text);
+  color: #26352a;
+}
+
+body[data-theme="halloween"] .input-row input {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f8efe1;
 }
 
 .input-row input:focus {
-  border-color: rgba(229, 111, 34, 0.78);
+  border-color: var(--theme-accent);
   box-shadow: 0 0 0 4px rgba(229, 111, 34, 0.13);
 }
 
@@ -478,8 +782,8 @@ p {
   border-radius: 20px;
   background:
     linear-gradient(145deg, rgba(255, 247, 237, 0.92), rgba(255, 250, 240, 0.98));
-  color: var(--green-dark);
-  border: 1px solid rgba(214, 157, 85, 0.34);
+  color: var(--theme-deep);
+  border: 1px solid var(--border);
   font-weight: 800;
   overflow-wrap: anywhere;
   box-shadow:
@@ -487,11 +791,22 @@ p {
     0 8px 18px rgba(67, 43, 24, 0.05);
 }
 
+body[data-theme="halloween"] .quick-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8efe1;
+}
+
 .quick-button.selected {
   background:
-    linear-gradient(145deg, #ecfccb, #f7fee7);
+    linear-gradient(145deg, var(--theme-soft-2), rgba(247, 254, 231, 0.88));
   border-color: rgba(132, 204, 22, 0.42);
   color: #365314;
+}
+
+body[data-theme="halloween"] .quick-button.selected {
+  background: rgba(249, 115, 22, 0.22);
+  color: #ffedd5;
+  border-color: rgba(249, 115, 22, 0.42);
 }
 
 .selected-area {
@@ -504,7 +819,7 @@ p {
 
 .selected-heading h4 {
   margin: 0 0 4px;
-  color: var(--green-dark);
+  color: var(--theme-deep);
 }
 
 .selected-heading p {
@@ -540,6 +855,12 @@ p {
   font-weight: 800;
 }
 
+body[data-theme="halloween"] .ingredient-chip {
+  background: rgba(249, 115, 22, 0.18);
+  border-color: rgba(249, 115, 22, 0.4);
+  color: #ffedd5;
+}
+
 .ingredient-chip span {
   max-width: 160px;
   overflow: hidden;
@@ -551,6 +872,10 @@ p {
   background: #fef3c7;
   border-color: #f59e0b;
   box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.14);
+}
+
+body[data-theme="halloween"] .ingredient-chip.urgent {
+  background: rgba(251, 191, 36, 0.18);
 }
 
 .chip-button,
@@ -594,8 +919,14 @@ p {
 
 .rescue-card {
   background:
-    radial-gradient(circle at top right, rgba(229, 111, 34, 0.1), transparent 35%),
-    linear-gradient(135deg, rgba(255, 247, 237, 0.93), rgba(236, 252, 203, 0.78));
+    radial-gradient(circle at top right, var(--theme-bg-a), transparent 35%),
+    linear-gradient(135deg, rgba(255, 247, 237, 0.93), var(--theme-soft-2));
+}
+
+body[data-theme="halloween"] .rescue-card {
+  background:
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 38%),
+    linear-gradient(135deg, rgba(59, 40, 72, 0.9), rgba(34, 24, 43, 0.85));
 }
 
 .rescue-content {
@@ -607,7 +938,7 @@ p {
 
 .secondary-button {
   min-height: 48px;
-  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  background: var(--theme-button-alt);
   color: #ffffff;
   border-radius: 999px;
   padding: 13px 18px;
@@ -616,7 +947,7 @@ p {
 }
 
 .secondary-button.active {
-  background: linear-gradient(135deg, var(--terracotta), var(--orange));
+  background: var(--theme-button);
 }
 
 .full-button {
@@ -643,17 +974,28 @@ p {
   flex: 0 0 auto;
   padding: 11px 15px;
   border-radius: 999px;
-  color: var(--green-dark);
+  color: var(--theme-deep);
   background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(214, 157, 85, 0.34);
+  border: 1px solid var(--border);
   font-weight: 900;
   white-space: nowrap;
 }
 
+body[data-theme="halloween"] .filter-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8efe1;
+}
+
 .filter-button.active {
-  background: var(--green-dark);
+  background: var(--theme-deep);
   color: #ffffff;
-  border-color: var(--green-dark);
+  border-color: var(--theme-deep);
+}
+
+body[data-theme="halloween"] .filter-button.active {
+  background: #f97316;
+  color: #241527;
+  border-color: #f97316;
 }
 
 /* RECIPES */
@@ -669,10 +1011,16 @@ p {
   border-radius: 30px;
   padding: 22px;
   background:
-    radial-gradient(circle at top right, rgba(229, 111, 34, 0.25), transparent 32%),
-    linear-gradient(135deg, #36583b, #263f2b);
+    radial-gradient(circle at top right, var(--theme-bg-a), transparent 32%),
+    linear-gradient(135deg, var(--theme-deep), var(--green-dark));
   color: #ffffff;
   box-shadow: 0 20px 42px rgba(38, 63, 43, 0.22);
+}
+
+body[data-theme="halloween"] .recommendation-card {
+  background:
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.3), transparent 32%),
+    linear-gradient(135deg, #3b2848, #241527);
 }
 
 .recommendation-card::before {
@@ -712,9 +1060,14 @@ p {
   border-radius: 28px;
   padding: 18px;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.93), rgba(255, 250, 240, 0.84));
+    linear-gradient(145deg, var(--theme-card-strong), rgba(255, 250, 240, 0.76));
   border: 1px solid var(--border);
   box-shadow: 0 12px 28px rgba(67, 43, 24, 0.08);
+}
+
+body[data-theme="halloween"] .recipe-card {
+  background:
+    linear-gradient(145deg, rgba(59, 40, 72, 0.82), rgba(34, 24, 43, 0.78));
 }
 
 .recipe-card h4,
@@ -744,12 +1097,17 @@ p {
   max-width: 100%;
   padding: 7px 10px;
   border-radius: 999px;
-  background: rgba(255, 247, 237, 0.9);
-  color: #7c2d12;
-  border: 1px solid rgba(214, 157, 85, 0.35);
+  background: var(--theme-soft);
+  color: var(--theme-accent-dark);
+  border: 1px solid var(--border);
   font-size: 0.82rem;
   font-weight: 900;
   overflow-wrap: anywhere;
+}
+
+body[data-theme="halloween"] .meta-pill {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffedd5;
 }
 
 .recipe-card .meta-pill:nth-child(n + 4) {
@@ -776,9 +1134,19 @@ p {
   color: #365314;
 }
 
+body[data-theme="halloween"] .match-line {
+  background: rgba(34, 197, 94, 0.12);
+  color: #dcfce7;
+}
+
 .missing-line {
   background: #fff7ed;
   color: #9a3412;
+}
+
+body[data-theme="halloween"] .missing-line {
+  background: rgba(249, 115, 22, 0.14);
+  color: #fed7aa;
 }
 
 .recipe-actions {
@@ -796,14 +1164,19 @@ p {
 }
 
 .small-button {
-  background: linear-gradient(135deg, var(--terracotta), var(--orange));
+  background: var(--theme-button);
   color: #ffffff;
 }
 
 .ghost-button {
   background: rgba(255, 247, 237, 0.85);
-  border: 1px solid rgba(214, 157, 85, 0.4);
-  color: #7c2d12;
+  border: 1px solid var(--border);
+  color: var(--theme-accent-dark);
+}
+
+body[data-theme="halloween"] .ghost-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffedd5;
 }
 
 .empty-state {
@@ -814,6 +1187,11 @@ p {
   color: var(--muted);
   background: rgba(255, 247, 237, 0.72);
   line-height: 1.5;
+}
+
+body[data-theme="halloween"] .empty-state {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(249, 115, 22, 0.42);
 }
 
 /* FOOTER */
@@ -830,13 +1208,19 @@ p {
   padding: 28px 20px 30px;
   border-radius: 36px;
   background:
-    radial-gradient(circle at top left, rgba(255, 237, 213, 0.82), transparent 40%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.93), rgba(255, 247, 237, 0.9));
-  border: 1px solid rgba(214, 157, 85, 0.36);
+    radial-gradient(circle at top left, var(--theme-bg-a), transparent 40%),
+    linear-gradient(145deg, var(--theme-card-strong), rgba(255, 247, 237, 0.78));
+  border: 1px solid var(--border);
   box-shadow:
     0 24px 60px rgba(67, 43, 24, 0.13),
-    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+    inset 0 1px 0 rgba(255, 255, 255, 0.46);
   overflow: hidden;
+}
+
+body[data-theme="halloween"] .footer-inner {
+  background:
+    radial-gradient(circle at top left, rgba(249, 115, 22, 0.16), transparent 40%),
+    linear-gradient(145deg, rgba(59, 40, 72, 0.88), rgba(34, 24, 43, 0.82));
 }
 
 .footer-inner::before {
@@ -860,7 +1244,7 @@ p {
 
 .footer-kicker {
   margin: 0;
-  color: var(--orange-dark);
+  color: var(--theme-accent-dark);
   font-size: 0.78rem;
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -869,7 +1253,7 @@ p {
 
 .footer-claim {
   margin: 3px 0 0;
-  color: var(--green-dark);
+  color: var(--theme-deep);
   font-weight: 900;
   font-size: clamp(1.18rem, 3.8vw, 1.62rem);
   line-height: 1.16;
@@ -905,7 +1289,7 @@ p {
 .footer-signature strong {
   display: block;
   margin-top: 4px;
-  color: var(--green-dark);
+  color: var(--theme-deep);
   font-size: clamp(1.25rem, 3.8vw, 1.58rem);
   line-height: 1.16;
 }
@@ -926,7 +1310,7 @@ p {
   min-height: 48px;
   padding: 13px 22px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--terracotta), var(--orange));
+  background: var(--theme-button);
   color: #ffffff;
   font-weight: 900;
   text-decoration: none;
@@ -940,9 +1324,13 @@ p {
   padding: 9px 15px;
   border-radius: 999px;
   background: rgba(255, 250, 240, 0.78);
-  border: 1px solid rgba(214, 157, 85, 0.36);
+  border: 1px solid var(--border);
   color: var(--muted);
   font-weight: 800;
+}
+
+body[data-theme="halloween"] .footer-reset-button {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* NAV */
@@ -959,11 +1347,15 @@ p {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 7px;
   padding: 8px;
-  border: 1px solid rgba(214, 157, 85, 0.32);
+  border: 1px solid var(--border);
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.88);
   box-shadow: var(--shadow);
   backdrop-filter: blur(16px);
+}
+
+body[data-theme="halloween"] .bottom-nav {
+  background: rgba(34, 24, 43, 0.86);
 }
 
 .nav-link {
@@ -992,8 +1384,13 @@ p {
 
 .nav-link.active {
   background: rgba(243, 230, 207, 0.92);
-  color: var(--orange-dark);
+  color: var(--theme-accent-dark);
   transform: translateY(-1px);
+}
+
+body[data-theme="halloween"] .nav-link.active {
+  background: rgba(249, 115, 22, 0.18);
+  color: #ffedd5;
 }
 
 .nav-link.active .nav-icon {
@@ -1022,6 +1419,10 @@ p {
   background: rgba(38, 53, 42, 0.46);
 }
 
+body[data-theme="halloween"] .modal-backdrop {
+  background: rgba(15, 10, 20, 0.72);
+}
+
 .modal-card {
   position: relative;
   width: min(100%, 760px);
@@ -1033,6 +1434,12 @@ p {
   border-radius: 30px;
   padding: 22px;
   box-shadow: var(--shadow);
+}
+
+body[data-theme="halloween"] .modal-card {
+  background: #241527;
+  color: #f8efe1;
+  border: 1px solid rgba(249, 115, 22, 0.32);
 }
 
 .close-button {
@@ -1051,9 +1458,14 @@ p {
   z-index: 3;
 }
 
+body[data-theme="halloween"] .close-button {
+  background: rgba(249, 115, 22, 0.18);
+  color: #ffedd5;
+}
+
 .modal-card h3 {
   margin-bottom: 8px;
-  color: var(--green-dark);
+  color: var(--theme-deep);
   font-size: 1.55rem;
   overflow-wrap: anywhere;
 }
@@ -1071,13 +1483,17 @@ p {
   margin-top: 14px;
   padding: 13px 14px;
   border-radius: 18px;
-  background: #fff7ed;
+  background: var(--theme-soft);
   color: var(--muted);
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
-/* NEUES REZEPT-MODAL MIT BILD, PORTIONEN UND ZUTATEN */
+body[data-theme="halloween"] .detail-box {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* REZEPT-MODAL */
 
 .modal-recipe-hero {
   display: grid;
@@ -1093,9 +1509,9 @@ p {
   overflow: hidden;
   border-radius: 24px;
   background:
-    radial-gradient(circle at top left, rgba(229, 111, 34, 0.18), transparent 40%),
-    linear-gradient(145deg, #fff7ed, #ecfccb);
-  border: 1px solid rgba(214, 157, 85, 0.34);
+    radial-gradient(circle at top left, var(--theme-bg-a), transparent 40%),
+    linear-gradient(145deg, var(--theme-soft), var(--theme-soft-2));
+  border: 1px solid var(--border);
   box-shadow: 0 14px 28px rgba(67, 43, 24, 0.1);
 }
 
@@ -1130,8 +1546,8 @@ p {
   margin-bottom: 9px;
   padding: 7px 10px;
   border-radius: 999px;
-  background: #ecfccb;
-  color: #365314;
+  background: var(--theme-soft-2);
+  color: var(--theme-deep);
   font-size: 0.78rem;
   font-weight: 900;
 }
@@ -1151,13 +1567,18 @@ p {
   padding: 14px;
   border-radius: 22px;
   background:
-    linear-gradient(145deg, rgba(236, 252, 203, 0.75), rgba(255, 247, 237, 0.92));
-  border: 1px solid rgba(132, 204, 22, 0.3);
+    linear-gradient(145deg, var(--theme-soft-2), rgba(255, 247, 237, 0.86));
+  border: 1px solid var(--border);
+}
+
+body[data-theme="halloween"] .portion-panel {
+  background:
+    linear-gradient(145deg, rgba(249, 115, 22, 0.18), rgba(124, 58, 237, 0.12));
 }
 
 .portion-panel p {
   margin: 0;
-  color: #365314;
+  color: var(--theme-deep);
   font-weight: 900;
 }
 
@@ -1168,7 +1589,11 @@ p {
   padding: 7px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(214, 157, 85, 0.32);
+  border: 1px solid var(--border);
+}
+
+body[data-theme="halloween"] .portion-controls {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .portion-button {
@@ -1177,7 +1602,7 @@ p {
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--terracotta), var(--orange));
+  background: var(--theme-button);
   color: #ffffff;
   font-size: 1.25rem;
   font-weight: 900;
@@ -1186,14 +1611,14 @@ p {
 .portion-count {
   min-width: 34px;
   text-align: center;
-  color: var(--green-dark);
+  color: var(--theme-deep);
   font-size: 1.08rem;
   font-weight: 900;
 }
 
 .modal-section-title {
   margin: 22px 0 10px;
-  color: var(--green-dark);
+  color: var(--theme-deep);
   font-size: 1.12rem;
 }
 
@@ -1211,14 +1636,18 @@ p {
   gap: 12px;
   padding: 11px 12px;
   border-radius: 16px;
-  background: #fff7ed;
-  border: 1px solid rgba(214, 157, 85, 0.28);
+  background: var(--theme-soft);
+  border: 1px solid var(--border);
   color: var(--muted);
   line-height: 1.35;
 }
 
+body[data-theme="halloween"] .ingredient-list li {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .ingredient-list strong {
-  color: var(--green-dark);
+  color: var(--theme-deep);
   text-align: right;
   white-space: nowrap;
 }
@@ -1228,16 +1657,22 @@ p {
   padding: 14px;
   border-radius: 20px;
   background:
-    linear-gradient(145deg, rgba(255, 237, 213, 0.94), rgba(255, 250, 240, 0.94));
-  border: 1px solid rgba(229, 111, 34, 0.22);
-  color: #7c2d12;
+    linear-gradient(145deg, var(--theme-soft), rgba(255, 250, 240, 0.9));
+  border: 1px solid var(--border);
+  color: var(--theme-accent-dark);
   line-height: 1.5;
+}
+
+body[data-theme="halloween"] .recipe-tip-box {
+  background:
+    linear-gradient(145deg, rgba(249, 115, 22, 0.18), rgba(255, 255, 255, 0.06));
+  color: #ffedd5;
 }
 
 .recipe-tip-box strong {
   display: block;
   margin-bottom: 5px;
-  color: var(--orange-dark);
+  color: var(--theme-accent-dark);
 }
 
 .alternative-list {
@@ -1251,10 +1686,15 @@ p {
 .alternative-list li {
   padding: 11px 12px;
   border-radius: 16px;
-  background: #f7fee7;
-  border: 1px solid rgba(132, 204, 22, 0.26);
+  background: var(--theme-soft-2);
+  border: 1px solid var(--border);
   color: #365314;
   line-height: 1.45;
+}
+
+body[data-theme="halloween"] .alternative-list li {
+  background: rgba(34, 197, 94, 0.1);
+  color: #dcfce7;
 }
 
 /* RESPONSIVE */
@@ -1297,6 +1737,14 @@ p {
 
   .welcome-extra {
     display: none;
+  }
+
+  .theme-options {
+    grid-template-columns: 1fr;
+  }
+
+  .theme-option {
+    min-height: 58px;
   }
 
   h1 {
@@ -1508,9 +1956,30 @@ p {
   .welcome-card h1,
   .welcome-card .welcome-text,
   .welcome-card .welcome-extra,
+  .welcome-card .theme-picker,
   .welcome-card .primary-button,
   .welcome-card .skip-welcome {
     grid-column: 2;
+  }
+
+  .theme-picker {
+    margin: 6px 0;
+    padding: 10px;
+  }
+
+  .theme-options {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .theme-option {
+    min-height: 46px;
+    font-size: 0.78rem;
+  }
+
+  .theme-preview {
+    width: 30px;
+    height: 30px;
+    border-radius: 11px;
   }
 
   .welcome-card h1 {
