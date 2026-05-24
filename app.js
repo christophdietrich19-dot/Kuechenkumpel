@@ -49,97 +49,51 @@ let activeTheme = "standard";
 const THEME_KEY = "kuechenkumpelTheme";
 const HIDE_WELCOME_KEY = "kuechenkumpelHideWelcome";
 
+const mascotFiles = {
+  welcome: "kochtopf-hallo.png",
+  hero: "kochtopf-standard.png",
+  section: "kochtopf-kochen.png",
+  rescue: "kochtopf-kein-bock.png",
+  idea: "kochtopf-idee.png",
+  footer: "kochtopf-standard.png",
+  buddy: "kochtopf-idee.png"
+};
+
 const themeSettings = {
   standard: {
     label: "Standard",
-    heroText: "Zeig mir, was da ist. Ich mach daraus eine Idee fürs Essen.",
-    mascots: {
-      welcome: "assets/images/kochtopf-hallo.png",
-      hero: "assets/images/kochtopf-standard.png",
-      section: "assets/images/kochtopf-kochen.png",
-      rescue: "assets/images/kochtopf-kein-bock.png",
-      idea: "assets/images/kochtopf-idee.png",
-      footer: "assets/images/kochtopf-standard.png",
-      buddy: "assets/images/kochtopf-idee.png"
-    }
+    folder: "standard",
+    heroText: "Zeig mir, was da ist. Ich mach daraus eine Idee fürs Essen."
   },
   fruehling: {
     label: "Frühling",
-    heroText: "Frisch, freundlich und ein bisschen grüner im Topf.",
-    mascots: {
-      welcome: "assets/images/kochtopf-hallo.png",
-      hero: "assets/images/kochtopf-standard.png",
-      section: "assets/images/kochtopf-kochen.png",
-      rescue: "assets/images/kochtopf-kein-bock.png",
-      idea: "assets/images/kochtopf-idee.png",
-      footer: "assets/images/kochtopf-standard.png",
-      buddy: "assets/images/kochtopf-idee.png"
-    }
+    folder: "fruehling",
+    heroText: "Frisch, freundlich und ein bisschen grüner im Topf."
   },
   ostern: {
     label: "Ostern",
-    heroText: "Heute wird es bunt, einfach und lecker.",
-    mascots: {
-      welcome: "assets/images/kochtopf-hallo.png",
-      hero: "assets/images/kochtopf-standard.png",
-      section: "assets/images/kochtopf-kochen.png",
-      rescue: "assets/images/kochtopf-kein-bock.png",
-      idea: "assets/images/kochtopf-idee.png",
-      footer: "assets/images/kochtopf-standard.png",
-      buddy: "assets/images/kochtopf-idee.png"
-    }
+    folder: "ostern",
+    heroText: "Heute wird es bunt, einfach und lecker."
   },
   sommer: {
     label: "Sommer",
-    heroText: "Schnell, frisch und bitte ohne Küchen-Marathon.",
-    mascots: {
-      welcome: "assets/images/kochtopf-hallo.png",
-      hero: "assets/images/kochtopf-standard.png",
-      section: "assets/images/kochtopf-kochen.png",
-      rescue: "assets/images/kochtopf-kein-bock.png",
-      idea: "assets/images/kochtopf-idee.png",
-      footer: "assets/images/kochtopf-standard.png",
-      buddy: "assets/images/kochtopf-idee.png"
-    }
+    folder: "sommer",
+    heroText: "Schnell, frisch und bitte ohne Küchen-Marathon."
   },
   herbst: {
     label: "Herbst",
-    heroText: "Gemütlich, warm und perfekt für Pfanne, Topf und Ofen.",
-    mascots: {
-      welcome: "assets/images/kochtopf-hallo.png",
-      hero: "assets/images/kochtopf-standard.png",
-      section: "assets/images/kochtopf-kochen.png",
-      rescue: "assets/images/kochtopf-kein-bock.png",
-      idea: "assets/images/kochtopf-idee.png",
-      footer: "assets/images/kochtopf-standard.png",
-      buddy: "assets/images/kochtopf-idee.png"
-    }
+    folder: "herbst",
+    heroText: "Gemütlich, warm und perfekt für Pfanne, Topf und Ofen."
   },
   halloween: {
     label: "Halloween",
-    heroText: "Gruselig leerer Kühlschrank? Keine Sorge, ich rette das.",
-    mascots: {
-      welcome: "assets/images/kochtopf-hallo.png",
-      hero: "assets/images/kochtopf-standard.png",
-      section: "assets/images/kochtopf-kochen.png",
-      rescue: "assets/images/kochtopf-kein-bock.png",
-      idea: "assets/images/kochtopf-idee.png",
-      footer: "assets/images/kochtopf-standard.png",
-      buddy: "assets/images/kochtopf-idee.png"
-    }
+    folder: "halloween",
+    heroText: "Gruselig leerer Kühlschrank? Keine Sorge, ich rette das."
   },
   weihnachten: {
     label: "Weihnachten",
-    heroText: "Heute wird es warm, gemütlich und ein bisschen festlich.",
-    mascots: {
-      welcome: "assets/images/kochtopf-hallo.png",
-      hero: "assets/images/kochtopf-standard.png",
-      section: "assets/images/kochtopf-kochen.png",
-      rescue: "assets/images/kochtopf-kein-bock.png",
-      idea: "assets/images/kochtopf-idee.png",
-      footer: "assets/images/kochtopf-standard.png",
-      buddy: "assets/images/kochtopf-idee.png"
-    }
+    folder: "weihnachten",
+    heroText: "Heute wird es warm, gemütlich und ein bisschen festlich."
   }
 };
 
@@ -544,14 +498,29 @@ function canonicalIngredient(value) {
   if (["dosentomaten", "dosen tomaten"].includes(text)) return "dosentomaten";
   if (["passierte tomaten", "tomatensosse", "tomatensoße"].includes(text)) return "passierte tomaten";
   if (["zwiebel", "zwiebeln"].includes(text)) return "zwiebel";
-  if (["brot", "broetchen", "brötchen", "toast", "baguette"].includes(text)) return text.replace("broetchen", "brötchen");
+  if (["brot", "broetchen", "brötchen", "toast", "baguette"].includes(text)) {
+    return text.replace("broetchen", "brötchen");
+  }
   if (["gemuese", "gemüse"].includes(text)) return "gemüse";
   if (["tk gemuese", "tk gemüse", "tiefkuehlgemuese", "tiefkühlgemüse"].includes(text)) return "tk-gemüse";
   if (["moehren", "möhren", "karotten", "mohren"].includes(text)) return "möhren";
   if (["paprika", "zucchini", "brokkoli", "pilze", "spinat"].includes(text)) return text;
-  if (["milch", "sahne", "kokosmilch", "frischkaese", "frischkäse", "schmand", "quark", "joghurt"].includes(text)) {
+
+  if (
+    [
+      "milch",
+      "sahne",
+      "kokosmilch",
+      "frischkaese",
+      "frischkäse",
+      "schmand",
+      "quark",
+      "joghurt"
+    ].includes(text)
+  ) {
     return text.replace("frischkaese", "frischkäse");
   }
+
   if (["hack", "hackfleisch"].includes(text)) return "hackfleisch";
   if (["haehnchen", "hähnchen", "huhn", "chicken"].includes(text)) return "hähnchen";
   if (["bohne", "bohnen"].includes(text)) return "bohnen";
@@ -569,43 +538,43 @@ function capitalize(value) {
 
 function displayIngredientName(value) {
   const map = {
-    "eier": "Eier",
-    "käse": "Käse",
-    "nudeln": "Nudeln",
-    "kartoffeln": "Kartoffeln",
-    "tomaten": "Tomaten",
-    "dosentomaten": "Dosentomaten",
+    eier: "Eier",
+    käse: "Käse",
+    nudeln: "Nudeln",
+    kartoffeln: "Kartoffeln",
+    tomaten: "Tomaten",
+    dosentomaten: "Dosentomaten",
     "passierte tomaten": "passierte Tomaten",
-    "zwiebel": "Zwiebel",
-    "brot": "Brot",
-    "brötchen": "Brötchen",
-    "toast": "Toast",
-    "baguette": "Baguette",
-    "gemüse": "Gemüse",
+    zwiebel: "Zwiebel",
+    brot: "Brot",
+    brötchen: "Brötchen",
+    toast: "Toast",
+    baguette: "Baguette",
+    gemüse: "Gemüse",
     "tk-gemüse": "TK-Gemüse",
-    "möhren": "Möhren",
-    "paprika": "Paprika",
-    "zucchini": "Zucchini",
-    "brokkoli": "Brokkoli",
-    "pilze": "Pilze",
-    "milch": "Milch",
-    "sahne": "Sahne",
-    "kokosmilch": "Kokosmilch",
-    "frischkäse": "Frischkäse",
-    "schmand": "Schmand",
-    "quark": "Quark",
-    "joghurt": "Joghurt",
-    "hackfleisch": "Hackfleisch",
-    "hähnchen": "Hähnchen",
-    "thunfisch": "Thunfisch",
-    "bohnen": "Bohnen",
-    "mais": "Mais",
-    "linsen": "Linsen",
-    "haferflocken": "Haferflocken",
-    "mehl": "Mehl",
-    "brühe": "Brühe",
-    "öl": "Öl",
-    "knoblauch": "Knoblauch"
+    möhren: "Möhren",
+    paprika: "Paprika",
+    zucchini: "Zucchini",
+    brokkoli: "Brokkoli",
+    pilze: "Pilze",
+    milch: "Milch",
+    sahne: "Sahne",
+    kokosmilch: "Kokosmilch",
+    frischkäse: "Frischkäse",
+    schmand: "Schmand",
+    quark: "Quark",
+    joghurt: "Joghurt",
+    hackfleisch: "Hackfleisch",
+    hähnchen: "Hähnchen",
+    thunfisch: "Thunfisch",
+    bohnen: "Bohnen",
+    mais: "Mais",
+    linsen: "Linsen",
+    haferflocken: "Haferflocken",
+    mehl: "Mehl",
+    brühe: "Brühe",
+    öl: "Öl",
+    knoblauch: "Knoblauch"
   };
 
   return map[value] || capitalize(value);
@@ -728,10 +697,12 @@ function buildTags(recipe) {
 
   if (
     recipe.timeTotal &&
-    (recipe.timeTotal.includes("10") ||
+    (
+      recipe.timeTotal.includes("10") ||
       recipe.timeTotal.includes("12") ||
       recipe.timeTotal.includes("15") ||
-      recipe.timeTotal.includes("20"))
+      recipe.timeTotal.includes("20")
+    )
   ) {
     tags.push("schnell");
   }
@@ -744,6 +715,50 @@ function buildTags(recipe) {
 }
 
 const recipes = buildRecipes();
+
+function getThemeMascotPath(themeName, mascotKey) {
+  const settings = themeSettings[themeName] || themeSettings.standard;
+  const fileName = mascotFiles[mascotKey] || mascotFiles.hero;
+
+  return `assets/images/themes/${settings.folder}/${fileName}`;
+}
+
+function getStandardMascotPath(mascotKey) {
+  const fileName = mascotFiles[mascotKey] || mascotFiles.hero;
+
+  return `assets/images/themes/standard/${fileName}`;
+}
+
+function getLegacyMascotPath(mascotKey) {
+  const fileName = mascotFiles[mascotKey] || mascotFiles.hero;
+
+  return `assets/images/${fileName}`;
+}
+
+function setMascotImage(imageElement, mascotKey) {
+  if (!imageElement) return;
+
+  const themePath = getThemeMascotPath(activeTheme, mascotKey);
+  const standardPath = getStandardMascotPath(mascotKey);
+  const legacyPath = getLegacyMascotPath(mascotKey);
+
+  imageElement.onerror = () => {
+    if (imageElement.src.includes(`/themes/${activeTheme}/`)) {
+      imageElement.onerror = () => {
+        imageElement.onerror = null;
+        imageElement.src = legacyPath;
+      };
+
+      imageElement.src = standardPath;
+      return;
+    }
+
+    imageElement.onerror = null;
+    imageElement.src = legacyPath;
+  };
+
+  imageElement.src = themePath;
+}
 
 function setTheme(themeName, shouldSave = false) {
   const safeTheme = themeSettings[themeName] ? themeName : "standard";
@@ -767,15 +782,17 @@ function updateThemeButtons() {
 
 function updateThemeMascots() {
   const settings = themeSettings[activeTheme] || themeSettings.standard;
-  const mascots = settings.mascots;
 
-  if (welcomeMascot) welcomeMascot.src = mascots.welcome;
-  if (heroMascot) heroMascot.src = mascots.hero;
-  if (sectionMascot) sectionMascot.src = mascots.section;
-  if (rescueMascot) rescueMascot.src = mascots.rescue;
-  if (ideaMascot) ideaMascot.src = mascots.idea;
-  if (footerMascot) footerMascot.src = mascots.footer;
-  if (themeHeroText) themeHeroText.textContent = settings.heroText;
+  setMascotImage(welcomeMascot, "welcome");
+  setMascotImage(heroMascot, "hero");
+  setMascotImage(sectionMascot, "section");
+  setMascotImage(rescueMascot, "rescue");
+  setMascotImage(ideaMascot, "idea");
+  setMascotImage(footerMascot, "footer");
+
+  if (themeHeroText) {
+    themeHeroText.textContent = settings.heroText;
+  }
 }
 
 function initTheme() {
@@ -860,7 +877,16 @@ function isVegetableSoftMatch(recipeIngredient, selectedIngredient) {
   const recipeValue = canonicalIngredient(recipeIngredient);
   const selectedValue = canonicalIngredient(selectedIngredient);
 
-  const vegetables = ["gemüse", "paprika", "zucchini", "möhren", "brokkoli", "pilze", "spinat", "tk-gemüse"];
+  const vegetables = [
+    "gemüse",
+    "paprika",
+    "zucchini",
+    "möhren",
+    "brokkoli",
+    "pilze",
+    "spinat",
+    "tk-gemüse"
+  ];
 
   return recipeValue === "gemüse" && vegetables.includes(selectedValue);
 }
@@ -900,11 +926,6 @@ function hasRealIngredient(recipe, recipeIngredient, selectedNames) {
   return type === "exact" || type === "soft";
 }
 
-function hasAnyIngredientConnection(recipe, ingredient, selectedNames) {
-  const type = getIngredientMatchType(recipe, ingredient, selectedNames);
-  return type === "exact" || type === "soft" || type === "substitute";
-}
-
 function scoreRecipe(recipe) {
   const selectedNames = getSelectedNames();
   const urgentNames = getUrgentNames();
@@ -938,7 +959,6 @@ function scoreRecipe(recipe) {
 
     if (selectedNames.some((selectedName) => isVegetableSoftMatch(ingredient, selectedName))) {
       matchingOptional.push(ingredient);
-      return;
     }
   });
 
@@ -974,7 +994,12 @@ function scoreRecipe(recipe) {
       score += 3;
     }
 
-    if (recipe.time.includes("30") || recipe.time.includes("35") || recipe.time.includes("40") || recipe.time.includes("45")) {
+    if (
+      recipe.time.includes("30") ||
+      recipe.time.includes("35") ||
+      recipe.time.includes("40") ||
+      recipe.time.includes("45")
+    ) {
       score -= 4;
     }
 
@@ -1016,14 +1041,22 @@ function getMatches() {
 
   return recipes
     .map(scoreRecipe)
-    .filter((item) => item.matchingMain.length > 0 || item.matchingOptional.length > 0 || item.substituteMain.length > 0)
+    .filter(
+      (item) =>
+        item.matchingMain.length > 0 ||
+        item.matchingOptional.length > 0 ||
+        item.substituteMain.length > 0
+    )
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score);
 }
 
 function getBuddyMascotPath() {
-  const settings = themeSettings[activeTheme] || themeSettings.standard;
-  return settings.mascots.buddy;
+  return getThemeMascotPath(activeTheme, "buddy");
+}
+
+function getBuddyMascotFallbackPath() {
+  return getStandardMascotPath("buddy");
 }
 
 function updateBuddyTextOnly(text) {
@@ -1031,6 +1064,7 @@ function updateBuddyTextOnly(text) {
     <img
       class="buddy-mascot"
       src="${escapeHtml(getBuddyMascotPath())}"
+      onerror="this.onerror=null; this.src='${escapeHtml(getBuddyMascotFallbackPath())}';"
       alt=""
       aria-hidden="true"
     />
