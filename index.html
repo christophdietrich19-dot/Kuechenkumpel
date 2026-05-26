@@ -59,98 +59,56 @@
         </div>
 
         <div id="themeOptions" class="theme-options">
-          <button
-            class="theme-option active"
-            type="button"
-            data-theme-option="standard"
-            aria-label="Theme Standard auswählen"
-          >
+          <button class="theme-option active" type="button" data-theme-option="standard">
             <span class="theme-option-icon">🍳</span>
-
             <span class="theme-option-copy">
               <strong>Standard</strong>
               <small>Warm & einfach</small>
             </span>
           </button>
 
-          <button
-            class="theme-option"
-            type="button"
-            data-theme-option="fruehling"
-            aria-label="Theme Frühling auswählen"
-          >
+          <button class="theme-option" type="button" data-theme-option="fruehling">
             <span class="theme-option-icon">🌿</span>
-
             <span class="theme-option-copy">
               <strong>Frühling</strong>
               <small>Frisch & leicht</small>
             </span>
           </button>
 
-          <button
-            class="theme-option"
-            type="button"
-            data-theme-option="ostern"
-            aria-label="Theme Ostern auswählen"
-          >
+          <button class="theme-option" type="button" data-theme-option="ostern">
             <span class="theme-option-icon">🐰</span>
-
             <span class="theme-option-copy">
               <strong>Ostern</strong>
               <small>Hell & bunt</small>
             </span>
           </button>
 
-          <button
-            class="theme-option"
-            type="button"
-            data-theme-option="sommer"
-            aria-label="Theme Sommer auswählen"
-          >
+          <button class="theme-option" type="button" data-theme-option="sommer">
             <span class="theme-option-icon">🍋</span>
-
             <span class="theme-option-copy">
               <strong>Sommer</strong>
               <small>Sonnig & leicht</small>
             </span>
           </button>
 
-          <button
-            class="theme-option"
-            type="button"
-            data-theme-option="herbst"
-            aria-label="Theme Herbst auswählen"
-          >
+          <button class="theme-option" type="button" data-theme-option="herbst">
             <span class="theme-option-icon">🍂</span>
-
             <span class="theme-option-copy">
               <strong>Herbst</strong>
               <small>Warm & gemütlich</small>
             </span>
           </button>
 
-          <button
-            class="theme-option"
-            type="button"
-            data-theme-option="halloween"
-            aria-label="Theme Halloween auswählen"
-          >
+          <button class="theme-option" type="button" data-theme-option="halloween">
             <span class="theme-option-icon">🎃</span>
-
             <span class="theme-option-copy">
               <strong>Halloween</strong>
               <small>Süß-spooky</small>
             </span>
           </button>
 
-          <button
-            class="theme-option theme-option-wide"
-            type="button"
-            data-theme-option="weihnachten"
-            aria-label="Theme Weihnachten auswählen"
-          >
+          <button class="theme-option theme-option-wide" type="button" data-theme-option="weihnachten">
             <span class="theme-option-icon">🎄</span>
-
             <span class="theme-option-copy">
               <strong>Weihnachten</strong>
               <small>Festlich & warm</small>
@@ -294,6 +252,40 @@
       <div id="moodInsight" class="mood-insight">
         <strong>Aktuelle Küchenlage:</strong>
         <span>Solider Alltag. Ich suche dir etwas, das gut passt und nicht unnötig kompliziert wird.</span>
+      </div>
+    </section>
+
+    <section id="decisionSection" class="card decision-card">
+      <div class="decision-header">
+        <div>
+          <p class="eyebrow">Keine Lust zu grübeln?</p>
+          <h3>Küchenkumpel entscheidet</h3>
+          <p>
+            Ich nehme deine Küchenlage, deine Zutaten oder würfle dir einfach eine solide Idee aus.
+          </p>
+        </div>
+
+        <img
+          id="decisionMascot"
+          class="section-mascot decision-mascot"
+          src="assets/images/themes/standard/kochtopf-idee.png"
+          alt="Küchenkumpel entscheidet"
+        />
+      </div>
+
+      <div id="decisionResult" class="decision-result empty-decision">
+        <strong>Noch keine Entscheidung getroffen.</strong>
+        <span>Drück auf den Button, dann übernehme ich kurz.</span>
+      </div>
+
+      <div class="decision-actions">
+        <button id="decideButton" class="primary-button decision-button" type="button">
+          Küchenkumpel entscheidet
+        </button>
+
+        <button id="decideAgainButton" class="ghost-button decision-secondary-button" type="button" disabled>
+          Doch was anderes
+        </button>
       </div>
     </section>
 

@@ -13,6 +13,7 @@ const welcomeThemeDescription = document.getElementById("welcomeThemeDescription
 const welcomeMascot = document.getElementById("welcomeMascot");
 const heroMascot = document.getElementById("heroMascot");
 const moodMascot = document.getElementById("moodMascot");
+const decisionMascot = document.getElementById("decisionMascot");
 const sectionMascot = document.getElementById("sectionMascot");
 const rescueMascot = document.getElementById("rescueMascot");
 const ideaMascot = document.getElementById("ideaMascot");
@@ -22,6 +23,10 @@ const themeHeroText = document.getElementById("themeHeroText");
 const moodOptionButtons = document.querySelectorAll("[data-mood]");
 const moodDescription = document.getElementById("moodDescription");
 const moodInsight = document.getElementById("moodInsight");
+
+const decisionResult = document.getElementById("decisionResult");
+const decideButton = document.getElementById("decideButton");
+const decideAgainButton = document.getElementById("decideAgainButton");
 
 const ingredientInput = document.getElementById("ingredientInput");
 const addIngredientButton = document.getElementById("addIngredientButton");
@@ -50,11 +55,12 @@ const navSections = [
 
 let selectedIngredients = [];
 let activeFilter = "all";
-let noMoodMode = false;
-let currentModalRecipeId = null;
 let currentModalPortions = 2;
 let activeTheme = "standard";
 let activeMood = "normal";
+let decisionIndex = 0;
+let lastDecisionMode = "none";
+let cachedRandomDecisionPool = [];
 
 const THEME_KEY = "kuechenkumpelTheme";
 const HIDE_WELCOME_KEY = "kuechenkumpelHideWelcome";
@@ -64,6 +70,7 @@ const mascotFiles = {
   welcome: "kochtopf-hallo.png",
   hero: "kochtopf-standard.png",
   mood: "kochtopf-hallo.png",
+  decision: "kochtopf-idee.png",
   section: "kochtopf-kochen.png",
   rescue: "kochtopf-kein-bock.png",
   idea: "kochtopf-idee.png",
@@ -554,6 +561,10 @@ function createCostText(value) {
   return "Etwas feiner. Für Tage, an denen der Kühlschrank kurz angeben darf.";
 }
 
+function isNoMoodMode() {
+  return activeMood === "kein-bock";
+}
+
 function normalize(value) {
   return String(value || "").trim().toLowerCase();
 }
@@ -893,6 +904,7 @@ function updateThemeMascots() {
   setMascotImage(welcomeMascot, "welcome");
   setMascotImage(heroMascot, "hero");
   setMascotImage(moodMascot, getCurrentMoodMascotKey());
+  setMascotImage(decisionMascot, "decision");
   setMascotImage(sectionMascot, "section");
   setMascotImage(rescueMascot, "rescue");
   setMascotImage(ideaMascot, "idea");
@@ -926,15 +938,14 @@ function setMood(moodName, shouldSave = true) {
     localStorage.setItem(MOOD_KEY, safeMood);
   }
 
-  noMoodMode = safeMood === "kein-bock";
-
   if (noMoodButton) {
-    noMoodButton.classList.toggle("active", noMoodMode);
-    noMoodButton.textContent = noMoodMode
+    noMoodButton.classList.toggle("active", isNoMoodMode());
+    noMoodButton.textContent = isNoMoodMode()
       ? "Kein-Bock-Modus ist aktiv"
       : "Rette mein Abendessen";
   }
 
+  resetDecision(false);
   updateMoodUI();
   updateThemeMascots();
   updateBuddyMessage();
@@ -984,12 +995,14 @@ function addIngredient(name) {
   });
 
   ingredientInput.value = "";
+  resetDecision(false);
   updateBuddyMessage();
   renderAll();
 }
 
 function removeIngredient(name) {
   selectedIngredients = selectedIngredients.filter((ingredient) => ingredient.name !== name);
+  resetDecision(false);
   updateBuddyMessage();
   renderAll();
 }
@@ -1006,6 +1019,7 @@ function toggleUrgent(name) {
     return ingredient;
   });
 
+  resetDecision(false);
   updateBuddyMessage();
   renderAll();
 }
@@ -1066,21 +1080,15 @@ function isSubstituteMatch(recipe, recipeIngredient, selectedIngredient) {
 
 function getIngredientMatchType(recipe, recipeIngredient, selectedNames) {
   for (const selectedName of selectedNames) {
-    if (isExactIngredientMatch(recipeIngredient, selectedName)) {
-      return "exact";
-    }
+    if (isExactIngredientMatch(recipeIngredient, selectedName)) return "exact";
   }
 
   for (const selectedName of selectedNames) {
-    if (isVegetableSoftMatch(recipeIngredient, selectedName)) {
-      return "soft";
-    }
+    if (isVegetableSoftMatch(recipeIngredient, selectedName)) return "soft";
   }
 
   for (const selectedName of selectedNames) {
-    if (isSubstituteMatch(recipe, recipeIngredient, selectedName)) {
-      return "substitute";
-    }
+    if (isSubstituteMatch(recipe, recipeIngredient, selectedName)) return "substitute";
   }
 
   return "missing";
@@ -1146,7 +1154,7 @@ function scoreRecipe(recipe) {
     }
   });
 
-  if (noMoodMode) {
+  if (isNoMoodMode()) {
     if (recipe.tags.includes("kein bock")) score += 8;
     if (recipe.dishes === "wenig") score += 3;
 
@@ -1168,9 +1176,7 @@ function scoreRecipe(recipe) {
       score -= 4;
     }
 
-    if (recipe.tags.includes("ofen")) {
-      score -= 5;
-    }
+    if (recipe.tags.includes("ofen")) score -= 5;
   }
 
   if (activeMood === "schnell") {
@@ -1310,7 +1316,7 @@ function updateBuddyMessage() {
     message = `Alles klar. ${formatList(urgentNames)} hat nicht mehr ewig Zeit. Geben wir dem Zeug heute noch einen würdigen Auftritt.`;
   } else if (selectedIngredients.length <= 2) {
     message = "Das ist sportlich wenig, aber wir kriegen was hin.";
-  } else if (noMoodMode) {
+  } else if (isNoMoodMode()) {
     message = "Keine Energie? Alles gut. Heute wird nicht gekocht, heute wird gerettet.";
   } else if (activeMood === "schnell") {
     message = "Okay, kurze Nummer. Ich suche dir die schnellen Kandidaten nach oben.";
@@ -1551,11 +1557,215 @@ function renderRecipeResults() {
   recipeResults.innerHTML = visibleMatches.map((match) => createRecipeCard(match, false)).join("");
 }
 
+function resetDecision(shouldRender = true) {
+  decisionIndex = 0;
+  lastDecisionMode = "none";
+  cachedRandomDecisionPool = [];
+
+  if (decideAgainButton) {
+    decideAgainButton.disabled = true;
+  }
+
+  if (decisionResult) {
+    decisionResult.className = "decision-result empty-decision";
+    decisionResult.innerHTML = `
+      <strong>Noch keine Entscheidung getroffen.</strong>
+      <span>Drück auf den Button, dann übernehme ich kurz.</span>
+    `;
+  }
+
+  if (shouldRender) {
+    renderAll();
+  }
+}
+
+function getDecisionPool() {
+  const matches = getMatches();
+
+  if (matches.length > 0) {
+    return {
+      mode: "matched",
+      items: matches.map((match) => match.recipe),
+      matches
+    };
+  }
+
+  if (cachedRandomDecisionPool.length === 0) {
+    cachedRandomDecisionPool = getShuffledRecipesForMood();
+  }
+
+  return {
+    mode: "random",
+    items: cachedRandomDecisionPool,
+    matches: []
+  };
+}
+
+function getShuffledRecipesForMood() {
+  return recipes
+    .map((recipe) => {
+      let weight = 1;
+
+      if (activeMood === "kein-bock" && recipe.tags.includes("kein bock")) weight += 4;
+      if (activeMood === "schnell" && recipe.tags.includes("schnell")) weight += 4;
+      if (activeMood === "muss-weg" && recipe.tags.includes("muss weg")) weight += 4;
+      if (activeMood === "guenstig" && recipe.tags.includes("günstig")) weight += 4;
+      if (activeMood === "satt" && recipe.tags.includes("sättigend")) weight += 4;
+      if (activeMood === "verwoehn" && (recipe.tags.includes("soulfood") || recipe.tags.includes("cremig"))) weight += 4;
+
+      return { recipe, weight, random: Math.random() };
+    })
+    .sort((a, b) => {
+      if (b.weight !== a.weight) return b.weight - a.weight;
+      return a.random - b.random;
+    })
+    .map((item) => item.recipe);
+}
+
+function decideRecipe(useNext = false) {
+  const pool = getDecisionPool();
+
+  if (!pool.items.length) {
+    decisionResult.className = "decision-result empty-decision";
+    decisionResult.innerHTML = `
+      <strong>Ich finde gerade keine Rezepte.</strong>
+      <span>Schau bitte, ob recipes.js sauber geladen wird.</span>
+    `;
+    return;
+  }
+
+  if (lastDecisionMode !== pool.mode) {
+    decisionIndex = 0;
+  } else if (useNext) {
+    decisionIndex += 1;
+  }
+
+  if (decisionIndex >= pool.items.length) {
+    decisionIndex = 0;
+  }
+
+  const recipe = pool.items[decisionIndex];
+  const match = pool.matches.find((item) => item.recipe.id === recipe.id) || null;
+
+  lastDecisionMode = pool.mode;
+
+  renderDecisionResult(recipe, pool.mode, match);
+
+  if (decideAgainButton) {
+    decideAgainButton.disabled = pool.items.length <= 1;
+  }
+
+  updateBuddyTextOnly(
+    pool.mode === "matched"
+      ? `Ich hab entschieden: ${recipe.title}. Das passt gerade am besten zu deiner Küchenlage.`
+      : `Keine Zutaten angegeben. Ich hab trotzdem entschieden: ${recipe.title}. Einkaufen musst du wahrscheinlich kurz.`
+  );
+}
+
+function createDecisionReason(recipe, mode, match) {
+  const mood = moodSettings[activeMood] || moodSettings.normal;
+
+  if (mode === "random") {
+    return `Du hast noch nichts eingetragen. Also würfle ich dir passend zur Küchenlage „${mood.label}“ eine solide Idee aus. Einkaufen müsstest du dafür wahrscheinlich kurz.`;
+  }
+
+  if (!match) {
+    return `Das Rezept passt gut zu deiner Küchenlage „${mood.label}“ und ist gerade ein brauchbarer Kandidat.`;
+  }
+
+  const parts = [];
+
+  if (match.matchingMain.length > 0) {
+    parts.push(`Du hast schon ${formatList(match.matchingMain)} da.`);
+  }
+
+  if (activeMood === "kein-bock") {
+    parts.push("Außerdem passt es gut, wenn heute wenig Aufwand gefragt ist.");
+  } else if (activeMood === "schnell") {
+    parts.push("Außerdem wirkt es nach einer schnellen Nummer ohne Küchenmarathon.");
+  } else if (activeMood === "muss-weg") {
+    parts.push("Außerdem hilft es dabei, vorhandene Sachen sinnvoll zu verwerten.");
+  } else if (activeMood === "guenstig") {
+    parts.push("Außerdem bleibt es eher bodenständig und günstig.");
+  } else if (activeMood === "satt") {
+    parts.push("Außerdem macht es ordentlich satt.");
+  } else if (activeMood === "verwoehn") {
+    parts.push("Außerdem hat es genau dieses gemütliche Soulfood-Gefühl.");
+  }
+
+  if (parts.length === 0) {
+    parts.push("Das Rezept ist gerade der stärkste Treffer aus deinen Angaben.");
+  }
+
+  return parts.join(" ");
+}
+
+function getDecisionShoppingItems(recipe, mode, match) {
+  if (mode === "random") {
+    return recipe.main || [];
+  }
+
+  if (match && match.missingMain.length > 0) {
+    return match.missingMain;
+  }
+
+  return [];
+}
+
+function renderDecisionResult(recipe, mode, match) {
+  const reason = createDecisionReason(recipe, mode, match);
+  const shoppingItems = getDecisionShoppingItems(recipe, mode, match);
+
+  const shoppingText = mode === "random"
+    ? "Besorgen müsstest du wahrscheinlich:"
+    : "Falls noch nicht da, wäre gut:";
+
+  const shoppingMarkup = shoppingItems.length > 0
+    ? `
+      <div class="decision-shopping">
+        <strong>${escapeHtml(shoppingText)}</strong>
+        <div class="decision-shopping-list">
+          ${shoppingItems.map((item) => `<span>${escapeHtml(displayIngredientName(item))}</span>`).join("")}
+        </div>
+      </div>
+    `
+    : `
+      <div class="decision-shopping decision-shopping-good">
+        <strong>Sieht gut aus.</strong>
+        <span>Für die wichtigsten Sachen bist du schon ziemlich gut aufgestellt.</span>
+      </div>
+    `;
+
+  decisionResult.className = "decision-result has-decision";
+  decisionResult.innerHTML = `
+    <div class="decision-picked">
+      <p class="decision-kicker">Küchenkumpel entscheidet heute:</p>
+      <h4>${escapeHtml(recipe.title)}</h4>
+      <p>${escapeHtml(reason)}</p>
+    </div>
+
+    ${shoppingMarkup}
+
+    <div class="decision-result-actions">
+      <button class="small-button" type="button" data-open-decision-recipe="${recipe.id}">
+        Rezept ansehen
+      </button>
+    </div>
+  `;
+
+  const openButton = decisionResult.querySelector("[data-open-decision-recipe]");
+
+  if (openButton) {
+    openButton.addEventListener("click", () => {
+      openRecipeModal(recipe.id);
+    });
+  }
+}
+
 function openRecipeModal(recipeId) {
   const recipe = recipes.find((item) => item.id === recipeId);
   if (!recipe) return;
 
-  currentModalRecipeId = recipe.id;
   currentModalPortions = recipe.portions || 2;
 
   renderRecipeModal(recipe);
@@ -1705,7 +1915,6 @@ function formatNumber(value) {
 
 function closeRecipeModal() {
   recipeModal.classList.add("hidden");
-  currentModalRecipeId = null;
 }
 
 function copyMissingIngredients(recipeId) {
@@ -1738,6 +1947,7 @@ function copyMissingIngredients(recipeId) {
 
 function setActiveFilter(filter) {
   activeFilter = filter;
+  resetDecision(false);
 
   filterButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.filter === filter);
@@ -1747,7 +1957,7 @@ function setActiveFilter(filter) {
 }
 
 function toggleNoMoodMode() {
-  const nextMood = noMoodMode ? "normal" : "kein-bock";
+  const nextMood = isNoMoodMode() ? "normal" : "kein-bock";
   setMood(nextMood);
 }
 
@@ -1780,6 +1990,7 @@ function startApp() {
   welcomeScreen.classList.add("hidden");
 
   const moodSection = document.getElementById("moodSection");
+
   if (moodSection) {
     setTimeout(() => {
       moodSection.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1877,6 +2088,14 @@ function bindEvents() {
   startAppButton.addEventListener("click", startApp);
   showWelcomeButton.addEventListener("click", showWelcomeAgain);
 
+  decideButton.addEventListener("click", () => {
+    decideRecipe(false);
+  });
+
+  decideAgainButton.addEventListener("click", () => {
+    decideRecipe(true);
+  });
+
   closeModalButton.addEventListener("click", closeRecipeModal);
   modalBackdrop.addEventListener("click", closeRecipeModal);
 
@@ -1890,6 +2109,7 @@ function bindEvents() {
 function initApp() {
   initTheme();
   initMood();
+  resetDecision(false);
 
   if (!recipes.length) {
     updateBuddyTextOnly("Ich finde gerade keine Rezepte. Schau bitte, ob recipes.js vor app.js geladen wird.");
