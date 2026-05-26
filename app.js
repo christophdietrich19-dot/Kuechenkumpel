@@ -6,6 +6,10 @@ const showWelcomeButton = document.getElementById("showWelcomeButton");
 const rememberThemeCheckbox = document.getElementById("rememberThemeCheckbox");
 const themeOptionButtons = document.querySelectorAll("[data-theme-option]");
 
+const welcomeThemeBadge = document.getElementById("welcomeThemeBadge");
+const welcomeThemeTitle = document.getElementById("welcomeThemeTitle");
+const welcomeThemeDescription = document.getElementById("welcomeThemeDescription");
+
 const welcomeMascot = document.getElementById("welcomeMascot");
 const heroMascot = document.getElementById("heroMascot");
 const sectionMascot = document.getElementById("sectionMascot");
@@ -62,38 +66,59 @@ const mascotFiles = {
 const themeSettings = {
   standard: {
     label: "Standard",
+    icon: "🍳",
     folder: "standard",
-    heroText: "Zeig mir, was da ist. Ich mach daraus eine Idee fürs Essen."
+    heroText: "Zeig mir, was da ist. Ich mach daraus eine Idee fürs Essen.",
+    previewTitle: "Warm und gemütlich",
+    previewDescription: "Einfach, ehrlich und ohne großes Küchen-Drama."
   },
   fruehling: {
     label: "Frühling",
+    icon: "🌿",
     folder: "fruehling",
-    heroText: "Frisch, freundlich und ein bisschen grüner im Topf."
+    heroText: "Frisch, freundlich und ein bisschen grüner im Topf.",
+    previewTitle: "Frisch und leicht",
+    previewDescription: "Kräuter, helle Farben und schnelle Ideen für entspannte Küche."
   },
   ostern: {
     label: "Ostern",
+    icon: "🐰",
     folder: "ostern",
-    heroText: "Heute wird es bunt, einfach und lecker."
+    heroText: "Heute wird es bunt, einfach und lecker.",
+    previewTitle: "Hell und bunt",
+    previewDescription: "Freundlich, weich und ein bisschen verspielt, ohne zu kitschig zu werden."
   },
   sommer: {
     label: "Sommer",
+    icon: "🍋",
     folder: "sommer",
-    heroText: "Schnell, frisch und bitte ohne Küchen-Marathon."
+    heroText: "Schnell, frisch und bitte ohne Küchen-Marathon.",
+    previewTitle: "Sonnig und leicht",
+    previewDescription: "Mediterran, frisch und entspannt. Perfekt für leichte Küche."
   },
   herbst: {
     label: "Herbst",
+    icon: "🍂",
     folder: "herbst",
-    heroText: "Gemütlich, warm und perfekt für Pfanne, Topf und Ofen."
+    heroText: "Gemütlich, warm und perfekt für Pfanne, Topf und Ofen.",
+    previewTitle: "Warm und gemütlich",
+    previewDescription: "Deftiger, weicher, ruhiger. Genau richtig für gemütliche Teller."
   },
   halloween: {
     label: "Halloween",
+    icon: "🎃",
     folder: "halloween",
-    heroText: "Gruselig leerer Kühlschrank? Keine Sorge, ich rette das."
+    heroText: "Gruselig leerer Kühlschrank? Keine Sorge, ich rette das.",
+    previewTitle: "Süß-spooky",
+    previewDescription: "Dunkel, verspielt und trotzdem lecker. Kühlschrank-Grusel wird Abendessen."
   },
   weihnachten: {
     label: "Weihnachten",
+    icon: "🎄",
     folder: "weihnachten",
-    heroText: "Heute wird es warm, gemütlich und ein bisschen festlich."
+    heroText: "Heute wird es warm, gemütlich und ein bisschen festlich.",
+    previewTitle: "Festlich und warm",
+    previewDescription: "Ruhig, gemütlich und ein kleines bisschen Küchenfest."
   }
 };
 
@@ -489,7 +514,6 @@ function canonicalIngredient(value) {
   const text = normalizeSearchValue(value);
 
   if (!text) return "";
-
   if (["ei", "eier"].includes(text)) return "eier";
   if (["kaese", "käse"].includes(text)) return "käse";
   if (["nudel", "nudeln", "pasta", "spaghetti", "makkaroni"].includes(text)) return "nudeln";
@@ -498,9 +522,11 @@ function canonicalIngredient(value) {
   if (["dosentomaten", "dosen tomaten"].includes(text)) return "dosentomaten";
   if (["passierte tomaten", "tomatensosse", "tomatensoße"].includes(text)) return "passierte tomaten";
   if (["zwiebel", "zwiebeln"].includes(text)) return "zwiebel";
+
   if (["brot", "broetchen", "brötchen", "toast", "baguette"].includes(text)) {
     return text.replace("broetchen", "brötchen");
   }
+
   if (["gemuese", "gemüse"].includes(text)) return "gemüse";
   if (["tk gemuese", "tk gemüse", "tiefkuehlgemuese", "tiefkühlgemüse"].includes(text)) return "tk-gemüse";
   if (["moehren", "möhren", "karotten", "mohren"].includes(text)) return "möhren";
@@ -595,6 +621,7 @@ function formatList(items) {
   if (formatted.length === 0) return "";
   if (formatted.length === 1) return formatted[0];
   if (formatted.length === 2) return `${formatted[0]} und ${formatted[1]}`;
+
   return `${formatted.slice(0, -1).join(", ")} und ${formatted[formatted.length - 1]}`;
 }
 
@@ -772,12 +799,29 @@ function setTheme(themeName, shouldSave = false) {
 
   updateThemeButtons();
   updateThemeMascots();
+  updateWelcomeThemePreview();
 }
 
 function updateThemeButtons() {
   themeOptionButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.themeOption === activeTheme);
   });
+}
+
+function updateWelcomeThemePreview() {
+  const settings = themeSettings[activeTheme] || themeSettings.standard;
+
+  if (welcomeThemeBadge) {
+    welcomeThemeBadge.textContent = `${settings.icon} ${settings.label}`;
+  }
+
+  if (welcomeThemeTitle) {
+    welcomeThemeTitle.textContent = settings.previewTitle;
+  }
+
+  if (welcomeThemeDescription) {
+    welcomeThemeDescription.textContent = settings.previewDescription;
+  }
 }
 
 function updateThemeMascots() {
@@ -797,6 +841,11 @@ function updateThemeMascots() {
 
 function initTheme() {
   const savedTheme = localStorage.getItem(THEME_KEY) || "standard";
+
+  if (rememberThemeCheckbox) {
+    rememberThemeCheckbox.checked = localStorage.getItem(THEME_KEY) !== null;
+  }
+
   setTheme(savedTheme, false);
 }
 
@@ -1160,6 +1209,30 @@ function renderSelectedIngredients() {
   });
 }
 
+function getRecipeImageMarkup(recipe, isRecommendation) {
+  const imageClass = isRecommendation ? "recipe-card-image large" : "recipe-card-image";
+  const imagePath = recipe.image || "";
+
+  if (!imagePath) {
+    return `
+      <div class="${imageClass} recipe-card-image-fallback">
+        <span>🥘</span>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="${imageClass}">
+      <img
+        src="${escapeHtml(imagePath)}"
+        alt="${escapeHtml(recipe.title)}"
+        loading="lazy"
+        onerror="this.parentElement.classList.add('recipe-card-image-fallback'); this.remove();"
+      />
+    </div>
+  `;
+}
+
 function createRecipeCard(match, isRecommendation) {
   const { recipe, matchingMain, substituteMain, missingMain, matchingOptional } = match;
   const cardClass = isRecommendation ? "recommendation-card" : "recipe-card";
@@ -1173,42 +1246,55 @@ function createRecipeCard(match, isRecommendation) {
     ? `Extra oder Ersatz passt auch: ${formatList(optionalItems)}`
     : "Extras sind nice, aber kein Muss.";
 
+  const badgeText = isRecommendation ? "Bester Treffer" : "Rezeptidee";
+
   return `
     <article class="${cardClass}">
-      <h4>${escapeHtml(recipe.title)}</h4>
+      ${getRecipeImageMarkup(recipe, isRecommendation)}
 
-      <p class="recipe-saying">${escapeHtml(recipe.saying)}</p>
-
-      <div class="recipe-meta">
-        <span class="meta-pill">Zeit · ${escapeHtml(recipe.time)}</span>
-        <span class="meta-pill">Abwasch · ${escapeHtml(recipe.dishes)}</span>
-        <span class="meta-pill">Kosten · ${escapeHtml(recipe.cost)}</span>
-        <span class="meta-pill">Sättigung · ${escapeHtml(recipe.filling)}</span>
-        <span class="meta-pill">Gefühl · ${escapeHtml(recipe.feeling)}</span>
-      </div>
-
-      <div class="match-info">
-        <div class="match-line">
-          Passt: ${matchingMain.length > 0 ? escapeHtml(formatList(matchingMain)) : "noch nicht viel, aber wir versuchen es."}
+      <div class="recipe-card-content">
+        <div class="recipe-card-topline">
+          <span class="recipe-card-badge">${badgeText}</span>
         </div>
 
-        <div class="missing-line">
-          ${escapeHtml(missingText)}
+        <h4>${escapeHtml(recipe.title)}</h4>
+
+        <p class="recipe-saying">${escapeHtml(recipe.saying)}</p>
+
+        <div class="recipe-meta">
+          <span class="meta-pill">Zeit · ${escapeHtml(recipe.time)}</span>
+          <span class="meta-pill">Abwasch · ${escapeHtml(recipe.dishes)}</span>
+          <span class="meta-pill">Kosten · ${escapeHtml(recipe.cost)}</span>
+          <span class="meta-pill">Sättigung · ${escapeHtml(recipe.filling)}</span>
+          <span class="meta-pill">Gefühl · ${escapeHtml(recipe.feeling)}</span>
         </div>
 
-        <div class="match-line">
-          ${escapeHtml(optionalText)}
+        <div class="match-info">
+          <div class="match-line">
+            <strong>Passt:</strong>
+            ${matchingMain.length > 0 ? escapeHtml(formatList(matchingMain)) : "noch nicht viel, aber wir versuchen es."}
+          </div>
+
+          <div class="missing-line">
+            <strong>${missingMain.length > 0 ? "Fehlt:" : "Status:"}</strong>
+            ${escapeHtml(missingText.replace("Fehlt noch: ", ""))}
+          </div>
+
+          <div class="match-line">
+            <strong>Extra:</strong>
+            ${escapeHtml(optionalText.replace("Extra oder Ersatz passt auch: ", ""))}
+          </div>
         </div>
-      </div>
 
-      <div class="recipe-actions">
-        <button class="small-button" data-open-recipe="${recipe.id}" type="button">
-          Rezept ansehen
-        </button>
+        <div class="recipe-actions">
+          <button class="small-button" data-open-recipe="${recipe.id}" type="button">
+            Rezept ansehen
+          </button>
 
-        <button class="ghost-button" data-copy-missing="${recipe.id}" type="button">
-          Fehlendes kopieren
-        </button>
+          <button class="ghost-button" data-copy-missing="${recipe.id}" type="button">
+            Fehlendes kopieren
+          </button>
+        </div>
       </div>
     </article>
   `;
@@ -1521,7 +1607,11 @@ function startApp() {
 
 function showWelcomeAgain() {
   localStorage.removeItem(HIDE_WELCOME_KEY);
-  hideWelcomeCheckbox.checked = false;
+
+  if (hideWelcomeCheckbox) {
+    hideWelcomeCheckbox.checked = false;
+  }
+
   welcomeScreen.classList.remove("hidden");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -1579,6 +1669,7 @@ function bindEvents() {
     button.addEventListener("click", () => {
       const selectedTheme = button.dataset.themeOption || "standard";
       const shouldSave = rememberThemeCheckbox ? rememberThemeCheckbox.checked : false;
+
       setTheme(selectedTheme, shouldSave);
       updateBuddyMessage();
     });

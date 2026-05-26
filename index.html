@@ -8,34 +8,54 @@
 
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body data-theme="standard">
   <div id="welcomeScreen" class="welcome-screen">
     <div class="welcome-card">
-      <div class="welcome-glow"></div>
+      <div class="welcome-background-deco welcome-deco-one"></div>
+      <div class="welcome-background-deco welcome-deco-two"></div>
 
-      <img
-        id="welcomeMascot"
-        class="mascot-image welcome-mascot"
-        src="assets/images/kochtopf-hallo.png"
-        alt="Küchenkumpel winkt freundlich"
-      />
+      <header class="welcome-header">
+        <p class="eyebrow">Dein kleiner Küchenretter</p>
 
-      <p class="eyebrow">Dein kleiner Küchenretter</p>
+        <h1>Küchenkumpel</h1>
 
-      <h1>Küchenkumpel</h1>
+        <p class="welcome-headline">
+          Was kochen wir heute?
+        </p>
 
-      <p class="welcome-text">
-        Sag mir, was noch da ist. Ich mach dir was draus.
-      </p>
+        <p class="welcome-text">
+          Such dir deine Küchenstimmung aus. Danach sagst du mir, was noch da ist, und ich mache dir eine Idee fürs Essen.
+        </p>
+      </header>
 
-      <p class="welcome-extra">
-        Such dir dein Küchenthema aus und leg los.
-      </p>
+      <section class="theme-preview-card" aria-label="Aktuelle Themenvorschau">
+        <div class="theme-preview-copy">
+          <span id="welcomeThemeBadge" class="theme-badge">🍳 Standard</span>
+
+          <h2 id="welcomeThemeTitle">Warm und gemütlich</h2>
+
+          <p id="welcomeThemeDescription">
+            Einfach, ehrlich und ohne großes Küchen-Drama.
+          </p>
+        </div>
+
+        <div class="theme-preview-mascot-wrap">
+          <div class="theme-preview-glow"></div>
+
+          <img
+            id="welcomeMascot"
+            class="mascot-image welcome-mascot"
+            src="assets/images/themes/standard/kochtopf-hallo.png"
+            alt="Küchenkumpel winkt freundlich"
+          />
+        </div>
+      </section>
 
       <section class="theme-picker" aria-label="Küchenthema auswählen">
         <div class="theme-picker-heading">
-          <h2>Wähle dein Thema</h2>
-          <p>Standard ist schon aktiv. Du kannst aber jederzeit umschalten.</p>
+          <h2>Wähle deine Stimmung</h2>
+          <p>Standard ist aktiv. Du kannst aber jederzeit wechseln.</p>
         </div>
 
         <div id="themeOptions" class="theme-options">
@@ -45,8 +65,12 @@
             data-theme-option="standard"
             aria-label="Theme Standard auswählen"
           >
-            <span class="theme-preview theme-preview-standard">🍳</span>
-            <span>Standard</span>
+            <span class="theme-option-icon">🍳</span>
+
+            <span class="theme-option-copy">
+              <strong>Standard</strong>
+              <small>Warm & einfach</small>
+            </span>
           </button>
 
           <button
@@ -55,8 +79,12 @@
             data-theme-option="fruehling"
             aria-label="Theme Frühling auswählen"
           >
-            <span class="theme-preview theme-preview-fruehling">🌷</span>
-            <span>Frühling</span>
+            <span class="theme-option-icon">🌿</span>
+
+            <span class="theme-option-copy">
+              <strong>Frühling</strong>
+              <small>Frisch & leicht</small>
+            </span>
           </button>
 
           <button
@@ -65,8 +93,12 @@
             data-theme-option="ostern"
             aria-label="Theme Ostern auswählen"
           >
-            <span class="theme-preview theme-preview-ostern">🐰</span>
-            <span>Ostern</span>
+            <span class="theme-option-icon">🐰</span>
+
+            <span class="theme-option-copy">
+              <strong>Ostern</strong>
+              <small>Hell & bunt</small>
+            </span>
           </button>
 
           <button
@@ -75,8 +107,12 @@
             data-theme-option="sommer"
             aria-label="Theme Sommer auswählen"
           >
-            <span class="theme-preview theme-preview-sommer">☀️</span>
-            <span>Sommer</span>
+            <span class="theme-option-icon">🍋</span>
+
+            <span class="theme-option-copy">
+              <strong>Sommer</strong>
+              <small>Sonnig & leicht</small>
+            </span>
           </button>
 
           <button
@@ -85,8 +121,12 @@
             data-theme-option="herbst"
             aria-label="Theme Herbst auswählen"
           >
-            <span class="theme-preview theme-preview-herbst">🍂</span>
-            <span>Herbst</span>
+            <span class="theme-option-icon">🍂</span>
+
+            <span class="theme-option-copy">
+              <strong>Herbst</strong>
+              <small>Warm & gemütlich</small>
+            </span>
           </button>
 
           <button
@@ -95,35 +135,49 @@
             data-theme-option="halloween"
             aria-label="Theme Halloween auswählen"
           >
-            <span class="theme-preview theme-preview-halloween">🎃</span>
-            <span>Halloween</span>
+            <span class="theme-option-icon">🎃</span>
+
+            <span class="theme-option-copy">
+              <strong>Halloween</strong>
+              <small>Süß-spooky</small>
+            </span>
           </button>
 
           <button
-            class="theme-option"
+            class="theme-option theme-option-wide"
             type="button"
             data-theme-option="weihnachten"
             aria-label="Theme Weihnachten auswählen"
           >
-            <span class="theme-preview theme-preview-weihnachten">🎄</span>
-            <span>Weihnachten</span>
+            <span class="theme-option-icon">🎄</span>
+
+            <span class="theme-option-copy">
+              <strong>Weihnachten</strong>
+              <small>Festlich & warm</small>
+            </span>
           </button>
         </div>
-
-        <label class="remember-theme">
-          <input id="rememberThemeCheckbox" type="checkbox" checked />
-          Thema merken
-        </label>
       </section>
 
-      <button id="startAppButton" class="primary-button large-button" type="button">
-        Loskochen
-      </button>
+      <div class="welcome-actions">
+        <button id="startAppButton" class="primary-button large-button" type="button">
+          Loskochen
+        </button>
 
-      <label class="skip-welcome">
-        <input id="hideWelcomeCheckbox" type="checkbox" />
-        Beim nächsten Mal direkt loslegen
-      </label>
+        <div class="welcome-options">
+          <label class="toggle-option">
+            <input id="rememberThemeCheckbox" type="checkbox" checked />
+            <span class="fake-toggle"></span>
+            <span>Thema merken</span>
+          </label>
+
+          <label class="toggle-option">
+            <input id="hideWelcomeCheckbox" type="checkbox" />
+            <span class="fake-toggle"></span>
+            <span>Beim nächsten Mal direkt loslegen</span>
+          </label>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -141,7 +195,7 @@
         <img
           id="heroMascot"
           class="mascot-image hero-mascot"
-          src="assets/images/kochtopf-standard.png"
+          src="assets/images/themes/standard/kochtopf-standard.png"
           alt="Küchenkumpel Kochtopf"
         />
       </div>
@@ -149,7 +203,7 @@
       <div id="buddyMessage" class="buddy-message">
         <img
           class="buddy-mascot"
-          src="assets/images/kochtopf-idee.png"
+          src="assets/images/themes/standard/kochtopf-idee.png"
           alt=""
           aria-hidden="true"
         />
@@ -172,7 +226,7 @@
         <img
           id="sectionMascot"
           class="section-mascot"
-          src="assets/images/kochtopf-kochen.png"
+          src="assets/images/themes/standard/kochtopf-kochen.png"
           alt="Küchenkumpel kocht"
         />
       </div>
@@ -215,7 +269,7 @@
         <img
           id="rescueMascot"
           class="section-mascot rescue-mascot"
-          src="assets/images/kochtopf-kein-bock.png"
+          src="assets/images/themes/standard/kochtopf-kein-bock.png"
           alt="Müder Küchenkumpel"
         />
       </div>
@@ -243,7 +297,7 @@
         <img
           id="ideaMascot"
           class="section-mascot idea-mascot"
-          src="assets/images/kochtopf-idee.png"
+          src="assets/images/themes/standard/kochtopf-idee.png"
           alt="Küchenkumpel hat eine Idee"
         />
       </div>
@@ -270,7 +324,7 @@
           <img
             id="footerMascot"
             class="footer-mascot"
-            src="assets/images/kochtopf-standard.png"
+            src="assets/images/themes/standard/kochtopf-standard.png"
             alt="Küchenkumpel Logo"
           />
 
