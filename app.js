@@ -12,11 +12,16 @@ const welcomeThemeDescription = document.getElementById("welcomeThemeDescription
 
 const welcomeMascot = document.getElementById("welcomeMascot");
 const heroMascot = document.getElementById("heroMascot");
+const moodMascot = document.getElementById("moodMascot");
 const sectionMascot = document.getElementById("sectionMascot");
 const rescueMascot = document.getElementById("rescueMascot");
 const ideaMascot = document.getElementById("ideaMascot");
 const footerMascot = document.getElementById("footerMascot");
 const themeHeroText = document.getElementById("themeHeroText");
+
+const moodOptionButtons = document.querySelectorAll("[data-mood]");
+const moodDescription = document.getElementById("moodDescription");
+const moodInsight = document.getElementById("moodInsight");
 
 const ingredientInput = document.getElementById("ingredientInput");
 const addIngredientButton = document.getElementById("addIngredientButton");
@@ -49,13 +54,16 @@ let noMoodMode = false;
 let currentModalRecipeId = null;
 let currentModalPortions = 2;
 let activeTheme = "standard";
+let activeMood = "normal";
 
 const THEME_KEY = "kuechenkumpelTheme";
 const HIDE_WELCOME_KEY = "kuechenkumpelHideWelcome";
+const MOOD_KEY = "kuechenkumpelMood";
 
 const mascotFiles = {
   welcome: "kochtopf-hallo.png",
   hero: "kochtopf-standard.png",
+  mood: "kochtopf-hallo.png",
   section: "kochtopf-kochen.png",
   rescue: "kochtopf-kein-bock.png",
   idea: "kochtopf-idee.png",
@@ -122,6 +130,58 @@ const themeSettings = {
   }
 };
 
+const moodSettings = {
+  normal: {
+    label: "Normaler Hunger",
+    description: "Such aus, wonach dir gerade ist. Ich passe die Rezeptvorschläge daran an.",
+    insight: "Solider Alltag. Ich suche dir etwas, das gut passt und nicht unnötig kompliziert wird.",
+    buddy: "Okay, normaler Hunger. Wir machen etwas Gutes, ohne die Küche in ein Projekt zu verwandeln.",
+    mascot: "mood"
+  },
+  "kein-bock": {
+    label: "Kein Bock",
+    description: "Heute zählt: wenig Aufwand, wenig Abwasch, möglichst schnell wieder sitzen.",
+    insight: "Kein-Bock-Modus. Schnelle Rezepte mit wenig Abwasch bekommen jetzt Vorrang.",
+    buddy: "Verstanden. Heute wird nicht gekocht, heute wird gerettet.",
+    mascot: "rescue"
+  },
+  schnell: {
+    label: "Muss schnell gehen",
+    description: "Ich schiebe schnelle Gerichte nach oben und bremse alles aus, was Küchenmarathon riecht.",
+    insight: "Zeitdruck erkannt. Alles mit kurzer Kochzeit wird jetzt stärker bevorzugt.",
+    buddy: "Alles klar. Wir halten es kurz, lecker und ohne unnötige Topf-Konferenz.",
+    mascot: "idea"
+  },
+  "muss-weg": {
+    label: "Es muss was weg",
+    description: "Markiere Zutaten mit der Uhr. Ich gebe Resten und bald-fälligen Sachen mehr Gewicht.",
+    insight: "Reste-Retter aktiv. Muss-weg-Zutaten zählen jetzt stärker bei der Empfehlung.",
+    buddy: "Sehr gut. Heute bekommen die Wackelkandidaten aus dem Kühlschrank ihren Auftritt.",
+    mascot: "section"
+  },
+  guenstig: {
+    label: "Günstig bitte",
+    description: "Ich bevorzuge einfache, günstige Rezepte mit soliden Grundzutaten.",
+    insight: "Sparmodus aktiv. Günstige Gerichte werden jetzt nach oben geschoben.",
+    buddy: "Konto schonen, Bauch trotzdem glücklich machen. Kriegen wir hin.",
+    mascot: "idea"
+  },
+  satt: {
+    label: "Mach mich satt",
+    description: "Ich suche dir eher sättigende, herzhafte und ordentliche Gerichte.",
+    insight: "Hunger ernst genommen. Sättigende Rezepte bekommen jetzt extra Rückenwind.",
+    buddy: "Alles klar. Heute kein Deko-Teller. Heute soll das ordentlich satt machen.",
+    mascot: "section"
+  },
+  verwoehn: {
+    label: "Verwöhn mich",
+    description: "Ich gewichte cremige, herzhafte und gemütliche Rezepte etwas stärker.",
+    insight: "Verwöhnmodus aktiv. Soulfood, cremige Ideen und gemütliche Teller dürfen nach vorne.",
+    buddy: "Oh, heute darf es also ein bisschen geiler sein. Gefällt mir.",
+    mascot: "idea"
+  }
+};
+
 const quickIngredients = [
   { name: "nudeln", label: "🍝 Nudeln" },
   { name: "reis", label: "🍚 Reis" },
@@ -156,7 +216,7 @@ const recipeSearchProfiles = {
   1: {
     main: ["nudeln", "käse", "milch"],
     optional: ["sahne", "zwiebel", "knoblauch", "tomaten", "paprika", "brokkoli"],
-    tags: ["schnell", "günstig", "vegetarisch", "kein bock", "cremig"],
+    tags: ["schnell", "günstig", "vegetarisch", "kein bock", "cremig", "soulfood"],
     substitutes: {
       milch: ["sahne"]
     }
@@ -172,12 +232,12 @@ const recipeSearchProfiles = {
   3: {
     main: ["nudeln", "eier", "käse"],
     optional: ["zwiebel", "schinken", "tomaten", "paprika"],
-    tags: ["schnell", "günstig", "kein bock", "reste"]
+    tags: ["schnell", "günstig", "kein bock", "reste", "sättigend"]
   },
   4: {
     main: ["nudeln", "thunfisch"],
     optional: ["tomaten", "frischkäse", "mais", "zwiebel", "käse"],
-    tags: ["schnell", "proteinreich", "vorrat"],
+    tags: ["schnell", "proteinreich", "vorrat", "sättigend"],
     substitutes: {
       tomaten: ["dosentomaten", "passierte tomaten"]
     }
@@ -190,7 +250,7 @@ const recipeSearchProfiles = {
   6: {
     main: ["nudeln", "schinken", "käse"],
     optional: ["milch", "sahne", "zwiebel", "erbsen"],
-    tags: ["schnell", "herzhaft", "soulfood"],
+    tags: ["schnell", "herzhaft", "soulfood", "sättigend"],
     substitutes: {
       schinken: ["wurst", "speck"]
     }
@@ -206,17 +266,17 @@ const recipeSearchProfiles = {
   8: {
     main: ["nudeln", "gemüse", "käse"],
     optional: ["milch", "sahne", "schinken", "tomaten", "eier"],
-    tags: ["muss weg", "herzhaft", "ofen", "soulfood"]
+    tags: ["muss weg", "herzhaft", "ofen", "soulfood", "sättigend"]
   },
   9: {
     main: ["nudeln", "frischkäse", "gemüse"],
     optional: ["tomaten", "knoblauch", "käse", "sahne", "schmand", "quark", "joghurt"],
-    tags: ["schnell", "vegetarisch", "cremig"]
+    tags: ["schnell", "vegetarisch", "cremig", "soulfood"]
   },
   10: {
     main: ["nudeln", "tomaten", "käse"],
     optional: ["zwiebel", "milch", "sahne", "knoblauch", "gemüse"],
-    tags: ["ofen", "vegetarisch", "soulfood"],
+    tags: ["ofen", "vegetarisch", "soulfood", "sättigend"],
     substitutes: {
       tomaten: ["dosentomaten", "passierte tomaten"]
     }
@@ -252,7 +312,7 @@ const recipeSearchProfiles = {
   16: {
     main: ["reis", "bohnen", "tomaten"],
     optional: ["mais", "paprika", "käse", "zwiebel"],
-    tags: ["günstig", "vorrat", "proteinreich"],
+    tags: ["günstig", "vorrat", "proteinreich", "sättigend"],
     substitutes: {
       tomaten: ["dosentomaten", "passierte tomaten"]
     }
@@ -265,22 +325,22 @@ const recipeSearchProfiles = {
   18: {
     main: ["hähnchen", "reis", "curry"],
     optional: ["gemüse", "sahne", "milch", "kokosmilch", "zwiebel"],
-    tags: ["proteinreich", "modern", "macht satt"]
+    tags: ["proteinreich", "modern", "macht satt", "sättigend"]
   },
   19: {
     main: ["hähnchen", "gemüse"],
     optional: ["reis", "nudeln", "joghurt", "quark", "knoblauch"],
-    tags: ["proteinreich", "muss weg", "alltag"]
+    tags: ["proteinreich", "muss weg", "alltag", "sättigend"]
   },
   20: {
     main: ["hackfleisch", "reis", "gemüse"],
     optional: ["tomaten", "käse", "mais", "zwiebel"],
-    tags: ["herzhaft", "alltag", "macht satt"]
+    tags: ["herzhaft", "alltag", "macht satt", "sättigend"]
   },
   21: {
     main: ["kartoffeln", "eier", "zwiebel"],
     optional: ["speck", "schinken", "käse", "gewürzgurke"],
-    tags: ["günstig", "herzhaft", "klassisch"]
+    tags: ["günstig", "herzhaft", "klassisch", "sättigend"]
   },
   22: {
     main: ["kartoffeln", "gemüse", "zwiebel"],
@@ -290,7 +350,7 @@ const recipeSearchProfiles = {
   23: {
     main: ["kartoffeln", "käse", "milch"],
     optional: ["sahne", "gemüse", "schinken", "zwiebel"],
-    tags: ["herzhaft", "ofen", "soulfood"],
+    tags: ["herzhaft", "ofen", "soulfood", "sättigend"],
     substitutes: {
       milch: ["sahne"]
     }
@@ -308,12 +368,12 @@ const recipeSearchProfiles = {
   26: {
     main: ["kartoffeln", "eier", "zwiebel"],
     optional: ["speck", "schinken", "käse", "gewürzgurke"],
-    tags: ["herzhaft", "günstig", "deftig"]
+    tags: ["herzhaft", "günstig", "deftig", "sättigend"]
   },
   27: {
     main: ["wurst", "kartoffeln", "zwiebel"],
     optional: ["eier", "paprika", "käse"],
-    tags: ["herzhaft", "günstig", "deftig"],
+    tags: ["herzhaft", "günstig", "deftig", "sättigend"],
     substitutes: {
       wurst: ["schinken", "speck"]
     }
@@ -329,7 +389,7 @@ const recipeSearchProfiles = {
   29: {
     main: ["gemüse", "käse", "milch"],
     optional: ["sahne", "kartoffeln", "nudeln", "eier"],
-    tags: ["muss weg", "ofen", "vegetarisch"],
+    tags: ["muss weg", "ofen", "vegetarisch", "soulfood"],
     substitutes: {
       milch: ["sahne"]
     }
@@ -396,7 +456,7 @@ const recipeSearchProfiles = {
   38: {
     main: ["brot", "eier", "milch", "käse"],
     optional: ["schinken", "kräuter", "tomaten"],
-    tags: ["günstig", "reste", "herzhaft"],
+    tags: ["günstig", "reste", "herzhaft", "sättigend"],
     substitutes: {
       brot: ["toast", "brötchen"]
     }
@@ -427,7 +487,7 @@ const recipeSearchProfiles = {
   43: {
     main: ["bohnen", "tomaten", "mais"],
     optional: ["reis", "brot", "käse", "hackfleisch"],
-    tags: ["vorrat", "günstig", "proteinreich"],
+    tags: ["vorrat", "günstig", "proteinreich", "sättigend"],
     substitutes: {
       tomaten: ["dosentomaten", "passierte tomaten"]
     }
@@ -737,6 +797,9 @@ function buildTags(recipe) {
   if (recipe.dishes === "wenig") tags.push("wenig abwasch");
   if (recipe.feeling === "Kein-Bock-Retter") tags.push("kein bock");
   if (recipe.category && recipe.category.includes("Vorrat")) tags.push("vorrat");
+  if (recipe.category && recipe.category.includes("Rest")) tags.push("muss weg");
+  if (recipe.satiety && recipe.satiety.includes("satt")) tags.push("sättigend");
+  if (recipe.slogan && normalize(recipe.slogan).includes("cremig")) tags.push("cremig");
 
   return tags;
 }
@@ -829,6 +892,7 @@ function updateThemeMascots() {
 
   setMascotImage(welcomeMascot, "welcome");
   setMascotImage(heroMascot, "hero");
+  setMascotImage(moodMascot, getCurrentMoodMascotKey());
   setMascotImage(sectionMascot, "section");
   setMascotImage(rescueMascot, "rescue");
   setMascotImage(ideaMascot, "idea");
@@ -847,6 +911,58 @@ function initTheme() {
   }
 
   setTheme(savedTheme, false);
+}
+
+function getCurrentMoodMascotKey() {
+  const settings = moodSettings[activeMood] || moodSettings.normal;
+  return settings.mascot || "mood";
+}
+
+function setMood(moodName, shouldSave = true) {
+  const safeMood = moodSettings[moodName] ? moodName : "normal";
+  activeMood = safeMood;
+
+  if (shouldSave) {
+    localStorage.setItem(MOOD_KEY, safeMood);
+  }
+
+  noMoodMode = safeMood === "kein-bock";
+
+  if (noMoodButton) {
+    noMoodButton.classList.toggle("active", noMoodMode);
+    noMoodButton.textContent = noMoodMode
+      ? "Kein-Bock-Modus ist aktiv"
+      : "Rette mein Abendessen";
+  }
+
+  updateMoodUI();
+  updateThemeMascots();
+  updateBuddyMessage();
+  renderAll();
+}
+
+function updateMoodUI() {
+  const settings = moodSettings[activeMood] || moodSettings.normal;
+
+  moodOptionButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.mood === activeMood);
+  });
+
+  if (moodDescription) {
+    moodDescription.textContent = settings.description;
+  }
+
+  if (moodInsight) {
+    moodInsight.innerHTML = `
+      <strong>Aktuelle Küchenlage:</strong>
+      <span>${escapeHtml(settings.insight)}</span>
+    `;
+  }
+}
+
+function initMood() {
+  const savedMood = localStorage.getItem(MOOD_KEY) || "normal";
+  setMood(savedMood, false);
 }
 
 function ingredientExists(name) {
@@ -1057,6 +1173,63 @@ function scoreRecipe(recipe) {
     }
   }
 
+  if (activeMood === "schnell") {
+    if (recipe.tags.includes("schnell")) score += 7;
+    if (recipe.dishes === "wenig") score += 2;
+
+    if (
+      recipe.time.includes("10") ||
+      recipe.time.includes("12") ||
+      recipe.time.includes("15") ||
+      recipe.time.includes("20")
+    ) {
+      score += 5;
+    }
+
+    if (
+      recipe.time.includes("35") ||
+      recipe.time.includes("40") ||
+      recipe.time.includes("45") ||
+      recipe.tags.includes("ofen")
+    ) {
+      score -= 5;
+    }
+  }
+
+  if (activeMood === "muss-weg") {
+    if (recipe.tags.includes("muss weg") || recipe.tags.includes("reste")) score += 7;
+
+    urgentNames.forEach((urgentName) => {
+      if (recipe.main.some((ingredient) => hasRealIngredient(recipe, ingredient, [urgentName]))) {
+        score += 8;
+      }
+
+      if (recipe.optional.some((ingredient) => isExactIngredientMatch(ingredient, urgentName))) {
+        score += 4;
+      }
+    });
+  }
+
+  if (activeMood === "guenstig") {
+    if (recipe.tags.includes("günstig")) score += 8;
+    if (recipe.cost === "günstig") score += 5;
+    if (recipe.cost === "hoch") score -= 6;
+  }
+
+  if (activeMood === "satt") {
+    if (recipe.tags.includes("sättigend")) score += 7;
+    if (recipe.tags.includes("proteinreich")) score += 4;
+    if (recipe.tags.includes("herzhaft")) score += 3;
+    if (recipe.filling && normalize(recipe.filling).includes("satt")) score += 4;
+  }
+
+  if (activeMood === "verwoehn") {
+    if (recipe.tags.includes("soulfood")) score += 7;
+    if (recipe.tags.includes("cremig")) score += 5;
+    if (recipe.tags.includes("herzhaft")) score += 3;
+    if (recipe.cost === "hoch") score += 1;
+  }
+
   if (activeFilter !== "all") {
     if (recipe.tags.includes(activeFilter)) {
       score += 4;
@@ -1127,17 +1300,26 @@ function updateBuddyTextOnly(text) {
 
 function updateBuddyMessage() {
   const urgentNames = getUrgentNames();
+  const mood = moodSettings[activeMood] || moodSettings.normal;
 
-  let message = "Okay, damit lässt sich arbeiten.";
+  let message = mood.buddy;
 
   if (selectedIngredients.length === 0) {
-    message = "Okay, was liegt heute im Kühlschrank?";
+    message = mood.buddy;
   } else if (urgentNames.length > 0) {
     message = `Alles klar. ${formatList(urgentNames)} hat nicht mehr ewig Zeit. Geben wir dem Zeug heute noch einen würdigen Auftritt.`;
   } else if (selectedIngredients.length <= 2) {
     message = "Das ist sportlich wenig, aber wir kriegen was hin.";
   } else if (noMoodMode) {
     message = "Keine Energie? Alles gut. Heute wird nicht gekocht, heute wird gerettet.";
+  } else if (activeMood === "schnell") {
+    message = "Okay, kurze Nummer. Ich suche dir die schnellen Kandidaten nach oben.";
+  } else if (activeMood === "guenstig") {
+    message = "Sparmodus läuft. Satt werden ohne Einkaufswagen-Eskalation.";
+  } else if (activeMood === "satt") {
+    message = "Alles klar. Heute soll das nicht nur hübsch aussehen, heute soll es satt machen.";
+  } else if (activeMood === "verwoehn") {
+    message = "Sehr schön. Heute darf es ein bisschen mehr Küchenliebe sein.";
   } else {
     message = "Okay, das sieht schon nach Abendessen aus.";
   }
@@ -1565,15 +1747,8 @@ function setActiveFilter(filter) {
 }
 
 function toggleNoMoodMode() {
-  noMoodMode = !noMoodMode;
-
-  noMoodButton.classList.toggle("active", noMoodMode);
-  noMoodButton.textContent = noMoodMode
-    ? "Kein-Bock-Modus ist aktiv"
-    : "Rette mein Abendessen";
-
-  updateBuddyMessage();
-  renderAll();
+  const nextMood = noMoodMode ? "normal" : "kein-bock";
+  setMood(nextMood);
 }
 
 function renderAll() {
@@ -1603,6 +1778,13 @@ function startApp() {
   }
 
   welcomeScreen.classList.add("hidden");
+
+  const moodSection = document.getElementById("moodSection");
+  if (moodSection) {
+    setTimeout(() => {
+      moodSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
+  }
 }
 
 function showWelcomeAgain() {
@@ -1675,6 +1857,12 @@ function bindEvents() {
     });
   });
 
+  moodOptionButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setMood(button.dataset.mood || "normal");
+    });
+  });
+
   if (rememberThemeCheckbox) {
     rememberThemeCheckbox.addEventListener("change", () => {
       if (rememberThemeCheckbox.checked) {
@@ -1701,6 +1889,7 @@ function bindEvents() {
 
 function initApp() {
   initTheme();
+  initMood();
 
   if (!recipes.length) {
     updateBuddyTextOnly("Ich finde gerade keine Rezepte. Schau bitte, ob recipes.js vor app.js geladen wird.");

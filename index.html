@@ -215,6 +215,88 @@
       </div>
     </section>
 
+    <section id="moodSection" class="card mood-card">
+      <div class="mood-header">
+        <div>
+          <p class="eyebrow">Küchenlage</p>
+          <h3>Wie sieht’s heute aus?</h3>
+          <p id="moodDescription">
+            Such aus, wonach dir gerade ist. Ich passe die Rezeptvorschläge daran an.
+          </p>
+        </div>
+
+        <img
+          id="moodMascot"
+          class="section-mascot mood-mascot"
+          src="assets/images/themes/standard/kochtopf-hallo.png"
+          alt="Küchenkumpel fragt nach deiner Küchenlage"
+        />
+      </div>
+
+      <div id="moodOptions" class="mood-options" aria-label="Küchenlage auswählen">
+        <button class="mood-option active" type="button" data-mood="normal">
+          <span class="mood-icon">🍽️</span>
+          <span class="mood-copy">
+            <strong>Normaler Hunger</strong>
+            <small>Einfach was Gutes</small>
+          </span>
+        </button>
+
+        <button class="mood-option" type="button" data-mood="kein-bock">
+          <span class="mood-icon">😩</span>
+          <span class="mood-copy">
+            <strong>Kein Bock</strong>
+            <small>Wenig Aufwand</small>
+          </span>
+        </button>
+
+        <button class="mood-option" type="button" data-mood="schnell">
+          <span class="mood-icon">⏰</span>
+          <span class="mood-copy">
+            <strong>Muss schnell gehen</strong>
+            <small>Keine Küchenrunde</small>
+          </span>
+        </button>
+
+        <button class="mood-option" type="button" data-mood="muss-weg">
+          <span class="mood-icon">🥦</span>
+          <span class="mood-copy">
+            <strong>Es muss was weg</strong>
+            <small>Reste retten</small>
+          </span>
+        </button>
+
+        <button class="mood-option" type="button" data-mood="guenstig">
+          <span class="mood-icon">💸</span>
+          <span class="mood-copy">
+            <strong>Günstig bitte</strong>
+            <small>Konto schonen</small>
+          </span>
+        </button>
+
+        <button class="mood-option" type="button" data-mood="satt">
+          <span class="mood-icon">💪</span>
+          <span class="mood-copy">
+            <strong>Mach mich satt</strong>
+            <small>Richtig ordentlich</small>
+          </span>
+        </button>
+
+        <button class="mood-option mood-option-wide" type="button" data-mood="verwoehn">
+          <span class="mood-icon">✨</span>
+          <span class="mood-copy">
+            <strong>Verwöhn mich</strong>
+            <small>Heute darf es geiler sein</small>
+          </span>
+        </button>
+      </div>
+
+      <div id="moodInsight" class="mood-insight">
+        <strong>Aktuelle Küchenlage:</strong>
+        <span>Solider Alltag. Ich suche dir etwas, das gut passt und nicht unnötig kompliziert wird.</span>
+      </div>
+    </section>
+
     <section id="start" class="card ingredient-card">
       <div class="card-title card-title-with-image">
         <div>
