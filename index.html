@@ -25,7 +25,7 @@
         </p>
 
         <p class="welcome-text">
-          Such dir deine Küchenstimmung aus. Danach sagst du mir, was noch da ist, und ich mache dir eine Idee fürs Essen.
+          Such dir deinen Look aus. Danach sagst du mir, was noch da ist, und ich mache dir eine Idee fürs Essen.
         </p>
       </header>
 
@@ -54,12 +54,12 @@
 
       <section class="theme-picker" aria-label="Küchenthema auswählen">
         <div class="theme-picker-heading">
-          <h2>Wähle deine Stimmung</h2>
+          <h2>Wähle deinen Look</h2>
           <p>Standard ist aktiv. Du kannst aber jederzeit wechseln.</p>
         </div>
 
         <div id="themeOptions" class="theme-options">
-          <button class="theme-option active" type="button" data-theme-option="standard">
+          <button class="theme-option active" type="button" data-theme-option="standard" aria-label="Standard Look auswählen">
             <span class="theme-option-icon">🍳</span>
             <span class="theme-option-copy">
               <strong>Standard</strong>
@@ -67,7 +67,7 @@
             </span>
           </button>
 
-          <button class="theme-option" type="button" data-theme-option="fruehling">
+          <button class="theme-option" type="button" data-theme-option="fruehling" aria-label="Frühling Look auswählen">
             <span class="theme-option-icon">🌿</span>
             <span class="theme-option-copy">
               <strong>Frühling</strong>
@@ -75,7 +75,7 @@
             </span>
           </button>
 
-          <button class="theme-option" type="button" data-theme-option="ostern">
+          <button class="theme-option" type="button" data-theme-option="ostern" aria-label="Ostern Look auswählen">
             <span class="theme-option-icon">🐰</span>
             <span class="theme-option-copy">
               <strong>Ostern</strong>
@@ -83,7 +83,7 @@
             </span>
           </button>
 
-          <button class="theme-option" type="button" data-theme-option="sommer">
+          <button class="theme-option" type="button" data-theme-option="sommer" aria-label="Sommer Look auswählen">
             <span class="theme-option-icon">🍋</span>
             <span class="theme-option-copy">
               <strong>Sommer</strong>
@@ -91,7 +91,7 @@
             </span>
           </button>
 
-          <button class="theme-option" type="button" data-theme-option="herbst">
+          <button class="theme-option" type="button" data-theme-option="herbst" aria-label="Herbst Look auswählen">
             <span class="theme-option-icon">🍂</span>
             <span class="theme-option-copy">
               <strong>Herbst</strong>
@@ -99,7 +99,7 @@
             </span>
           </button>
 
-          <button class="theme-option" type="button" data-theme-option="halloween">
+          <button class="theme-option" type="button" data-theme-option="halloween" aria-label="Halloween Look auswählen">
             <span class="theme-option-icon">🎃</span>
             <span class="theme-option-copy">
               <strong>Halloween</strong>
@@ -107,7 +107,7 @@
             </span>
           </button>
 
-          <button class="theme-option theme-option-wide" type="button" data-theme-option="weihnachten">
+          <button class="theme-option theme-option-wide" type="button" data-theme-option="weihnachten" aria-label="Weihnachten Look auswählen">
             <span class="theme-option-icon">🎄</span>
             <span class="theme-option-copy">
               <strong>Weihnachten</strong>
@@ -137,6 +137,54 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div id="updateFlyer" class="update-flyer hidden" role="dialog" aria-modal="true" aria-labelledby="updateFlyerTitle">
+    <div id="updateFlyerBackdrop" class="update-flyer-backdrop"></div>
+
+    <article class="update-pinup-card">
+      <button id="closeUpdateFlyerButton" class="update-close-button" type="button" aria-label="Update-Hinweis schließen">
+        ×
+      </button>
+
+      <div class="update-pinup-header">
+        <div class="update-pinup-title-area">
+          <span id="updateFlyerBadge" class="update-badge">UPDATE</span>
+
+          <h2 id="updateFlyerTitle">Neu bei Küchenkumpel</h2>
+
+          <p id="updateFlyerSubtitle">
+            Ein kleines Update für deinen Küchenbuddy.
+          </p>
+        </div>
+
+        <img
+          id="updateFlyerImage"
+          class="update-pinup-kumpel"
+          src="assets/images/update-pinup.png"
+          alt="Neu bei Küchenkumpel – Update-Pinup mit Küchenkumpel"
+        />
+      </div>
+
+      <div id="updateFlyerItems" class="update-pinup-list"></div>
+
+      <div class="update-pinup-footer">
+        <p>
+          Schön, dass du wieder da bist.<br />
+          Viel Spaß beim <strong>Loskochen!</strong>
+        </p>
+
+        <div class="update-flyer-actions">
+          <button id="confirmUpdateFlyerButton" class="primary-button update-main-button" type="button">
+            Alles klar, loskochen
+          </button>
+
+          <button id="showUpdateLaterButton" class="update-later-button" type="button">
+            Später nochmal anschauen
+          </button>
+        </div>
+      </div>
+    </article>
   </div>
 
   <main class="app" id="app">
@@ -379,6 +427,25 @@
       <div id="topRecommendation"></div>
     </section>
 
+    <section id="favorites" class="results-section favorites-section">
+      <div class="section-heading section-heading-with-image">
+        <div>
+          <p class="eyebrow">Gemerkte Rezepte</p>
+          <h3>Favoriten</h3>
+          <p>Hier landen deine Küchenideen, die du nicht wieder verlieren willst.</p>
+        </div>
+
+        <img
+          id="favoriteMascot"
+          class="section-mascot favorite-mascot"
+          src="assets/images/themes/standard/kochtopf-idee.png"
+          alt="Küchenkumpel mit Favoriten"
+        />
+      </div>
+
+      <div id="favoriteResults" class="recipe-grid"></div>
+    </section>
+
     <section id="recipes" class="results-section">
       <div class="section-heading">
         <div>
@@ -434,9 +501,14 @@
   </main>
 
   <nav class="bottom-nav" aria-label="App Navigation">
-    <a href="#start" class="nav-link active" data-nav="start">
+    <a href="#moodSection" class="nav-link active" data-nav="moodSection">
       <span class="nav-icon">⌂</span>
-      Start
+      Küche
+    </a>
+
+    <a href="#favorites" class="nav-link" data-nav="favorites">
+      <span class="nav-icon">♡</span>
+      Favoriten
     </a>
 
     <a href="#recipes" class="nav-link" data-nav="recipes">
@@ -460,6 +532,7 @@
   </div>
 
   <script src="recipes.js"></script>
+  <script src="content/updates.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
