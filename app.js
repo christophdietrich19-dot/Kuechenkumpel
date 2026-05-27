@@ -13,6 +13,8 @@ const updateFlyerBadge = document.getElementById("updateFlyerBadge");
 const updateFlyerTitle = document.getElementById("updateFlyerTitle");
 const updateFlyerSubtitle = document.getElementById("updateFlyerSubtitle");
 const updateFlyerItems = document.getElementById("updateFlyerItems");
+const updateFlyerFooterText = document.getElementById("updateFlyerFooterText");
+const updateFlyerFooterHighlight = document.getElementById("updateFlyerFooterHighlight");
 
 const rememberThemeCheckbox = document.getElementById("rememberThemeCheckbox");
 const themeOptionButtons = document.querySelectorAll("[data-theme-option]");
@@ -289,7 +291,7 @@ function renderUpdateFlyerContent() {
   }
 
   if (updateFlyerBadge) {
-    updateFlyerBadge.textContent = updateContent.badge || "Update";
+    updateFlyerBadge.textContent = updateContent.badge || "UPDATE";
   }
 
   if (updateFlyerTitle) {
@@ -302,11 +304,19 @@ function renderUpdateFlyerContent() {
 
   if (updateFlyerImage) {
     updateFlyerImage.src = updateContent.image || "assets/images/update-pinup.png";
-    updateFlyerImage.alt = updateContent.imageAlt || "Küchenkumpel Update";
+    updateFlyerImage.alt = updateContent.imageAlt || "Neu bei Küchenkumpel";
+  }
+
+  if (updateFlyerFooterText) {
+    updateFlyerFooterText.textContent = updateContent.footerText || "Schön, dass du wieder da bist.";
+  }
+
+  if (updateFlyerFooterHighlight) {
+    updateFlyerFooterHighlight.textContent = updateContent.footerHighlight || "Viel Spaß beim Loskochen!";
   }
 
   if (confirmUpdateFlyerButton) {
-    confirmUpdateFlyerButton.textContent = updateContent.buttonText || "Alles klar";
+    confirmUpdateFlyerButton.textContent = updateContent.buttonText || "Alles klar, loskochen";
   }
 
   if (showUpdateLaterButton) {
@@ -319,8 +329,8 @@ function renderUpdateFlyerContent() {
     updateFlyerItems.innerHTML = items
       .map((item) => {
         return `
-          <div class="update-item">
-            <span class="update-item-icon">${escapeHtml(item.icon || "✦")}</span>
+          <div class="update-pinup-item">
+            <span class="update-pinup-icon">${escapeHtml(item.icon || "✦")}</span>
 
             <div>
               <strong>${escapeHtml(item.title || "")}</strong>
@@ -338,6 +348,7 @@ function openUpdateFlyer() {
 
   renderUpdateFlyerContent();
   updateFlyer.classList.remove("hidden");
+  document.body.classList.add("update-flyer-open");
 }
 
 function closeUpdateFlyer(rememberVersion = false) {
@@ -350,6 +361,7 @@ function closeUpdateFlyer(rememberVersion = false) {
   }
 
   updateFlyer.classList.add("hidden");
+  document.body.classList.remove("update-flyer-open");
 }
 
 function initUpdateFlyer() {

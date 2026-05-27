@@ -184,6 +184,10 @@ body[data-theme="halloween"]::before {
     linear-gradient(90deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px);
 }
 
+body.update-flyer-open {
+  overflow: hidden;
+}
+
 button,
 input {
   font: inherit;
@@ -689,15 +693,16 @@ body[data-theme="halloween"] .theme-option-icon {
   transform: translateX(18px);
 }
 
-/* UPDATE FLYER */
+/* UPDATE PINUP */
 
 .update-flyer {
   position: fixed;
   inset: 0;
   z-index: 180;
-  display: grid;
-  place-items: center;
+  display: block;
   padding: 18px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .update-flyer.hidden {
@@ -705,12 +710,12 @@ body[data-theme="halloween"] .theme-option-icon {
 }
 
 .update-flyer-backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background:
     radial-gradient(circle at 18% 10%, var(--theme-bg-a), transparent 34%),
     radial-gradient(circle at 84% 88%, var(--theme-bg-b), transparent 34%),
-    rgba(38, 53, 42, 0.46);
+    rgba(38, 53, 42, 0.48);
   backdrop-filter: blur(10px);
 }
 
@@ -721,95 +726,89 @@ body[data-theme="halloween"] .update-flyer-backdrop {
     rgba(15, 10, 20, 0.74);
 }
 
-.update-flyer-card {
+.update-pinup-card {
   position: relative;
   z-index: 1;
-  width: min(100%, 820px);
-  max-height: min(88vh, 780px);
-  overflow: auto;
-  display: grid;
-  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
-  gap: 0;
-  border-radius: 38px;
+  width: min(100%, 560px);
+  margin: 0 auto;
+  border-radius: 34px;
+  padding: 22px;
   background:
-    radial-gradient(circle at 14% 12%, rgba(255, 255, 255, 0.92), transparent 32%),
-    linear-gradient(145deg, var(--theme-card-strong), rgba(255, 247, 237, 0.9));
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.94), transparent 38%),
+    radial-gradient(circle at 90% 6%, var(--theme-bg-a), transparent 36%),
+    linear-gradient(145deg, var(--theme-card-strong), rgba(255, 247, 237, 0.92));
   border: 1px solid var(--border);
   box-shadow:
-    0 34px 92px rgba(67, 43, 24, 0.24),
+    0 34px 92px rgba(67, 43, 24, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  overflow: hidden;
 }
 
-body[data-theme="halloween"] .update-flyer-card {
+body[data-theme="halloween"] .update-pinup-card {
   background:
-    radial-gradient(circle at 14% 12%, rgba(255, 255, 255, 0.09), transparent 32%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.09), transparent 38%),
+    radial-gradient(circle at 90% 6%, rgba(249, 115, 22, 0.22), transparent 36%),
     linear-gradient(145deg, rgba(59, 40, 72, 0.98), rgba(34, 24, 43, 0.94));
   border-color: rgba(249, 115, 22, 0.35);
 }
 
+.update-pinup-card::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 26px;
+  border: 1px solid rgba(245, 214, 166, 0.42);
+  pointer-events: none;
+}
+
+body[data-theme="halloween"] .update-pinup-card::before {
+  border-color: rgba(249, 115, 22, 0.22);
+}
+
 .update-close-button {
   position: absolute;
-  z-index: 3;
-  right: 16px;
-  top: 16px;
+  z-index: 4;
+  right: 18px;
+  top: 18px;
   width: 42px;
   height: 42px;
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: rgba(255, 250, 240, 0.92);
+  background: rgba(255, 250, 240, 0.94);
   border: 1px solid var(--border);
   color: var(--theme-accent-dark);
   font-size: 1.45rem;
   font-weight: 900;
   line-height: 1;
-  box-shadow: 0 10px 22px rgba(67, 43, 24, 0.12);
+  box-shadow: 0 10px 22px rgba(67, 43, 24, 0.14);
 }
 
 body[data-theme="halloween"] .update-close-button {
   background: rgba(255, 255, 255, 0.08);
   color: #ffedd5;
+  border-color: rgba(249, 115, 22, 0.32);
 }
 
-.update-flyer-image-wrap {
-  min-height: 430px;
-  padding: 18px;
+.update-pinup-header,
+.update-pinup-list,
+.update-pinup-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.update-pinup-header {
+  position: relative;
+  min-height: 164px;
   display: grid;
-  place-items: center;
-  background:
-    radial-gradient(circle at 32% 22%, var(--theme-bg-a), transparent 45%),
-    linear-gradient(145deg, var(--theme-soft), var(--theme-soft-2));
-  border-right: 1px solid var(--border);
-  overflow: hidden;
+  grid-template-columns: minmax(0, 1fr) 142px;
+  gap: 12px;
+  align-items: start;
+  padding: 6px 44px 12px 0;
 }
 
-body[data-theme="halloween"] .update-flyer-image-wrap {
-  background:
-    radial-gradient(circle at 32% 22%, rgba(249, 115, 22, 0.25), transparent 45%),
-    linear-gradient(145deg, rgba(124, 58, 237, 0.18), rgba(34, 24, 43, 0.5));
-}
-
-.update-flyer-image {
-  width: min(100%, 320px);
-  border-radius: 28px;
-  display: block;
-  box-shadow:
-    0 24px 52px rgba(67, 43, 24, 0.18),
-    0 0 0 1px rgba(255, 255, 255, 0.45);
-  transform: rotate(-1.5deg);
-}
-
-body[data-theme="halloween"] .update-flyer-image {
-  box-shadow:
-    0 24px 52px rgba(0, 0, 0, 0.34),
-    0 0 0 1px rgba(249, 115, 22, 0.28);
-}
-
-.update-flyer-content {
-  padding: 34px 32px 30px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.update-pinup-title-area {
+  min-width: 0;
 }
 
 .update-badge {
@@ -822,9 +821,9 @@ body[data-theme="halloween"] .update-flyer-image {
   background: var(--theme-soft);
   border: 1px solid var(--border);
   color: var(--theme-accent-dark);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
@@ -833,28 +832,47 @@ body[data-theme="halloween"] .update-badge {
   color: #ffedd5;
 }
 
-.update-flyer-content h2 {
-  margin: 16px 0 8px;
+.update-pinup-title-area h2 {
+  margin: 14px 0 8px;
   color: var(--theme-deep);
-  font-size: clamp(1.85rem, 5vw, 3rem);
-  line-height: 1.05;
-  letter-spacing: -0.055em;
+  font-size: clamp(2rem, 7vw, 3.1rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
 }
 
-.update-flyer-content > p {
+.update-pinup-title-area p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.55;
+  line-height: 1.5;
   font-size: 1rem;
 }
 
-.update-list {
-  display: grid;
-  gap: 10px;
-  margin: 20px 0 22px;
+.update-pinup-kumpel {
+  width: 132px;
+  height: auto;
+  justify-self: end;
+  align-self: start;
+  border-radius: 22px;
+  object-fit: cover;
+  box-shadow:
+    0 18px 36px rgba(67, 43, 24, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.5);
+  transform: rotate(2deg);
 }
 
-.update-item {
+body[data-theme="halloween"] .update-pinup-kumpel {
+  box-shadow:
+    0 18px 36px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(249, 115, 22, 0.28);
+}
+
+.update-pinup-list {
+  display: grid;
+  gap: 10px;
+  margin: 6px 0 18px;
+}
+
+.update-pinup-item {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 12px;
@@ -862,17 +880,17 @@ body[data-theme="halloween"] .update-badge {
   padding: 12px;
   border-radius: 20px;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.74), rgba(255, 247, 237, 0.62));
+    linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(255, 247, 237, 0.64));
   border: 1px solid var(--border);
   box-shadow: 0 8px 18px rgba(67, 43, 24, 0.06);
 }
 
-body[data-theme="halloween"] .update-item {
+body[data-theme="halloween"] .update-pinup-item {
   background: rgba(255, 255, 255, 0.07);
   border-color: rgba(249, 115, 22, 0.24);
 }
 
-.update-item-icon {
+.update-pinup-icon {
   width: 38px;
   height: 38px;
   display: grid;
@@ -885,24 +903,45 @@ body[data-theme="halloween"] .update-item {
   box-shadow: inset 0 0 0 1px rgba(214, 157, 85, 0.2);
 }
 
-body[data-theme="halloween"] .update-item-icon {
+body[data-theme="halloween"] .update-pinup-icon {
   background: rgba(249, 115, 22, 0.16);
   color: #ffedd5;
 }
 
-.update-item strong {
+.update-pinup-item strong {
   display: block;
   margin: 0 0 4px;
   color: var(--theme-deep);
-  font-size: 0.96rem;
+  font-size: 0.98rem;
   line-height: 1.2;
 }
 
-.update-item p {
+.update-pinup-item p {
   margin: 0;
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.42;
+}
+
+.update-pinup-footer {
+  display: grid;
+  gap: 16px;
+  padding-top: 2px;
+}
+
+.update-pinup-footer p {
+  margin: 0;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.45;
+  font-size: 0.95rem;
+}
+
+.update-pinup-footer strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--theme-deep);
+  font-size: 1.12rem;
 }
 
 .update-flyer-actions {
@@ -2767,32 +2806,17 @@ body[data-theme="halloween"] .alternative-list li {
     border-radius: 28px;
   }
 
-  .update-flyer-card {
-    grid-template-columns: 1fr;
-    width: min(100%, 560px);
+  .update-pinup-card {
+    width: min(100%, 520px);
   }
 
-  .update-flyer-image-wrap {
-    min-height: auto;
-    padding: 20px 20px 0;
-    border-right: none;
-    background:
-      radial-gradient(circle at 50% 10%, var(--theme-bg-a), transparent 42%),
-      linear-gradient(145deg, var(--theme-soft), var(--theme-soft-2));
+  .update-pinup-header {
+    grid-template-columns: minmax(0, 1fr) 120px;
+    min-height: 140px;
   }
 
-  body[data-theme="halloween"] .update-flyer-image-wrap {
-    background:
-      radial-gradient(circle at 50% 10%, rgba(249, 115, 22, 0.24), transparent 42%),
-      linear-gradient(145deg, rgba(124, 58, 237, 0.18), rgba(34, 24, 43, 0.5));
-  }
-
-  .update-flyer-image {
-    width: min(100%, 250px);
-  }
-
-  .update-flyer-content {
-    padding: 24px 24px 26px;
+  .update-pinup-kumpel {
+    width: 112px;
   }
 }
 
@@ -2904,42 +2928,69 @@ body[data-theme="halloween"] .alternative-list li {
     padding: 10px;
   }
 
-  .update-flyer-card {
-    max-height: min(91vh, 760px);
+  .update-pinup-card {
     border-radius: 30px;
+    padding: 18px;
+  }
+
+  .update-pinup-card::before {
+    inset: 9px;
+    border-radius: 23px;
   }
 
   .update-close-button {
-    right: 12px;
-    top: 12px;
+    right: 14px;
+    top: 14px;
     width: 38px;
     height: 38px;
   }
 
-  .update-flyer-image-wrap {
-    padding: 18px 16px 0;
+  .update-pinup-header {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 4px 42px 12px 0;
   }
 
-  .update-flyer-image {
-    width: min(100%, 220px);
-    border-radius: 22px;
+  .update-pinup-kumpel {
+    width: 94px;
+    position: absolute;
+    right: 0;
+    top: 8px;
+    opacity: 0.92;
   }
 
-  .update-flyer-content {
-    padding: 20px 16px 20px;
+  .update-pinup-title-area {
+    padding-right: 78px;
   }
 
-  .update-flyer-content h2 {
+  .update-pinup-title-area h2 {
     font-size: clamp(1.72rem, 9vw, 2.35rem);
   }
 
-  .update-item {
+  .update-pinup-title-area p {
+    font-size: 0.92rem;
+  }
+
+  .update-pinup-list {
+    gap: 8px;
+    margin: 8px 0 16px;
+  }
+
+  .update-pinup-item {
     padding: 11px;
   }
 
-  .update-item-icon {
+  .update-pinup-icon {
     width: 36px;
     height: 36px;
+  }
+
+  .update-pinup-item strong {
+    font-size: 0.92rem;
+  }
+
+  .update-pinup-item p {
+    font-size: 0.84rem;
   }
 
   .hero-top {
@@ -3167,29 +3218,20 @@ body[data-theme="halloween"] .alternative-list li {
     min-height: 58px;
   }
 
-  .update-flyer-image {
-    width: min(100%, 190px);
+  .update-pinup-card {
+    padding: 15px;
   }
 
-  .update-flyer-content h2 {
+  .update-pinup-title-area {
+    padding-right: 70px;
+  }
+
+  .update-pinup-kumpel {
+    width: 82px;
+  }
+
+  .update-pinup-title-area h2 {
     font-size: clamp(1.55rem, 8.5vw, 2.05rem);
-  }
-
-  .update-list {
-    gap: 8px;
-    margin: 16px 0 18px;
-  }
-
-  .update-item {
-    gap: 10px;
-  }
-
-  .update-item strong {
-    font-size: 0.92rem;
-  }
-
-  .update-item p {
-    font-size: 0.84rem;
   }
 
   .hero-top h2 {
@@ -3262,12 +3304,19 @@ body[data-theme="halloween"] .alternative-list li {
     gap: 3px;
   }
 
-  .update-flyer-content {
-    padding-left: 12px;
-    padding-right: 12px;
+  .update-pinup-card {
+    padding: 13px;
   }
 
-  .update-item-icon {
+  .update-pinup-title-area {
+    padding-right: 62px;
+  }
+
+  .update-pinup-kumpel {
+    width: 72px;
+  }
+
+  .update-pinup-icon {
     width: 34px;
     height: 34px;
   }
@@ -3342,54 +3391,59 @@ body[data-theme="halloween"] .alternative-list li {
   }
 
   .update-flyer {
-    align-items: start;
     padding: 8px;
   }
 
-  .update-flyer-card {
-    width: min(100%, 860px);
-    max-height: calc(100vh - 16px);
-    grid-template-columns: minmax(170px, 0.7fr) minmax(0, 1.3fr);
+  .update-pinup-card {
+    width: min(100%, 760px);
     border-radius: 26px;
+    padding: 14px;
   }
 
-  .update-flyer-image-wrap {
+  .update-pinup-header {
     min-height: auto;
-    padding: 12px;
-    border-right: 1px solid var(--border);
+    grid-template-columns: minmax(0, 1fr) 104px;
+    padding: 4px 38px 8px 0;
   }
 
-  .update-flyer-image {
-    width: min(100%, 175px);
-    border-radius: 18px;
+  .update-pinup-kumpel {
+    width: 96px;
   }
 
-  .update-flyer-content {
-    padding: 16px 18px;
-  }
-
-  .update-flyer-content h2 {
-    margin-top: 10px;
+  .update-pinup-title-area h2 {
+    margin-top: 8px;
     font-size: clamp(1.5rem, 4vw, 2.2rem);
   }
 
-  .update-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    margin: 12px 0 14px;
+  .update-pinup-title-area p {
+    font-size: 0.86rem;
   }
 
-  .update-item {
+  .update-pinup-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 8px 0 12px;
+  }
+
+  .update-pinup-item {
     padding: 9px;
   }
 
-  .update-item-icon {
+  .update-pinup-icon {
     width: 32px;
     height: 32px;
   }
 
-  .update-item p {
+  .update-pinup-item p {
     font-size: 0.8rem;
+  }
+
+  .update-pinup-footer {
+    gap: 10px;
+  }
+
+  .update-pinup-footer p {
+    display: none;
   }
 
   .app {
