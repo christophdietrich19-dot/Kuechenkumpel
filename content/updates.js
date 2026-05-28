@@ -1,5 +1,5 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.3.3",
+  version: "1.3.6",
 
   badge: "UPDATE",
 
@@ -10,6 +10,10 @@ window.KUECHENKUMPEL_UPDATE = {
   image: "assets/images/update-pinup.png",
 
   imageAlt: "Neu bei Küchenkumpel – Update-Pinup mit Küchenkumpel",
+
+  mascot: "assets/images/themes/standard/kochtopf-hallo.png",
+
+  mascotAlt: "Küchenkumpel winkt freundlich",
 
   items: [
     {
@@ -42,7 +46,7 @@ window.KUECHENKUMPEL_UPDATE = {
   footerText: "Schön, dass du wieder da bist.",
   footerHighlight: "Viel Spaß beim Loskochen!",
 
-  buttonText: "Alles klar, loskochen",
+  buttonText: "Weiter",
 
   laterText: "Später nochmal anschauen"
 };

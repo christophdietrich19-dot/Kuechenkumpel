@@ -303,8 +303,13 @@ function renderUpdateFlyerContent() {
   }
 
   if (updateFlyerImage) {
-    updateFlyerImage.src = updateContent.image || "assets/images/update-pinup.png";
-    updateFlyerImage.alt = updateContent.imageAlt || "Neu bei Küchenkumpel";
+    updateFlyerImage.src =
+      updateContent.mascot ||
+      "assets/images/themes/standard/kochtopf-hallo.png";
+
+    updateFlyerImage.alt =
+      updateContent.mascotAlt ||
+      "Küchenkumpel winkt freundlich";
   }
 
   if (updateFlyerFooterText) {
@@ -316,7 +321,7 @@ function renderUpdateFlyerContent() {
   }
 
   if (confirmUpdateFlyerButton) {
-    confirmUpdateFlyerButton.textContent = updateContent.buttonText || "Alles klar, loskochen";
+    confirmUpdateFlyerButton.textContent = updateContent.buttonText || "Weiter";
   }
 
   if (showUpdateLaterButton) {
