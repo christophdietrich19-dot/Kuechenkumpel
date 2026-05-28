@@ -7,13 +7,13 @@ window.KUECHENKUMPEL_UPDATE = {
 
   subtitle: "Dein Küchenbuddy kann dir jetzt selbst etwas vorschlagen.",
 
-  image: "assets/images/update-pinup.png",
+  image: "assets/images/themes/standard/kochtopf-idee.png",
 
-  imageAlt: "Neu bei Küchenkumpel – Update-Pinup mit Küchenkumpel",
+  imageAlt: "Küchenkumpel hat eine Rezeptidee",
 
-  mascot: "assets/images/themes/standard/kochtopf-hallo.png",
+  mascot: "assets/images/themes/standard/kochtopf-idee.png",
 
-  mascotAlt: "Küchenkumpel winkt freundlich",
+  mascotAlt: "Küchenkumpel hat eine Rezeptidee",
 
   items: [
     {
