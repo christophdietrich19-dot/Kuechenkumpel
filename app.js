@@ -42,6 +42,11 @@ const decisionResult = document.getElementById("decisionResult");
 const decideButton = document.getElementById("decideButton");
 const decideAgainButton = document.getElementById("decideAgainButton");
 
+const dailyRecommendationResult = document.getElementById("dailyRecommendationResult");
+const dailyRecommendationButton = document.getElementById("dailyRecommendationButton");
+const dailyRecommendationAgainButton = document.getElementById("dailyRecommendationAgainButton");
+const dailyRecommendationMascot = document.getElementById("dailyRecommendationMascot");
+
 const ingredientInput = document.getElementById("ingredientInput");
 const addIngredientButton = document.getElementById("addIngredientButton");
 const quickIngredientsContainer = document.getElementById("quickIngredients");
@@ -78,6 +83,8 @@ let currentModalPortions = 2;
 let decisionIndex = 0;
 let lastDecisionMode = "none";
 let cachedRandomDecisionPool = [];
+let dailyRecommendationIndex = 0;
+let cachedDailyRecommendationPool = [];
 
 const THEME_KEY = "kuechenkumpelTheme";
 const HIDE_WELCOME_KEY = "kuechenkumpelHideWelcome";
@@ -90,6 +97,7 @@ const mascotFiles = {
   hero: "kochtopf-standard.png",
   mood: "kochtopf-hallo.png",
   decision: "kochtopf-idee.png",
+  daily: "kochtopf-idee.png",
   section: "kochtopf-kochen.png",
   rescue: "kochtopf-kein-bock.png",
   idea: "kochtopf-idee.png",
@@ -304,10 +312,12 @@ function renderUpdateFlyerContent() {
 
   if (updateFlyerImage) {
     updateFlyerImage.src =
+      updateContent.image ||
       updateContent.mascot ||
       "assets/images/themes/standard/kochtopf-hallo.png";
 
     updateFlyerImage.alt =
+      updateContent.imageAlt ||
       updateContent.mascotAlt ||
       "Küchenkumpel winkt freundlich";
   }
@@ -771,6 +781,7 @@ function updateThemeMascots() {
   setMascotImage(heroMascot, "hero");
   setMascotImage(moodMascot, getCurrentMoodMascotKey());
   setMascotImage(decisionMascot, "decision");
+  setMascotImage(dailyRecommendationMascot, "daily");
   setMascotImage(sectionMascot, "section");
   setMascotImage(rescueMascot, "rescue");
   setMascotImage(ideaMascot, "idea");
@@ -859,6 +870,7 @@ function setMood(moodName, shouldSave = true) {
   }
 
   resetDecision(false);
+  resetDailyRecommendation(false);
   updateMoodUI();
   updateThemeMascots();
   updateBuddyMessage();
@@ -1439,6 +1451,332 @@ function renderRecipeResults() {
   recipeResults.innerHTML = visibleMatches.map((match) => createRecipeCard(match, false)).join("");
 }
 
+function resetDailyRecommendation(shouldRender = true) {
+  dailyRecommendationIndex = 0;
+  cachedDailyRecommendationPool = [];
+
+  if (dailyRecommendationAgainButton) {
+    dailyRecommendationAgainButton.disabled = true;
+  }
+
+  if (dailyRecommendationResult) {
+    dailyRecommendationResult.className = "daily-recommendation-result empty-daily-recommendation";
+    dailyRecommendationResult.innerHTML = `
+      <strong>Noch keine Empfehlung ausgewählt.</strong>
+      <span>Drück auf den Button, dann schlage ich dir etwas Passendes vor.</span>
+    `;
+  }
+
+  if (shouldRender) {
+    renderAll();
+  }
+}
+
+function getSeasonMode() {
+  const month = new Date().getMonth() + 1;
+
+  if (month >= 3 && month <= 5) return "fruehling";
+  if (month >= 6 && month <= 8) return "sommer";
+  if (month >= 9 && month <= 11) return "herbst";
+
+  return "winter";
+}
+
+function getSeasonLabel(season) {
+  const labels = {
+    fruehling: "Frühling",
+    sommer: "Sommer",
+    herbst: "Herbst",
+    winter: "Winter"
+  };
+
+  return labels[season] || "Saison";
+}
+
+function getDailyIntroText(season, daytimeMode) {
+  if (daytimeMode === "morgen") {
+    return "Heute würde ich es eher einfach halten. Schnell, nicht zu schwer und ohne Küchenstress direkt am Morgen.";
+  }
+
+  if (daytimeMode === "mittag") {
+    return "Für jetzt würde ich etwas nehmen, das satt macht, aber nicht den halben Tag klaut.";
+  }
+
+  if (daytimeMode === "nacht") {
+    return "Zu der Uhrzeit bitte keine Heldentaten mehr. Schnell, einfach und möglichst wenig Chaos.";
+  }
+
+  if (season === "sommer") {
+    return "Heute eher leicht und unkompliziert. Kein schwerer Teller, wenn es auch frischer geht.";
+  }
+
+  if (season === "winter") {
+    return "Heute darf es ruhig etwas Wärmeres und Sättigenderes sein. So ein richtiger Küchentrost eben.";
+  }
+
+  if (season === "herbst") {
+    return "Heute passt etwas Warmes und Gemütliches ziemlich gut. Nicht übertrieben, einfach ordentlich.";
+  }
+
+  if (season === "fruehling") {
+    return "Heute würde ich es eher frisch, einfach und nicht zu schwer halten.";
+  }
+
+  return "Heute würde ich dir das hier vorschlagen. Passt gerade ganz gut und macht nicht unnötig Arbeit.";
+}
+
+function getRecipeSearchText(recipe) {
+  return normalize(
+    [
+      recipe.title,
+      recipe.name,
+      recipe.category,
+      recipe.slogan,
+      recipe.shortDescription,
+      recipe.feeling,
+      recipe.satiety,
+      recipe.timeTotal,
+      recipe.timePrep,
+      recipe.timeCook,
+      recipe.difficulty,
+      recipe.cost,
+      recipe.dishes,
+      ...(recipe.tags || []),
+      ...((recipe.ingredients || []).map((ingredient) => ingredient.name))
+    ].join(" ")
+  );
+}
+
+function scoreDailyRecipe(recipe) {
+  const season = getSeasonMode();
+  const daytimeMode = getDaytimeMode();
+  const text = getRecipeSearchText(recipe);
+  let score = 0;
+
+  if (recipe.difficulty === "einfach") score += 3;
+  if (recipe.dishes === "wenig") score += 4;
+  if (recipe.cost === "günstig") score += 2;
+  if ((recipe.tags || []).includes("schnell")) score += 3;
+  if ((recipe.tags || []).includes("sättigend")) score += 2;
+
+  if (activeMood === "kein-bock") {
+    if ((recipe.tags || []).includes("kein bock")) score += 8;
+    if ((recipe.tags || []).includes("schnell")) score += 5;
+    if (recipe.dishes === "wenig") score += 5;
+    if ((recipe.tags || []).includes("ofen")) score -= 6;
+  }
+
+  if (activeMood === "schnell") {
+    if ((recipe.tags || []).includes("schnell")) score += 8;
+    if (text.includes("15 minuten") || text.includes("20 minuten")) score += 3;
+    if (text.includes("40 minuten") || text.includes("45 minuten")) score -= 5;
+  }
+
+  if (activeMood === "muss-weg") {
+    if ((recipe.tags || []).includes("muss weg")) score += 7;
+    if (text.includes("reste") || text.includes("gemüse") || text.includes("gemuese")) score += 4;
+  }
+
+  if (activeMood === "guenstig") {
+    if (recipe.cost === "günstig") score += 8;
+    if (text.includes("grundzutaten")) score += 2;
+  }
+
+  if (activeMood === "satt") {
+    if ((recipe.tags || []).includes("sättigend")) score += 8;
+    if (text.includes("kartoffel") || text.includes("nudel") || text.includes("reis") || text.includes("auflauf")) score += 3;
+  }
+
+  if (activeMood === "verwoehn") {
+    if ((recipe.tags || []).includes("soulfood") || (recipe.tags || []).includes("cremig")) score += 8;
+    if (text.includes("käse") || text.includes("kaese") || text.includes("sahne")) score += 3;
+  }
+
+  if (daytimeMode === "morgen") {
+    if ((recipe.tags || []).includes("frühstück") || text.includes("brot") || text.includes("ei") || text.includes("hafer")) score += 7;
+    if ((recipe.tags || []).includes("schnell")) score += 4;
+    if ((recipe.tags || []).includes("ofen") || text.includes("auflauf")) score -= 5;
+  }
+
+  if (daytimeMode === "mittag") {
+    if ((recipe.tags || []).includes("sättigend")) score += 4;
+    if ((recipe.tags || []).includes("schnell")) score += 3;
+  }
+
+  if (daytimeMode === "nachmittag") {
+    if ((recipe.tags || []).includes("schnell")) score += 3;
+    if (text.includes("brot") || text.includes("ei") || text.includes("nudel")) score += 2;
+  }
+
+  if (daytimeMode === "abend") {
+    if ((recipe.tags || []).includes("sättigend") || (recipe.tags || []).includes("soulfood")) score += 4;
+    if (recipe.dishes === "wenig") score += 2;
+  }
+
+  if (daytimeMode === "nacht") {
+    if ((recipe.tags || []).includes("schnell")) score += 7;
+    if (recipe.dishes === "wenig") score += 5;
+    if ((recipe.tags || []).includes("ofen") || text.includes("auflauf")) score -= 8;
+  }
+
+  if (season === "sommer") {
+    if (text.includes("tomate") || text.includes("gemüse") || text.includes("gemuese") || text.includes("frisch") || text.includes("thunfisch")) score += 4;
+    if (text.includes("leicht")) score += 3;
+    if (text.includes("auflauf") || text.includes("richtig deftig")) score -= 3;
+  }
+
+  if (season === "winter") {
+    if ((recipe.tags || []).includes("soulfood") || (recipe.tags || []).includes("sättigend")) score += 5;
+    if (text.includes("auflauf") || text.includes("kartoffel") || text.includes("käse") || text.includes("kaese") || text.includes("sahne")) score += 4;
+  }
+
+  if (season === "herbst") {
+    if (text.includes("kartoffel") || text.includes("auflauf") || text.includes("gemüse") || text.includes("gemuese") || text.includes("cremig")) score += 4;
+    if ((recipe.tags || []).includes("soulfood")) score += 3;
+  }
+
+  if (season === "fruehling") {
+    if (text.includes("frisch") || text.includes("gemüse") || text.includes("gemuese") || text.includes("tomate")) score += 4;
+    if ((recipe.tags || []).includes("schnell")) score += 2;
+  }
+
+  return score + Math.random();
+}
+
+function getDailyRecommendationPool() {
+  return recipes
+    .map((recipe) => ({
+      recipe,
+      score: scoreDailyRecipe(recipe)
+    }))
+    .sort((a, b) => b.score - a.score)
+    .map((item) => item.recipe);
+}
+
+function createDailyReason(recipe) {
+  const season = getSeasonMode();
+  const daytimeMode = getDaytimeMode();
+  const daytime = getDaytimeSettings();
+  const intro = getDailyIntroText(season, daytimeMode);
+  const parts = [];
+
+  parts.push(intro);
+
+  if (activeMood !== "normal") {
+    const mood = moodSettings[activeMood] || moodSettings.normal;
+    parts.push(`Deine Küchenlage ist gerade „${mood.label}“, also habe ich das mit reingerechnet.`);
+  }
+
+  if (recipe.dishes === "wenig") {
+    parts.push("Außerdem bleibt der Abwasch überschaubar.");
+  }
+
+  if ((recipe.tags || []).includes("schnell")) {
+    parts.push("Und es dauert nicht ewig.");
+  } else if ((recipe.tags || []).includes("sättigend")) {
+    parts.push("Und es macht ordentlich satt.");
+  }
+
+  return {
+    text: parts.join(" "),
+    badges: [
+      getSeasonLabel(season),
+      daytime.label,
+      recipe.time || recipe.timeTotal || "schnell gemacht"
+    ]
+  };
+}
+
+function renderDailyRecommendation(shouldKeep = true) {
+  if (!dailyRecommendationResult) return;
+
+  if (!shouldKeep || cachedDailyRecommendationPool.length === 0) {
+    if (!dailyRecommendationResult.dataset.recipeId) {
+      return;
+    }
+  }
+
+  const recipeId = Number(dailyRecommendationResult.dataset.recipeId || 0);
+  const recipe = recipes.find((item) => item.id === recipeId);
+
+  if (!recipe) {
+    return;
+  }
+
+  const reason = createDailyReason(recipe);
+
+  dailyRecommendationResult.className = "daily-recommendation-result has-daily-recommendation";
+  dailyRecommendationResult.innerHTML = `
+    <div class="daily-recommendation-recipe">
+      <img
+        class="daily-recommendation-image"
+        src="${escapeHtml(recipe.image || "") }"
+        alt="${escapeHtml(recipe.title)}"
+      />
+
+      <div class="daily-recommendation-copy">
+        <strong>Heute würde ich dir das hier vorschlagen:</strong>
+        <h4>${escapeHtml(recipe.title)}</h4>
+        <p>${escapeHtml(reason.text)}</p>
+
+        <div class="daily-recommendation-meta">
+          ${reason.badges.map((badge) => `<span>${escapeHtml(badge)}</span>`).join("")}
+        </div>
+
+        <button class="small-button daily-recommendation-open-button" type="button" data-open-daily-recipe="${recipe.id}">
+          Rezept ansehen
+        </button>
+      </div>
+    </div>
+  `;
+
+  const image = dailyRecommendationResult.querySelector(".daily-recommendation-image");
+
+  if (image) {
+    image.onerror = () => {
+      image.onerror = null;
+      image.src = getThemeMascotPath(activeTheme, "idea");
+    };
+  }
+}
+
+function recommendDailyRecipe(useNext = false) {
+  if (!dailyRecommendationResult) return;
+
+  if (!recipes.length) {
+    dailyRecommendationResult.className = "daily-recommendation-result empty-daily-recommendation";
+    dailyRecommendationResult.innerHTML = `
+      <strong>Ich finde gerade keine Rezepte.</strong>
+      <span>Schau bitte, ob recipes.js sauber geladen wird.</span>
+    `;
+    return;
+  }
+
+  if (cachedDailyRecommendationPool.length === 0) {
+    cachedDailyRecommendationPool = getDailyRecommendationPool();
+    dailyRecommendationIndex = 0;
+  } else if (useNext) {
+    dailyRecommendationIndex += 1;
+  }
+
+  if (dailyRecommendationIndex >= cachedDailyRecommendationPool.length) {
+    dailyRecommendationIndex = 0;
+  }
+
+  const recipe = cachedDailyRecommendationPool[dailyRecommendationIndex];
+
+  if (!recipe) return;
+
+  dailyRecommendationResult.dataset.recipeId = String(recipe.id);
+  renderDailyRecommendation(true);
+
+  if (dailyRecommendationAgainButton) {
+    dailyRecommendationAgainButton.disabled = cachedDailyRecommendationPool.length <= 1;
+  }
+
+  updateBuddyTextOnly(`Ich würde heute ${recipe.title} nehmen. Passt gerade ganz gut.`);
+}
+
 function resetDecision(shouldRender = true) {
   decisionIndex = 0;
   lastDecisionMode = "none";
@@ -1892,6 +2230,7 @@ function renderAll() {
   renderQuickIngredients();
   renderSelectedIngredients();
   renderRecommendations();
+  renderDailyRecommendation(false);
   renderFavorites();
   renderRecipeResults();
   attachRecipeActionEvents();
@@ -2045,6 +2384,28 @@ function bindEvents() {
     });
   }
 
+  if (dailyRecommendationButton) {
+    dailyRecommendationButton.addEventListener("click", () => {
+      recommendDailyRecipe(false);
+    });
+  }
+
+  if (dailyRecommendationAgainButton) {
+    dailyRecommendationAgainButton.addEventListener("click", () => {
+      recommendDailyRecipe(true);
+    });
+  }
+
+  if (dailyRecommendationResult) {
+    dailyRecommendationResult.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-open-daily-recipe]");
+
+      if (target) {
+        openRecipeModal(Number(target.dataset.openDailyRecipe));
+      }
+    });
+  }
+
   if (closeModalButton) {
     closeModalButton.addEventListener("click", closeRecipeModal);
   }
@@ -2091,6 +2452,7 @@ function initApp() {
   initTheme();
   initMood();
   resetDecision(false);
+  resetDailyRecommendation(false);
   initWelcomeScreen();
   updateBuddyMessage();
   renderAll();

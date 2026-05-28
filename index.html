@@ -223,6 +223,40 @@
       </div>
     </section>
 
+    <section id="dailyRecommendationSection" class="card daily-recommendation-card">
+      <div class="daily-recommendation-header">
+        <div>
+          <p class="eyebrow">Keine Idee?</p>
+          <h3>Küchenkumpel empfiehlt</h3>
+          <p>
+            Ich such dir etwas aus, das gerade zur Tageszeit, zur Saison und zu deiner Küchenlage passt.
+          </p>
+        </div>
+
+        <img
+          id="dailyRecommendationMascot"
+          class="section-mascot daily-recommendation-mascot"
+          src="assets/images/themes/standard/kochtopf-idee.png"
+          alt="Küchenkumpel empfiehlt ein Rezept"
+        />
+      </div>
+
+      <div id="dailyRecommendationResult" class="daily-recommendation-result empty-daily-recommendation">
+        <strong>Noch keine Empfehlung ausgewählt.</strong>
+        <span>Drück auf den Button, dann schlage ich dir etwas Passendes vor.</span>
+      </div>
+
+      <div class="daily-recommendation-actions">
+        <button id="dailyRecommendationButton" class="primary-button daily-recommendation-button" type="button">
+          Küchenkumpel empfiehlt
+        </button>
+
+        <button id="dailyRecommendationAgainButton" class="ghost-button daily-recommendation-secondary-button" type="button" disabled>
+          Andere Idee
+        </button>
+      </div>
+    </section>
+
     <section id="moodSection" class="card mood-card">
       <div class="mood-header">
         <div>
