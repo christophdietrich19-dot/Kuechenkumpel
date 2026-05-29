@@ -11,25 +11,25 @@
 
 <body data-theme="standard">
   <div id="welcomeScreen" class="welcome-screen">
-    <div class="welcome-card">
+    <div class="welcome-card compact-welcome-card">
       <div class="welcome-background-deco welcome-deco-one"></div>
       <div class="welcome-background-deco welcome-deco-two"></div>
 
-      <header class="welcome-header">
+      <header class="welcome-header compact-welcome-header">
         <p class="eyebrow">Dein kleiner Küchenretter</p>
 
         <h1>Küchenkumpel</h1>
 
         <p class="welcome-headline">
-          Was kochen wir heute?
+          Wähle deinen Look.
         </p>
 
         <p class="welcome-text">
-          Such dir deinen Look aus. Danach sagst du mir, was noch da ist, und ich mache dir eine Idee fürs Essen.
+          Danach geht’s direkt ans Kochen.
         </p>
       </header>
 
-      <section class="theme-preview-card" aria-label="Aktuelle Themenvorschau">
+      <section class="theme-preview-card compact-theme-preview-card" aria-label="Aktuelle Themenvorschau">
         <div class="theme-preview-copy">
           <span id="welcomeThemeBadge" class="theme-badge">🍳 Standard</span>
 
@@ -40,7 +40,7 @@
           </p>
         </div>
 
-        <div class="theme-preview-mascot-wrap">
+        <div class="theme-preview-mascot-wrap compact-theme-mascot-wrap">
           <div class="theme-preview-glow"></div>
 
           <img
@@ -52,10 +52,10 @@
         </div>
       </section>
 
-      <section class="theme-picker" aria-label="Küchenthema auswählen">
+      <section class="theme-picker compact-theme-picker" aria-label="Küchenthema auswählen">
         <div class="theme-picker-heading">
-          <h2>Wähle deinen Look</h2>
-          <p>Standard ist aktiv. Du kannst aber jederzeit wechseln.</p>
+          <h2>Look auswählen</h2>
+          <p>Du kannst später jederzeit wechseln.</p>
         </div>
 
         <div id="themeOptions" class="theme-options">
@@ -117,7 +117,7 @@
         </div>
       </section>
 
-      <div class="welcome-actions">
+      <div class="welcome-actions compact-welcome-actions">
         <button id="startAppButton" class="primary-button large-button" type="button">
           Loskochen
         </button>
@@ -154,7 +154,7 @@
           <h2 id="updateFlyerTitle">Neu bei Küchenkumpel</h2>
 
           <p id="updateFlyerSubtitle">
-            Ein kleines Update für deinen Küchenbuddy.
+            Dein Küchenbuddy wurde aufgeräumt.
           </p>
         </div>
 
@@ -162,8 +162,8 @@
           <img
             id="updateFlyerImage"
             class="update-pinup-kumpel"
-            src="assets/images/themes/standard/kochtopf-hallo.png"
-            alt="Küchenkumpel winkt freundlich"
+            src="assets/images/update-klemmbrett.png"
+            alt="Küchenkumpel mit Klemmbrett"
           />
         </div>
       </div>
@@ -173,7 +173,7 @@
       <div class="update-pinup-footer">
         <p>
           <span id="updateFlyerFooterText">Schön, dass du wieder da bist.</span>
-          <strong id="updateFlyerFooterHighlight">Viel Spaß beim Loskochen!</strong>
+          <strong id="updateFlyerFooterHighlight">Weniger Chaos, mehr Kochen.</strong>
         </p>
 
         <div class="update-flyer-actions">
@@ -190,7 +190,7 @@
   </div>
 
   <main class="app" id="app">
-    <section class="hero-section">
+    <section class="hero-section" id="home">
       <div class="hero-top">
         <div class="hero-copy">
           <p class="eyebrow">Aus Kühlschrank-Chaos wird Abendessen</p>
@@ -223,13 +223,156 @@
       </div>
     </section>
 
-    <section id="dailyRecommendationSection" class="card daily-recommendation-card">
+    <section id="start" class="card main-cooking-card">
+      <div class="main-cooking-header">
+        <div>
+          <p class="eyebrow">Start</p>
+          <h3>Was kochen wir heute?</h3>
+          <p>
+            Sag mir, was da ist — oder lass mich einfach etwas vorschlagen.
+          </p>
+        </div>
+
+        <img
+          id="sectionMascot"
+          class="section-mascot main-cooking-mascot"
+          src="assets/images/themes/standard/kochtopf-kochen.png"
+          alt="Küchenkumpel kocht"
+        />
+      </div>
+
+      <div class="input-row main-input-row">
+        <input
+          id="ingredientInput"
+          type="text"
+          placeholder="z. B. Nudeln, Eier, Käse"
+          autocomplete="off"
+        />
+
+        <button id="addIngredientButton" type="button">
+          Hinzufügen
+        </button>
+      </div>
+
+      <div class="quick-ingredient-area">
+        <div class="quick-ingredient-heading">
+          <strong>Schnell auswählen</strong>
+          <span>Die Basics zuerst. Den Rest kannst du aufklappen.</span>
+        </div>
+
+        <div id="quickIngredients" class="quick-ingredients compact-quick-ingredients"></div>
+
+        <button id="toggleMoreIngredientsButton" class="soft-wide-button more-ingredients-button" type="button">
+          Mehr Zutaten anzeigen
+        </button>
+      </div>
+
+      <div id="selectedArea" class="selected-area hidden">
+        <div class="selected-heading">
+          <h4>Ausgewählt</h4>
+          <p>Tippe auf die Uhr, wenn etwas bald weg muss.</p>
+        </div>
+
+        <div id="selectedIngredients" class="selected-ingredients"></div>
+      </div>
+
+      <div class="main-actions">
+        <button id="dailyRecommendationButton" class="primary-button daily-recommendation-button main-recommendation-button" type="button">
+          Küchenkumpel empfiehlt
+        </button>
+      </div>
+    </section>
+
+    <section id="moodSection" class="card mood-card compact-mood-card">
+      <div class="compact-section-header">
+        <div>
+          <p class="eyebrow">Küchenlage</p>
+          <h3>Wie sieht’s heute aus?</h3>
+        </div>
+
+        <img
+          id="moodMascot"
+          class="section-mascot mood-mascot"
+          src="assets/images/themes/standard/kochtopf-hallo.png"
+          alt="Küchenkumpel fragt nach deiner Küchenlage"
+        />
+      </div>
+
+      <p id="moodDescription" class="compact-mood-description">
+        Such aus, wonach dir gerade ist. Ich passe die Vorschläge daran an.
+      </p>
+
+      <div id="moodOptions" class="mood-options mood-chip-list" aria-label="Küchenlage auswählen">
+        <button class="mood-option mood-chip active" type="button" data-mood="normal">
+          <span class="mood-icon">🍽️</span>
+          <span class="mood-copy">
+            <strong>Normal</strong>
+            <small>Einfach gut</small>
+          </span>
+        </button>
+
+        <button class="mood-option mood-chip mood-chip-featured" type="button" data-mood="kein-bock">
+          <span class="mood-icon">😩</span>
+          <span class="mood-copy">
+            <strong>Kein Bock</strong>
+            <small>Wenig Aufwand</small>
+          </span>
+        </button>
+
+        <button class="mood-option mood-chip" type="button" data-mood="schnell">
+          <span class="mood-icon">⏰</span>
+          <span class="mood-copy">
+            <strong>Schnell</strong>
+            <small>Keine Runde</small>
+          </span>
+        </button>
+
+        <button class="mood-option mood-chip" type="button" data-mood="muss-weg">
+          <span class="mood-icon">🥦</span>
+          <span class="mood-copy">
+            <strong>Muss weg</strong>
+            <small>Reste retten</small>
+          </span>
+        </button>
+
+        <button class="mood-option mood-chip" type="button" data-mood="guenstig">
+          <span class="mood-icon">💸</span>
+          <span class="mood-copy">
+            <strong>Günstig</strong>
+            <small>Konto schonen</small>
+          </span>
+        </button>
+
+        <button class="mood-option mood-chip" type="button" data-mood="satt">
+          <span class="mood-icon">💪</span>
+          <span class="mood-copy">
+            <strong>Satt</strong>
+            <small>Ordentlich</small>
+          </span>
+        </button>
+
+        <button class="mood-option mood-chip" type="button" data-mood="verwoehn">
+          <span class="mood-icon">✨</span>
+          <span class="mood-copy">
+            <strong>Verwöhnen</strong>
+            <small>Mehr Liebe</small>
+          </span>
+        </button>
+      </div>
+
+      <div id="moodInsight" class="mood-insight compact-mood-insight">
+        <strong>Aktuelle Küchenlage:</strong>
+        <span>Solider Alltag. Ich suche dir etwas, das gut passt und nicht unnötig kompliziert wird.</span>
+      </div>
+    </section>
+
+    <section id="dailyRecommendationSection" class="card daily-recommendation-card hidden">
       <div class="daily-recommendation-header">
         <div>
-          <p class="eyebrow">Keine Idee?</p>
-          <h3>Küchenkumpel empfiehlt</h3>
+          <p class="eyebrow">Küchenkumpel empfiehlt</p>
+          <h3>Heute würde ich dir das hier vorschlagen</h3>
           <p>
-            Ich such dir etwas aus, das gerade zur Tageszeit, zur Saison und zu deiner Küchenlage passt.
+            Passend zu Tageszeit, Saison und deiner Küchenlage.
           </p>
         </div>
 
@@ -247,197 +390,13 @@
       </div>
 
       <div class="daily-recommendation-actions">
-        <button id="dailyRecommendationButton" class="primary-button daily-recommendation-button" type="button">
-          Küchenkumpel empfiehlt
-        </button>
-
         <button id="dailyRecommendationAgainButton" class="ghost-button daily-recommendation-secondary-button" type="button" disabled>
           Andere Idee
         </button>
       </div>
     </section>
 
-    <section id="moodSection" class="card mood-card">
-      <div class="mood-header">
-        <div>
-          <p class="eyebrow">Küchenlage</p>
-          <h3>Wie sieht’s heute aus?</h3>
-          <p id="moodDescription">
-            Such aus, wonach dir gerade ist. Ich passe die Rezeptvorschläge daran an.
-          </p>
-        </div>
-
-        <img
-          id="moodMascot"
-          class="section-mascot mood-mascot"
-          src="assets/images/themes/standard/kochtopf-hallo.png"
-          alt="Küchenkumpel fragt nach deiner Küchenlage"
-        />
-      </div>
-
-      <div id="moodOptions" class="mood-options" aria-label="Küchenlage auswählen">
-        <button class="mood-option active" type="button" data-mood="normal">
-          <span class="mood-icon">🍽️</span>
-          <span class="mood-copy">
-            <strong>Normaler Hunger</strong>
-            <small>Einfach was Gutes</small>
-          </span>
-        </button>
-
-        <button class="mood-option" type="button" data-mood="kein-bock">
-          <span class="mood-icon">😩</span>
-          <span class="mood-copy">
-            <strong>Kein Bock</strong>
-            <small>Wenig Aufwand</small>
-          </span>
-        </button>
-
-        <button class="mood-option" type="button" data-mood="schnell">
-          <span class="mood-icon">⏰</span>
-          <span class="mood-copy">
-            <strong>Muss schnell gehen</strong>
-            <small>Keine Küchenrunde</small>
-          </span>
-        </button>
-
-        <button class="mood-option" type="button" data-mood="muss-weg">
-          <span class="mood-icon">🥦</span>
-          <span class="mood-copy">
-            <strong>Es muss was weg</strong>
-            <small>Reste retten</small>
-          </span>
-        </button>
-
-        <button class="mood-option" type="button" data-mood="guenstig">
-          <span class="mood-icon">💸</span>
-          <span class="mood-copy">
-            <strong>Günstig bitte</strong>
-            <small>Konto schonen</small>
-          </span>
-        </button>
-
-        <button class="mood-option" type="button" data-mood="satt">
-          <span class="mood-icon">💪</span>
-          <span class="mood-copy">
-            <strong>Mach mich satt</strong>
-            <small>Richtig ordentlich</small>
-          </span>
-        </button>
-
-        <button class="mood-option mood-option-wide" type="button" data-mood="verwoehn">
-          <span class="mood-icon">✨</span>
-          <span class="mood-copy">
-            <strong>Verwöhn mich</strong>
-            <small>Heute darf es geiler sein</small>
-          </span>
-        </button>
-      </div>
-
-      <div id="moodInsight" class="mood-insight">
-        <strong>Aktuelle Küchenlage:</strong>
-        <span>Solider Alltag. Ich suche dir etwas, das gut passt und nicht unnötig kompliziert wird.</span>
-      </div>
-    </section>
-
-    <section id="decisionSection" class="card decision-card">
-      <div class="decision-header">
-        <div>
-          <p class="eyebrow">Keine Lust zu grübeln?</p>
-          <h3>Küchenkumpel entscheidet</h3>
-          <p>
-            Ich nehme deine Küchenlage, deine Zutaten oder würfle dir einfach eine solide Idee aus.
-          </p>
-        </div>
-
-        <img
-          id="decisionMascot"
-          class="section-mascot decision-mascot"
-          src="assets/images/themes/standard/kochtopf-idee.png"
-          alt="Küchenkumpel entscheidet"
-        />
-      </div>
-
-      <div id="decisionResult" class="decision-result empty-decision">
-        <strong>Noch keine Entscheidung getroffen.</strong>
-        <span>Drück auf den Button, dann übernehme ich kurz.</span>
-      </div>
-
-      <div class="decision-actions">
-        <button id="decideButton" class="primary-button decision-button" type="button">
-          Küchenkumpel entscheidet
-        </button>
-
-        <button id="decideAgainButton" class="ghost-button decision-secondary-button" type="button" disabled>
-          Doch was anderes
-        </button>
-      </div>
-    </section>
-
-    <section id="start" class="card ingredient-card">
-      <div class="card-title card-title-with-image">
-        <div>
-          <p class="eyebrow">Zutaten</p>
-          <h3>Was hast du zuhause?</h3>
-          <p>Schreib rein, was da ist, oder tipp unten auf die Zutaten.</p>
-        </div>
-
-        <img
-          id="sectionMascot"
-          class="section-mascot"
-          src="assets/images/themes/standard/kochtopf-kochen.png"
-          alt="Küchenkumpel kocht"
-        />
-      </div>
-
-      <div class="input-row">
-        <input
-          id="ingredientInput"
-          type="text"
-          placeholder="z. B. Nudeln, Eier, Käse"
-          autocomplete="off"
-        />
-
-        <button id="addIngredientButton" type="button">
-          Hinzufügen
-        </button>
-      </div>
-
-      <div id="quickIngredients" class="quick-ingredients"></div>
-
-      <div class="selected-area">
-        <div class="selected-heading">
-          <h4>Ausgewählt</h4>
-          <p>Tippe auf die Uhr, wenn etwas bald weg muss.</p>
-        </div>
-
-        <div id="selectedIngredients" class="selected-ingredients"></div>
-      </div>
-    </section>
-
-    <section class="card rescue-card">
-      <div class="rescue-content">
-        <div>
-          <p class="eyebrow">Notfallmodus</p>
-          <h3>Ich hab keinen Bock</h3>
-          <p>
-            Keine Energie zum Kochen? Dann suchen wir dir etwas Schnelles mit wenig Aufwand.
-          </p>
-        </div>
-
-        <img
-          id="rescueMascot"
-          class="section-mascot rescue-mascot"
-          src="assets/images/themes/standard/kochtopf-kein-bock.png"
-          alt="Müder Küchenkumpel"
-        />
-      </div>
-
-      <button id="noMoodButton" class="secondary-button full-button" type="button">
-        Rette mein Abendessen
-      </button>
-    </section>
-
-    <section class="filters">
+    <section class="filters compact-filters" aria-label="Rezeptfilter">
       <button class="filter-button active" data-filter="all" type="button">Alles</button>
       <button class="filter-button" data-filter="schnell" type="button">Schnell</button>
       <button class="filter-button" data-filter="günstig" type="button">Günstig</button>
@@ -445,7 +404,7 @@
       <button class="filter-button" data-filter="vegetarisch" type="button">Vegetarisch</button>
     </section>
 
-    <section class="recommendation-section">
+    <section id="recommendationSection" class="recommendation-section compact-recommendation-section">
       <div class="section-heading section-heading-with-image">
         <div>
           <p class="eyebrow">Bester Treffer</p>
@@ -463,12 +422,31 @@
       <div id="topRecommendation"></div>
     </section>
 
-    <section id="favorites" class="results-section favorites-section">
-      <div class="section-heading section-heading-with-image">
+    <section id="recipes" class="results-section compact-results-section">
+      <div class="section-heading">
         <div>
-          <p class="eyebrow">Gemerkte Rezepte</p>
-          <h3>Favoriten</h3>
-          <p>Hier landen deine Küchenideen, die du nicht wieder verlieren willst.</p>
+          <p class="eyebrow">Weitere Ideen</p>
+          <h3>Rezeptvorschläge</h3>
+        </div>
+
+        <p id="resultCounter" class="counter-text">Noch keine Zutaten eingetragen.</p>
+      </div>
+
+      <button id="toggleMoreRecipesButton" class="soft-wide-button more-recipes-button" type="button">
+        Mehr Vorschläge zeigen
+      </button>
+
+      <div id="recipeResults" class="recipe-grid collapsible-recipe-grid hidden"></div>
+    </section>
+
+    <section id="favoritePreviewSection" class="card favorite-preview-card hidden">
+      <div class="favorite-preview-content">
+        <div>
+          <p class="eyebrow">Favoriten</p>
+          <h3>Gemerkte Rezepte</h3>
+          <p id="favoritePreviewText">
+            Du hast noch keine Favoriten gespeichert.
+          </p>
         </div>
 
         <img
@@ -479,25 +457,33 @@
         />
       </div>
 
+      <button id="showFavoritesButton" class="soft-wide-button" type="button">
+        Favoriten ansehen
+      </button>
+    </section>
+
+    <section id="favorites" class="results-section favorites-section compact-favorites-section hidden">
+      <div class="section-heading section-heading-with-image">
+        <div>
+          <p class="eyebrow">Gemerkte Rezepte</p>
+          <h3>Favoriten</h3>
+          <p>Hier landen deine Küchenideen, die du nicht wieder verlieren willst.</p>
+        </div>
+
+        <img
+          id="favoritesListMascot"
+          class="section-mascot favorite-mascot"
+          src="assets/images/themes/standard/kochtopf-idee.png"
+          alt="Küchenkumpel mit Favoriten"
+        />
+      </div>
+
       <div id="favoriteResults" class="recipe-grid"></div>
     </section>
 
-    <section id="recipes" class="results-section">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Weitere Ideen</p>
-          <h3>Rezeptvorschläge</h3>
-        </div>
-
-        <p id="resultCounter" class="counter-text">Noch keine Zutaten eingetragen.</p>
-      </div>
-
-      <div id="recipeResults" class="recipe-grid"></div>
-    </section>
-
-    <footer id="about" class="app-footer">
+    <footer id="about" class="app-footer compact-footer">
       <div class="footer-inner">
-        <div class="footer-brand">
+        <div class="footer-brand compact-footer-brand">
           <img
             id="footerMascot"
             class="footer-mascot"
@@ -506,30 +492,22 @@
           />
 
           <div>
-            <p class="footer-kicker">Küchenkumpel</p>
-            <p class="footer-claim">Aus Kühlschrank-Chaos wird Abendessen.</p>
+            <p class="footer-claim">Küchenkumpel by Christoph Dietrich</p>
           </div>
         </div>
 
-        <div class="footer-divider"></div>
-
-        <div class="footer-signature">
-          <p>entwickelt von</p>
-          <strong>Christoph Dietrich</strong>
-        </div>
-
-        <div class="footer-actions">
+        <div class="footer-actions compact-footer-actions">
           <a
             class="footer-link"
             href="https://christophdietrich19-dot.github.io/cd-christoph-it/"
             target="_blank"
             rel="noopener"
           >
-            Portfolio ansehen
+            Portfolio
           </a>
 
           <button id="showWelcomeButton" class="footer-reset-button" type="button">
-            Begrüßung wieder anzeigen
+            Begrüßung
           </button>
         </div>
       </div>
@@ -537,9 +515,9 @@
   </main>
 
   <nav class="bottom-nav" aria-label="App Navigation">
-    <a href="#moodSection" class="nav-link active" data-nav="moodSection">
+    <a href="#start" class="nav-link active" data-nav="start">
       <span class="nav-icon">⌂</span>
-      Küche
+      Start
     </a>
 
     <a href="#favorites" class="nav-link" data-nav="favorites">
@@ -562,7 +540,10 @@
     <div id="modalBackdrop" class="modal-backdrop"></div>
 
     <article class="modal-card">
-      <button id="closeModalButton" class="close-button" type="button">×</button>
+      <button id="closeModalButton" class="close-button" type="button" aria-label="Rezept schließen">
+        ×
+      </button>
+
       <div id="modalContent"></div>
     </article>
   </div>

@@ -1,11 +1,11 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.4.1",
+  version: "1.5.0",
 
   badge: "UPDATE",
 
   title: "Neu bei Küchenkumpel",
 
-  subtitle: "Dein Küchenbuddy kann dir jetzt selbst etwas vorschlagen.",
+  subtitle: "Weniger Chaos, mehr Kochen.",
 
   image: "assets/images/update-klemmbrett.png",
 
@@ -17,34 +17,34 @@ window.KUECHENKUMPEL_UPDATE = {
 
   items: [
     {
+      icon: "⌂",
+      title: "Startseite aufgeräumt",
+      text: "Alles wirkt ruhiger und du findest schneller dahin, wo du wirklich hinwillst."
+    },
+    {
       icon: "✦",
-      title: "Küchenkumpel empfiehlt",
-      text: "Wenn du keine Idee hast, schlägt dir der Kumpel jetzt ein passendes Rezept vor."
-    },
-    {
-      icon: "☀",
-      title: "Passt zur Tageszeit",
-      text: "Morgens, mittags, abends oder nachts: Die Empfehlung fühlt sich jetzt passender an."
-    },
-    {
-      icon: "🍂",
-      title: "Saison wird mitgedacht",
-      text: "Im Sommer eher leichter, im Winter eher wärmer und herzhafter."
+      title: "Was kochen wir heute?",
+      text: "Zutaten eingeben, schnell auswählen oder direkt den Küchenkumpel empfehlen lassen."
     },
     {
       icon: "🍽",
-      title: "Küchenlage zählt mit",
-      text: "Kein Bock, schnell, günstig oder richtig satt: Deine Auswahl beeinflusst die Empfehlung."
+      title: "Küchenlage als Chips",
+      text: "Kein Bock, schnell, günstig oder satt: Die Auswahl ist kompakter und trotzdem direkt da."
     },
     {
       icon: "↻",
-      title: "Andere Idee",
-      text: "Wenn dir der erste Vorschlag nicht passt, sucht Küchenkumpel dir einfach eine neue Idee."
+      title: "Mehr nur bei Bedarf",
+      text: "Mehr Zutaten und weitere Rezeptideen klappst du nur auf, wenn du sie brauchst."
+    },
+    {
+      icon: "♡",
+      title: "Favoriten ruhiger",
+      text: "Gemerkte Rezepte bleiben erreichbar, nehmen aber nicht mehr so viel Platz weg."
     }
   ],
 
   footerText: "Schön, dass du wieder da bist.",
-  footerHighlight: "Probier den neuen Empfehlungsbutton ruhig mal aus.",
+  footerHighlight: "Weniger Chaos, mehr Kochen.",
 
   buttonText: "Weiter",
 
