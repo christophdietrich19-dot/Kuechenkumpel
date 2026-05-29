@@ -2,3 +2,166 @@
 
 /* Küchenkumpel empfiehlt */
 #dailyRecommendationSection{position:relative;overflow:hidden;background:radial-gradient(circle at 96% 10%,var(--theme-bg-a),transparent 34%),linear-gradient(145deg,var(--theme-card-strong),var(--theme-card))}#dailyRecommendationSection::before{content:"";position:absolute;right:-90px;top:-110px;width:240px;height:240px;border-radius:999px;background:radial-gradient(circle,var(--theme-bg-a),transparent 68%);pointer-events:none}#dailyRecommendationSection .daily-recommendation-header{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px}#dailyRecommendationSection .daily-recommendation-header h3{margin:0 0 7px;color:var(--theme-deep);font-size:clamp(1.28rem,4vw,2rem);letter-spacing:-.04em;line-height:1.08}#dailyRecommendationSection .daily-recommendation-header p:not(.eyebrow){margin:0;max-width:560px;color:var(--muted);line-height:1.48}#dailyRecommendationSection .daily-recommendation-mascot{transform:rotate(3deg)}#dailyRecommendationSection .daily-recommendation-result{position:relative;z-index:2;margin:0 0 14px;padding:14px;border-radius:24px;background:rgba(255,255,255,.58);border:1px solid var(--border);box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}body[data-theme="halloween"] #dailyRecommendationSection .daily-recommendation-result{background:rgba(255,255,255,.07)}#dailyRecommendationSection .empty-daily-recommendation{display:grid;gap:4px}#dailyRecommendationSection .daily-recommendation-result strong{display:block;color:var(--theme-deep);margin-bottom:4px}#dailyRecommendationSection .daily-recommendation-result span,#dailyRecommendationSection .daily-recommendation-result p{display:block;color:var(--muted);line-height:1.45;margin:0}#dailyRecommendationSection .daily-recommendation-recipe{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:center}#dailyRecommendationSection .daily-recommendation-image{width:96px;height:96px;border-radius:22px;object-fit:cover;background:var(--theme-soft);border:1px solid var(--border);box-shadow:0 12px 26px rgba(67,43,24,.12)}#dailyRecommendationSection .daily-recommendation-copy{min-width:0}#dailyRecommendationSection .daily-recommendation-copy h4{margin:0 0 7px;color:var(--theme-deep);font-size:1.22rem;line-height:1.12;letter-spacing:-.03em}#dailyRecommendationSection .daily-recommendation-copy p{margin:0 0 10px;color:var(--muted);line-height:1.45}#dailyRecommendationSection .daily-recommendation-meta{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px}#dailyRecommendationSection .daily-recommendation-meta span{display:inline-flex;align-items:center;width:auto;padding:6px 9px;border-radius:999px;background:var(--theme-soft);border:1px solid var(--border);color:var(--theme-accent-dark);font-size:.76rem;font-weight:900;line-height:1.1}body[data-theme="halloween"] #dailyRecommendationSection .daily-recommendation-meta span{background:rgba(249,115,22,.16);color:#ffedd5}#dailyRecommendationSection .daily-recommendation-open-button{width:auto;margin-top:0;padding:10px 14px;min-height:40px}#dailyRecommendationSection .daily-recommendation-actions{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}#dailyRecommendationSection .daily-recommendation-button,#dailyRecommendationSection .daily-recommendation-secondary-button{min-height:50px}#dailyRecommendationSection .daily-recommendation-secondary-button:disabled{opacity:.48}@media (max-width:620px){#dailyRecommendationSection .daily-recommendation-header{align-items:flex-start}#dailyRecommendationSection .daily-recommendation-recipe{grid-template-columns:82px minmax(0,1fr);gap:11px}#dailyRecommendationSection .daily-recommendation-image{width:82px;height:82px;border-radius:19px}#dailyRecommendationSection .daily-recommendation-copy h4{font-size:1.08rem}#dailyRecommendationSection .daily-recommendation-copy p{font-size:.92rem}#dailyRecommendationSection .daily-recommendation-actions{grid-template-columns:1fr}#dailyRecommendationSection .daily-recommendation-secondary-button{width:100%}}@media (max-width:390px){#dailyRecommendationSection .daily-recommendation-header{gap:10px}#dailyRecommendationSection .daily-recommendation-header .section-mascot{width:58px}#dailyRecommendationSection .daily-recommendation-recipe{grid-template-columns:1fr}#dailyRecommendationSection .daily-recommendation-image{width:100%;height:150px;border-radius:20px}#dailyRecommendationSection .daily-recommendation-meta span{font-size:.72rem}}
+
+/* =========================================================
+   Fix 1.4.2 – Bottom-Navigation + mobile Begrüßung
+   Stand: komplette style.css, bestehende Optik bleibt erhalten
+   ========================================================= */
+
+body{
+  padding-bottom:calc(var(--nav-height) + 48px + env(safe-area-inset-bottom)) !important;
+}
+
+.app{
+  padding-bottom:calc(var(--nav-height) + 72px + env(safe-area-inset-bottom)) !important;
+}
+
+.bottom-nav{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  width:min(calc(100% - 24px),620px) !important;
+  height:var(--nav-height) !important;
+  overflow:hidden !important;
+}
+
+.nav-link{
+  min-width:0 !important;
+  padding:6px 4px !important;
+  line-height:1.12 !important;
+  white-space:normal !important;
+}
+
+.nav-icon{
+  flex:0 0 auto !important;
+}
+
+#about{
+  scroll-margin-bottom:calc(var(--nav-height) + 34px) !important;
+}
+
+@media (max-width:620px){
+  :root{
+    --nav-height:78px;
+  }
+
+  body{
+    padding-bottom:calc(var(--nav-height) + 42px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .app{
+    padding-bottom:calc(var(--nav-height) + 78px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .bottom-nav{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    width:min(calc(100% - 16px),540px) !important;
+    bottom:max(10px,env(safe-area-inset-bottom)) !important;
+    gap:4px !important;
+    padding:7px !important;
+    border-radius:26px !important;
+  }
+
+  .nav-link{
+    font-size:0.66rem !important;
+    gap:3px !important;
+    padding:6px 2px !important;
+  }
+
+  .nav-icon{
+    width:22px !important;
+    height:22px !important;
+    font-size:0.78rem !important;
+  }
+
+  .welcome-screen{
+    place-items:start center !important;
+    align-items:start !important;
+    justify-items:center !important;
+    padding:calc(12px + env(safe-area-inset-top)) 10px 16px !important;
+  }
+
+  .welcome-card{
+    margin:0 auto !important;
+    transform:none !important;
+    max-height:none !important;
+  }
+
+  .theme-preview-card{
+    margin-top:14px !important;
+  }
+
+  .theme-preview-mascot-wrap{
+    min-height:156px !important;
+    padding-top:8px !important;
+  }
+
+  .welcome-mascot{
+    width:min(158px,46vw) !important;
+    transform:translateY(0) !important;
+  }
+}
+
+@media (max-width:390px){
+  :root{
+    --nav-height:76px;
+  }
+
+  .bottom-nav{
+    width:min(calc(100% - 12px),500px) !important;
+    gap:3px !important;
+    padding:6px !important;
+  }
+
+  .nav-link{
+    font-size:0.62rem !important;
+    padding:5px 1px !important;
+  }
+
+  .nav-icon{
+    width:21px !important;
+    height:21px !important;
+    font-size:0.74rem !important;
+  }
+
+  .welcome-screen{
+    padding:calc(10px + env(safe-area-inset-top)) 8px 14px !important;
+  }
+
+  .theme-preview-mascot-wrap{
+    min-height:146px !important;
+    padding-top:6px !important;
+  }
+
+  .welcome-mascot{
+    width:min(146px,44vw) !important;
+  }
+}
+
+@media (max-height:560px) and (orientation:landscape){
+  :root{
+    --nav-height:66px;
+  }
+
+  body{
+    padding-bottom:calc(var(--nav-height) + 30px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .app{
+    padding-bottom:calc(var(--nav-height) + 54px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .bottom-nav{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    width:min(calc(100% - 18px),620px) !important;
+    height:var(--nav-height) !important;
+  }
+
+  .nav-link{
+    font-size:0.65rem !important;
+  }
+
+  .welcome-screen{
+    place-items:start center !important;
+    align-items:start !important;
+    justify-items:center !important;
+  }
+}

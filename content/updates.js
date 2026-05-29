@@ -1,5 +1,5 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.4.0",
+  version: "1.4.1",
 
   badge: "UPDATE",
 
@@ -7,13 +7,13 @@ window.KUECHENKUMPEL_UPDATE = {
 
   subtitle: "Dein Küchenbuddy kann dir jetzt selbst etwas vorschlagen.",
 
-  image: "assets/images/themes/standard/kochtopf-idee.png",
+  image: "assets/images/update-klemmbrett.png",
 
-  imageAlt: "Küchenkumpel hat eine Rezeptidee",
+  imageAlt: "Küchenkumpel mit Klemmbrett und Update-Checkliste",
 
-  mascot: "assets/images/themes/standard/kochtopf-idee.png",
+  mascot: "assets/images/update-klemmbrett.png",
 
-  mascotAlt: "Küchenkumpel hat eine Rezeptidee",
+  mascotAlt: "Küchenkumpel mit Klemmbrett und Update-Checkliste",
 
   items: [
     {
