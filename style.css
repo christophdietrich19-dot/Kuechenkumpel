@@ -1211,3 +1211,16 @@ body[data-theme="halloween"] .main-cooking-card .selected-area{
   }
 }
 
+/* =========================================================
+   FINALER FIX: Welcome-Screen wirklich ausblenden
+   Muss ganz am Ende stehen, damit mobile display:block-Regeln nicht gewinnen.
+   ========================================================= */
+
+#welcomeScreen.hidden,
+.welcome-screen.hidden{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+

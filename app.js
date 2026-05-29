@@ -1981,6 +1981,7 @@ function startApp(event) {
   if (welcomeScreen) {
     welcomeScreen.classList.add("hidden");
     welcomeScreen.setAttribute("aria-hidden", "true");
+    welcomeScreen.style.display = "none";
   }
 
   const startSection = document.getElementById("start");
@@ -1999,7 +2000,11 @@ function showWelcomeAgain() {
   localStorage.removeItem(HIDE_WELCOME_KEY);
 
   if (hideWelcomeCheckbox) hideWelcomeCheckbox.checked = false;
-  if (welcomeScreen) welcomeScreen.classList.remove("hidden");
+  if (welcomeScreen) {
+    welcomeScreen.style.display = "";
+    welcomeScreen.classList.remove("hidden");
+    welcomeScreen.removeAttribute("aria-hidden");
+  }
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -2040,6 +2045,48 @@ function initNav() {
   window.addEventListener("load", updateActiveNavByScroll);
   window.addEventListener("resize", updateActiveNavByScroll);
 }
+
+
+function eventHitsStartButton(event) {
+  if (!startAppButton) {
+    return false;
+  }
+
+  const rect = startAppButton.getBoundingClientRect();
+  let point = null;
+
+  if (event.touches && event.touches.length > 0) {
+    point = event.touches[0];
+  } else if (event.changedTouches && event.changedTouches.length > 0) {
+    point = event.changedTouches[0];
+  } else if (typeof event.clientX === "number" && typeof event.clientY === "number") {
+    point = event;
+  }
+
+  if (!point) {
+    return false;
+  }
+
+  return (
+    point.clientX >= rect.left &&
+    point.clientX <= rect.right &&
+    point.clientY >= rect.top &&
+    point.clientY <= rect.bottom
+  );
+}
+
+function handleStartButtonFallback(event) {
+  if (!welcomeScreen || welcomeScreen.classList.contains("hidden")) {
+    return;
+  }
+
+  const target = event.target && event.target.closest ? event.target.closest("#startAppButton") : null;
+
+  if (target || eventHitsStartButton(event)) {
+    startApp(event);
+  }
+}
+
 
 function bindEvents() {
   if (addIngredientButton) {
@@ -2116,13 +2163,10 @@ function bindEvents() {
     startAppButton.addEventListener("pointerup", startApp);
   }
 
-  document.addEventListener("click", (event) => {
-    const target = event.target.closest("#startAppButton");
-
-    if (target) {
-      startApp(event);
-    }
-  });
+  document.addEventListener("pointerdown", handleStartButtonFallback, true);
+  document.addEventListener("touchstart", handleStartButtonFallback, { capture: true, passive: false });
+  document.addEventListener("mousedown", handleStartButtonFallback, true);
+  document.addEventListener("click", handleStartButtonFallback, true);
   if (showWelcomeButton) showWelcomeButton.addEventListener("click", showWelcomeAgain);
 
   if (dailyRecommendationButton) {
