@@ -87,6 +87,7 @@ let cachedDailyRecommendationPool = [];
 let moreIngredientsVisible = false;
 let moreRecipesVisible = false;
 let favoritesVisible = false;
+let appStartLocked = false;
 
 const THEME_KEY = "kuechenkumpelTheme";
 const HIDE_WELCOME_KEY = "kuechenkumpelHideWelcome";
@@ -1957,7 +1958,18 @@ function initWelcomeScreen() {
   }
 }
 
-function startApp() {
+function startApp(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  if (appStartLocked) {
+    return;
+  }
+
+  appStartLocked = true;
+
   if (rememberThemeCheckbox && rememberThemeCheckbox.checked) {
     localStorage.setItem(THEME_KEY, activeTheme);
   }
@@ -1968,12 +1980,18 @@ function startApp() {
 
   if (welcomeScreen) {
     welcomeScreen.classList.add("hidden");
+    welcomeScreen.setAttribute("aria-hidden", "true");
   }
 
   const startSection = document.getElementById("start");
 
   if (startSection) {
-    setTimeout(() => startSection.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+    setTimeout(() => {
+      startSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      appStartLocked = false;
+    }, 120);
+  } else {
+    appStartLocked = false;
   }
 }
 
@@ -2092,7 +2110,19 @@ function bindEvents() {
     });
   }
 
-  if (startAppButton) startAppButton.addEventListener("click", startApp);
+  if (startAppButton) {
+    startAppButton.addEventListener("click", startApp);
+    startAppButton.addEventListener("touchend", startApp, { passive: false });
+    startAppButton.addEventListener("pointerup", startApp);
+  }
+
+  document.addEventListener("click", (event) => {
+    const target = event.target.closest("#startAppButton");
+
+    if (target) {
+      startApp(event);
+    }
+  });
   if (showWelcomeButton) showWelcomeButton.addEventListener("click", showWelcomeAgain);
 
   if (dailyRecommendationButton) {
@@ -2136,6 +2166,8 @@ function bindEvents() {
     }
   });
 }
+
+window.kuechenkumpelStartApp = startApp;
 
 function initApp() {
   bindEvents();
