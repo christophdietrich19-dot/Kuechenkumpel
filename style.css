@@ -1124,3 +1124,90 @@ body[data-theme="halloween"] .main-cooking-card .selected-area{
   }
 }
 
+/* =========================================================
+   KUECHENKUMPEL 1.5.0 - MOBILE LOSKOCHEN TOUCH FIX
+   Fix für Handy: Button liegt garantiert über allen Deko-Ebenen
+   ========================================================= */
+
+.welcome-screen{
+  pointer-events:auto !important;
+}
+
+.welcome-card,
+.compact-welcome-card{
+  position:relative !important;
+  isolation:isolate !important;
+}
+
+.welcome-card::before,
+.compact-welcome-card::before,
+.welcome-background-deco,
+.welcome-deco-one,
+.welcome-deco-two,
+.theme-preview-glow,
+.update-pinup-decoration{
+  pointer-events:none !important;
+}
+
+.welcome-header,
+.compact-welcome-header,
+.theme-preview-card,
+.compact-theme-preview-card,
+.theme-picker,
+.compact-theme-picker{
+  position:relative !important;
+  z-index:2 !important;
+}
+
+.welcome-actions,
+.compact-welcome-actions{
+  position:relative !important;
+  z-index:50 !important;
+  pointer-events:auto !important;
+}
+
+#startAppButton{
+  position:relative !important;
+  z-index:100 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:rgba(0,0,0,0) !important;
+  user-select:none !important;
+}
+
+#startAppButton::before,
+#startAppButton::after{
+  pointer-events:none !important;
+}
+
+.welcome-options,
+.welcome-options *,
+.toggle-option,
+.toggle-option *{
+  pointer-events:auto !important;
+}
+
+/* Auf Handy bekommt der Startbutton zusätzlich freien Touch-Raum */
+@media (max-width:620px){
+  .compact-welcome-actions{
+    position:relative !important;
+    z-index:80 !important;
+    padding-top:2px !important;
+    padding-bottom:4px !important;
+  }
+
+  #startAppButton{
+    min-height:52px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:min(100%,340px) !important;
+    margin:0 auto !important;
+  }
+
+  .compact-theme-picker{
+    position:relative !important;
+    z-index:2 !important;
+  }
+}
+
