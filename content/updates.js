@@ -1,11 +1,11 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.5.0",
+  version: "1.6.0",
 
   badge: "UPDATE",
 
   title: "Neu bei Küchenkumpel",
 
-  subtitle: "Weniger Chaos, mehr Kochen.",
+  subtitle: "100 Rezeptideen sind jetzt am Start.",
 
   image: "assets/images/update-klemmbrett.png",
 
@@ -17,34 +17,34 @@ window.KUECHENKUMPEL_UPDATE = {
 
   items: [
     {
-      icon: "⌂",
-      title: "Startseite aufgeräumt",
-      text: "Alles wirkt ruhiger und du findest schneller dahin, wo du wirklich hinwillst."
+      icon: "🍽",
+      title: "Jetzt mit 100 Rezeptideen",
+      text: "Mehr Auswahl für Alltag, Feierabend, Kein-Bock-Tage und alles, was im Kühlschrank noch auf seinen Auftritt wartet."
     },
     {
       icon: "✦",
-      title: "Was kochen wir heute?",
-      text: "Zutaten eingeben, schnell auswählen oder direkt den Küchenkumpel empfehlen lassen."
+      title: "50 neue Rezepte ergänzt",
+      text: "Von One-Pot-Nudeln über Restepfannen bis zu Frühstücks-Snacks ist jetzt deutlich mehr dabei."
     },
     {
-      icon: "🍽",
-      title: "Küchenlage als Chips",
-      text: "Kein Bock, schnell, günstig oder satt: Die Auswahl ist kompakter und trotzdem direkt da."
+      icon: "🥦",
+      title: "Mehr Ideen für Reste",
+      text: "Wenn Kartoffeln, Reis, Nudeln oder Gemüse weg müssen, findet Küchenkumpel jetzt noch öfter etwas Passendes."
     },
     {
-      icon: "↻",
-      title: "Mehr nur bei Bedarf",
-      text: "Mehr Zutaten und weitere Rezeptideen klappst du nur auf, wenn du sie brauchst."
+      icon: "⏱",
+      title: "Mehr schnelle Feierabendküche",
+      text: "Für müde Abende gibt es neue einfache Gerichte, die ohne großes Küchen-Drama funktionieren."
     },
     {
       icon: "♡",
-      title: "Favoriten ruhiger",
-      text: "Gemerkte Rezepte bleiben erreichbar, nehmen aber nicht mehr so viel Platz weg."
+      title: "Mehr Auswahl zum Merken",
+      text: "Du kannst jetzt noch mehr Lieblingsrezepte speichern und später schnell wiederfinden."
     }
   ],
 
   footerText: "Schön, dass du wieder da bist.",
-  footerHighlight: "Weniger Chaos, mehr Kochen.",
+  footerHighlight: "Mehr Rezepte, weniger Sucherei.",
 
   buttonText: "Weiter",
 

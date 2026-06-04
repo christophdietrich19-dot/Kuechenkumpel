@@ -707,7 +707,14 @@ function buildRecipes() {
   });
 }
 
-const recipes = buildRecipes();
+let recipes = [];
+
+function refreshRecipes() {
+  recipes = buildRecipes();
+  return recipes;
+}
+
+refreshRecipes();
 
 function getThemeMascotPath(themeName, mascotKey) {
   const settings = themeSettings[themeName] || themeSettings.standard;
@@ -1426,18 +1433,31 @@ function renderFavorites() {
 }
 
 function renderRecipeResults() {
-  if (!recipeResults || !resultCounter || !toggleMoreRecipesButton) return;
+  if (!recipeResults || !resultCounter) return;
 
+  const hasIngredients = selectedIngredients.length > 0;
   const matches = getMatches();
+  const hasToggleButton = !!toggleMoreRecipesButton;
 
-  recipeResults.classList.toggle("hidden", !moreRecipesVisible);
-  toggleMoreRecipesButton.textContent = moreRecipesVisible
-    ? "Vorschläge ausblenden"
-    : "Mehr Vorschläge zeigen";
+  if (!hasToggleButton) {
+    moreRecipesVisible = true;
+  }
 
-  if (selectedIngredients.length === 0) {
+  if (hasToggleButton) {
+    toggleMoreRecipesButton.textContent = moreRecipesVisible
+      ? "Vorschläge ausblenden"
+      : "Mehr Vorschläge zeigen";
+  }
+
+  if (!hasIngredients) {
     resultCounter.textContent = "Noch keine Zutaten eingetragen.";
-    toggleMoreRecipesButton.disabled = true;
+
+    if (hasToggleButton) {
+      toggleMoreRecipesButton.disabled = true;
+    }
+
+    moreRecipesVisible = false;
+    recipeResults.classList.add("hidden");
     recipeResults.innerHTML = `
       <div class="empty-state">
         Trag ein paar Zutaten ein. Dann kommen hier weitere Ideen.
@@ -1446,9 +1466,15 @@ function renderRecipeResults() {
     return;
   }
 
-  if (matches.length <= 1) {
-    resultCounter.textContent = matches.length === 1 ? "Ein guter Treffer gefunden." : "Noch nichts Passendes gefunden.";
-    toggleMoreRecipesButton.disabled = true;
+  if (matches.length === 0) {
+    resultCounter.textContent = "Noch nichts Passendes gefunden.";
+
+    if (hasToggleButton) {
+      toggleMoreRecipesButton.disabled = true;
+    }
+
+    moreRecipesVisible = false;
+    recipeResults.classList.add("hidden");
     recipeResults.innerHTML = `
       <div class="empty-state">
         Im Moment gibt es keine weiteren Vorschläge. Eine Zutat mehr würde helfen.
@@ -1457,13 +1483,39 @@ function renderRecipeResults() {
     return;
   }
 
+  if (matches.length === 1) {
+    resultCounter.textContent = "Ein guter Treffer gefunden.";
+
+    if (hasToggleButton) {
+      toggleMoreRecipesButton.disabled = true;
+      moreRecipesVisible = false;
+      recipeResults.classList.add("hidden");
+    } else {
+      moreRecipesVisible = true;
+      recipeResults.classList.remove("hidden");
+    }
+
+    recipeResults.innerHTML = `
+      <div class="empty-state">
+        Ich habe gerade nur diesen einen wirklich passenden Treffer. Eine Zutat mehr bringt mehr Auswahl.
+      </div>
+    `;
+    return;
+  }
+
   const visibleMatches = matches.slice(1, 13);
+
   resultCounter.textContent = `${matches.length} Idee${matches.length === 1 ? "" : "n"} gefunden.`;
-  toggleMoreRecipesButton.disabled = false;
+
+  if (hasToggleButton) {
+    toggleMoreRecipesButton.disabled = false;
+    recipeResults.classList.toggle("hidden", !moreRecipesVisible);
+  } else {
+    recipeResults.classList.remove("hidden");
+  }
 
   recipeResults.innerHTML = visibleMatches.map((match) => createRecipeCard(match, false)).join("");
 }
-
 function getRecipeSearchText(recipe) {
   return normalize(
     [
@@ -1940,6 +1992,8 @@ function setActiveFilter(filter) {
 }
 
 function renderAll() {
+  refreshRecipes();
+
   renderQuickIngredients();
   renderSelectedIngredients();
   renderRecommendations();
@@ -2214,6 +2268,8 @@ function bindEvents() {
 window.kuechenkumpelStartApp = startApp;
 
 function initApp() {
+  refreshRecipes();
+
   bindEvents();
   loadFavorites();
   initTheme();
@@ -2225,7 +2281,7 @@ function initApp() {
   initUpdateFlyer();
 
   if (!recipes.length) {
-    updateBuddyTextOnly("Ich finde gerade keine Rezepte. Schau bitte, ob recipes.js vor app.js geladen wird.");
+    updateBuddyTextOnly("Ich finde gerade keine Rezepte. Schau bitte, ob die Rezeptdateien vor app.js geladen werden.");
   }
 }
 
