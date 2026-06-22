@@ -1,6 +1,6 @@
 window.KUECHENKUMPEL_VERSION = {
-  app: "1.9.1",
-  recipes: "130-rezepte-logo-airfryer-clean",
+  app: "1.9.2",
+  recipes: "130-rezepte-website-ready",
   images: "airfryer-banner-textfix",
-  build: "text-und-bannerfix"
+  build: "website-ready-namefix"
 };

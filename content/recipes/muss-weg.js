@@ -166,7 +166,7 @@ const MUSS_WEG_RECIPES = [
   },
   {
     "id": 63,
-    "name": "Brotpizza",
+    "name": "Brotpizza aus Resten",
     "category": "Muss-weg / Resteküche",
     "slogan": "Altes Brot? Nein. Kleine Pizza mit Vergangenheit.",
     "portions": 2,
@@ -233,7 +233,7 @@ const MUSS_WEG_RECIPES = [
     ],
     "shortDescription": "Pizza-Gefühl auf Brot. Perfekt, wenn Brot, Käse und kleine Reste weg müssen.",
     "slug": "brotpizza-muss-weg",
-    "imageAlt": "Brotpizza – Küchenkumpel Rezeptbild",
+    "imageAlt": "Brotpizza aus Resten – Küchenkumpel Rezeptbild",
     "categories": [
       "muss-weg"
     ],
@@ -241,7 +241,7 @@ const MUSS_WEG_RECIPES = [
   },
   {
     "id": 64,
-    "name": "Nudelauflauf mit Resten",
+    "name": "Nudelauflauf aus Kühlschrankresten",
     "category": "Muss-weg / Resteküche",
     "slogan": "Nudeln, Reste, Käse. Mehr muss ein Abend manchmal nicht können.",
     "portions": 4,
@@ -318,7 +318,7 @@ const MUSS_WEG_RECIPES = [
     ],
     "shortDescription": "Ein Auflauf für Nudeln und Reste. Käse drüber, Ofen an, Hunger beruhigt.",
     "slug": "nudelauflauf-mit-resten-muss-weg",
-    "imageAlt": "Nudelauflauf mit Resten – Küchenkumpel Rezeptbild",
+    "imageAlt": "Nudelauflauf aus Kühlschrankresten – Küchenkumpel Rezeptbild",
     "categories": [
       "muss-weg"
     ],
