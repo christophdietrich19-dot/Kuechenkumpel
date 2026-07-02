@@ -4,7 +4,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Küchenkumpel</title>
+  <title>Küchenkumpel | Rezeptideen aus Kühlschrank-Chaos</title>
+  <meta
+    name="description"
+    content="Küchenkumpel findet Rezeptideen aus vorhandenen Zutaten – mit Favoriten, Resteküche, Heißluftfritteuse und Sommerideen für warme Tage."
+  />
+  <link rel="canonical" href="https://christophdietrich19-dot.github.io/Kuechenkumpel/" />
+
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Küchenkumpel | Rezeptideen aus Kühlschrank-Chaos" />
+  <meta
+    property="og:description"
+    content="Eine kleine Küchen-App für schnelle Rezeptideen, Resteküche, Favoriten, Heißluftfritteuse und Sommergerichte."
+  />
+  <meta property="og:url" content="https://christophdietrich19-dot.github.io/Kuechenkumpel/" />
+  <meta property="og:site_name" content="Küchenkumpel" />
+  <meta
+    property="og:image"
+    content="https://christophdietrich19-dot.github.io/Kuechenkumpel/assets/images/branding/og-kuechenkumpel.jpg"
+  />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Küchenkumpel – Rezeptideen aus Kühlschrank-Chaos" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Küchenkumpel | Rezeptideen aus Kühlschrank-Chaos" />
+  <meta
+    name="twitter:description"
+    content="Rezeptideen aus vorhandenen Zutaten: schnell, alltagstauglich und mit frischen Sommerideen."
+  />
+  <meta
+    name="twitter:image"
+    content="https://christophdietrich19-dot.github.io/Kuechenkumpel/assets/images/branding/og-kuechenkumpel.jpg"
+  />
+
+  <meta name="theme-color" content="#f28a21" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="assets/images/branding/apple-touch-icon.png" />
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -418,13 +455,13 @@
     </section>
 
     <section class="filters">
-      <button class="filter-button active" data-filter="all" type="button">Alles</button>
-      <button class="filter-button" data-filter="schnell" type="button">Schnell</button>
-      <button class="filter-button" data-filter="günstig" type="button">Günstig</button>
-      <button class="filter-button" data-filter="muss weg" type="button">Muss weg</button>
-      <button class="filter-button" data-filter="vegetarisch" type="button">Vegetarisch</button>
-      <button class="filter-button" data-filter="heissluftfritteuse" type="button">Heißluftfritteuse</button>
-      <button class="filter-button" data-filter="zu heiß zum kochen" type="button">Zu heiß zum Kochen</button>
+      <button class="filter-button active" data-filter="all" type="button" aria-pressed="true">Alles</button>
+      <button class="filter-button" data-filter="schnell" type="button" aria-pressed="false">Schnell</button>
+      <button class="filter-button" data-filter="günstig" type="button" aria-pressed="false">Günstig</button>
+      <button class="filter-button" data-filter="muss weg" type="button" aria-pressed="false">Muss weg</button>
+      <button class="filter-button" data-filter="vegetarisch" type="button" aria-pressed="false">Vegetarisch</button>
+      <button class="filter-button" data-filter="heissluftfritteuse" type="button" aria-pressed="false">Heißluftfritteuse</button>
+      <button class="filter-button" data-filter="zu heiß zum kochen" type="button" aria-pressed="false">Zu heiß zum Kochen</button>
     </section>
 
     <section id="airfryerSpecial" class="airfryer-special-card card">
@@ -502,10 +539,10 @@
           <h3>Rezeptvorschläge</h3>
         </div>
 
-        <p id="resultCounter" class="counter-text">Noch keine Zutaten eingetragen.</p>
+        <p id="resultCounter" class="counter-text" aria-live="polite">Noch keine Zutaten eingetragen.</p>
       </div>
 
-      <div id="recipeResults" class="recipe-grid"></div>
+      <div id="recipeResults" class="recipe-grid" aria-live="polite"></div>
     </section>
 
     <footer id="about" class="app-footer">
@@ -531,14 +568,32 @@
           <strong>Christoph Dietrich</strong>
         </div>
 
-        <div class="footer-actions">
+        <div class="footer-actions" aria-label="Links und App-Aktionen">
           <a
             class="footer-link"
             href="https://christoph-it.de/"
             target="_blank"
             rel="noopener"
           >
-            Portfolio ansehen
+            Portfolio
+          </a>
+
+          <a
+            class="footer-link"
+            href="https://christoph-it.de/impressum"
+            target="_blank"
+            rel="noopener"
+          >
+            Impressum
+          </a>
+
+          <a
+            class="footer-link"
+            href="https://christoph-it.de/datenschutz"
+            target="_blank"
+            rel="noopener"
+          >
+            Datenschutz
           </a>
 
           <button id="showWelcomeButton" class="footer-reset-button" type="button">
@@ -571,11 +626,11 @@
     </a>
   </nav>
 
-  <div id="recipeModal" class="modal hidden">
-    <div id="modalBackdrop" class="modal-backdrop"></div>
+  <div id="recipeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalRecipeTitle" aria-hidden="true">
+    <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true"></div>
 
-    <article class="modal-card">
-      <button id="closeModalButton" class="close-button" type="button">×</button>
+    <article class="modal-card" role="document">
+      <button id="closeModalButton" class="close-button" type="button" aria-label="Rezept schließen">×</button>
       <div id="modalContent"></div>
     </article>
   </div>

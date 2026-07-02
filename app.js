@@ -1321,6 +1321,7 @@ function renderQuickIngredients() {
     toggleMoreIngredientsButton.textContent = moreIngredientsVisible
       ? "Weniger Zutaten anzeigen"
       : "Mehr Zutaten anzeigen";
+    toggleMoreIngredientsButton.setAttribute("aria-expanded", String(moreIngredientsVisible));
   }
 }
 
@@ -1580,6 +1581,7 @@ function renderRecipeResults() {
     toggleMoreRecipesButton.textContent = moreRecipesVisible
       ? "Vorschläge ausblenden"
       : "Mehr Vorschläge zeigen";
+    toggleMoreRecipesButton.setAttribute("aria-expanded", String(moreRecipesVisible));
   }
 
   if (!hasIngredients) {
@@ -1587,6 +1589,7 @@ function renderRecipeResults() {
 
     if (hasToggleButton) {
       toggleMoreRecipesButton.disabled = true;
+      toggleMoreRecipesButton.setAttribute("aria-expanded", "false");
     }
 
     moreRecipesVisible = false;
@@ -1604,6 +1607,7 @@ function renderRecipeResults() {
 
     if (hasToggleButton) {
       toggleMoreRecipesButton.disabled = true;
+      toggleMoreRecipesButton.setAttribute("aria-expanded", "false");
     }
 
     moreRecipesVisible = false;
@@ -1621,6 +1625,7 @@ function renderRecipeResults() {
 
     if (hasToggleButton) {
       toggleMoreRecipesButton.disabled = true;
+      toggleMoreRecipesButton.setAttribute("aria-expanded", "false");
       moreRecipesVisible = false;
       recipeResults.classList.add("hidden");
     } else {
@@ -1942,6 +1947,12 @@ function openRecipeModal(recipeId) {
 
   renderRecipeModal(recipe);
   recipeModal.classList.remove("hidden");
+  recipeModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+
+  if (closeModalButton) {
+    closeModalButton.focus();
+  }
 }
 
 function renderRecipeModal(recipe) {
@@ -1962,7 +1973,7 @@ function renderRecipeModal(recipe) {
           ${createFavoriteButton(recipe)}
         </div>
 
-        <h3>${escapeHtml(recipe.title)}</h3>
+        <h3 id="modalRecipeTitle">${escapeHtml(recipe.title)}</h3>
         <p class="recipe-saying">${escapeHtml(recipe.saying)}</p>
         <p class="modal-description">${escapeHtml(recipe.shortDescription || "")}</p>
       </div>
@@ -2100,7 +2111,12 @@ function formatNumber(value) {
 }
 
 function closeRecipeModal() {
-  if (recipeModal) recipeModal.classList.add("hidden");
+  if (recipeModal) {
+    recipeModal.classList.add("hidden");
+    recipeModal.setAttribute("aria-hidden", "true");
+  }
+
+  document.body.classList.remove("modal-open");
 }
 
 function copyMissingIngredients(recipeId) {
@@ -2135,7 +2151,9 @@ function setActiveFilter(filter) {
   cachedDailyRecommendationPool = [];
 
   filterButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.filter === filter);
+    const isActive = button.dataset.filter === filter;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
   });
 
   renderAll();
