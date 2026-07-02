@@ -1,47 +1,44 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.9.1",
+  version: "1.10.0",
 
   badge: "UPDATE",
 
   title: "Neu bei Küchenkumpel",
 
-  subtitle: "Jetzt gibt es auch Ideen für die Heißluftfritteuse.",
+  subtitle: "Zu heiß zum Kochen? Dann bleibt die Küche entspannter.",
 
-  image: "assets/images/specials/airfryer-kuechenkumpel.png",
+  image: "assets/images/themes/sommer/kochtopf-idee.png",
 
-  imageAlt: "Küchenkumpel mit Heißluftfritteuse",
+  imageAlt: "Küchenkumpel mit Sommerideen",
 
-  mascot: "assets/images/specials/airfryer-kuechenkumpel.jpg",
+  mascot: "assets/images/themes/sommer/kochtopf-idee.png",
 
-  mascotAlt: "Küchenkumpel mit Ninja-Heißluftfritteuse",
+  mascotAlt: "Küchenkumpel mit Sommerideen",
 
   items: [
     {
-      icon: "🌪",
-      title: "Heißluftrezepte am Start",
-      text: "Knusprige Ideen für schnelle Gerichte, kleine Snacks und einfache Abende mit wenig Abwasch."
+      icon: "☀️",
+      title: "Zu heiß zum Kochen",
+      text: "50 neue Ideen für warme Tage: frisch, leicht und ohne langes Stehen am Herd."
     },
     {
-      icon: "🥷",
-      title: "Mit Ninja im Blick",
-      text: "Der neue Bereich orientiert sich an Ninja Heißluftfritteusen und bleibt offen für weitere Geräte."
+      icon: "🥗",
+      title: "Salate, Bowls und Wraps",
+      text: "Mehr schnelle Mittagessen und Abendessen, die satt machen, aber nicht schwer wirken."
     },
     {
-      icon: "🧡",
-      title: "Frischer Auftritt",
-      text: "Küchenkumpel bekommt ein neues Logo und wirkt dadurch einheitlicher in App, Website und Downloadbereich."
+      icon: "🧊",
+      title: "Wenig Herd, wenig Stress",
+      text: "Viele Rezepte funktionieren kalt, lauwarm oder mit nur wenigen Minuten Kochzeit."
     },
     {
       icon: "🍽",
-      title: "Alles bleibt vertraut",
-      text: "Deine bisherigen Rezeptideen bleiben erhalten. Die Heißluftrezepte kommen einfach dazu."
+      title: "Jetzt 180 Rezeptideen",
+      text: "Die bisherigen Rezepte bleiben erhalten. Der Sommerblock kommt einfach dazu."
     }
   ],
 
   footerText: "Schön, dass du wieder da bist.",
-  footerHighlight: "Viel Spaß beim Ausprobieren.",
 
-  buttonText: "Weiter",
-
-  laterText: "Später nochmal anschauen"
+  buttonText: "Loskochen"
 };
