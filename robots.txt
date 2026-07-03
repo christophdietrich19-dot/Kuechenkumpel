@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://christophdietrich19-dot.github.io/Kuechenkumpel/sitemap.xml

@@ -1753,3 +1753,34 @@ body[data-theme="airfryer"] .theme-preview-mascot-wrap .welcome-mascot{width:min
     width: 100% !important;
   }
 }
+
+
+/* 1.12.1 Performance & Feinschliff */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid rgba(242, 138, 33, 0.95);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 6px rgba(242, 138, 33, 0.18);
+}
+
+.footer-link:focus-visible,
+.nav-link:focus-visible,
+.recipe-card:focus-visible,
+.recommendation-card:focus-visible {
+  border-radius: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -1,40 +1,35 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.12.0",
+  version: "1.12.1",
 
-  badge: "UPDATE",
+  badge: "FEINSCHLIFF",
 
-  title: "Neu bei Küchenkumpel",
+  title: "Küchenkumpel ist leichter geworden",
 
-  subtitle: "Mehr Komfort beim Stöbern, Kochen und Planen.",
+  subtitle: "Weniger Ballast, schnellerer Start und bessere Bedienbarkeit.",
 
   image: "assets/images/themes/standard/kochtopf-idee.png",
 
-  imageAlt: "Küchenkumpel mit Komfortfunktionen",
+  imageAlt: "Küchenkumpel mit Performance-Feinschliff",
 
   mascot: "assets/images/themes/standard/kochtopf-idee.png",
 
-  mascotAlt: "Küchenkumpel mit Komfortfunktionen",
+  mascotAlt: "Küchenkumpel mit Performance-Feinschliff",
 
   items: [
     {
-      icon: "🎲",
-      title: "Überrasch mich",
-      text: "Küchenkumpel kann jetzt spontan ein Rezept ziehen, passend zu Filter, Suche oder Vorrat."
+      icon: "⚡",
+      title: "Bilder optimiert",
+      text: "Die großen Maskottchen- und Logo-Bilder wurden deutlich verkleinert, ohne Pfade oder Namen zu ändern."
     },
     {
-      icon: "👨‍🍳",
-      title: "Kochmodus und Timer",
-      text: "Im Rezept gibt es jetzt Schritt-für-Schritt-Ansicht, Timer, Teilen und Druckansicht."
+      icon: "🖼️",
+      title: "Bilder laden ruhiger",
+      text: "Nicht sofort sichtbare Bilder werden später geladen und blockieren den Start weniger."
     },
     {
-      icon: "♡",
-      title: "Favoriten und Verlauf",
-      text: "Favoriten lassen sich kopieren oder leeren. Zuletzt angesehene Rezepte bleiben griffbereit."
-    },
-    {
-      icon: "📊",
-      title: "Mehr Überblick",
-      text: "Sortierung, Hinweise, kleine Statistik und Küchenkumpel-Fragen machen die App runder."
+      icon: "⌨️",
+      title: "Tastaturfreundlicher",
+      text: "Buttons, Links und Eingaben haben jetzt ein besser sichtbares Fokus-Highlight."
     }
   ],
 
