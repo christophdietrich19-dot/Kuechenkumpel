@@ -421,7 +421,7 @@
 
       <div id="quickIngredients" class="quick-ingredients"></div>
 
-      <div class="selected-area">
+      <div id="selectedArea" class="selected-area">
         <div class="selected-heading">
           <h4>Ausgewählt</h4>
           <p>Tippe auf die Uhr, wenn etwas bald weg muss.</p>
@@ -429,6 +429,85 @@
 
         <div id="selectedIngredients" class="selected-ingredients"></div>
       </div>
+
+      <div id="smartSuggestions" class="smart-suggestions hidden" aria-live="polite"></div>
+
+    </section>
+
+
+
+    <section id="dailyRecommendationSection" class="card daily-recommendation-section">
+      <div class="card-title">
+        <div>
+          <p class="eyebrow">Schnelle Entscheidung</p>
+          <h3>Heute einfach entscheiden</h3>
+          <p>Hol dir ein passendes Rezept für heute oder lass Küchenkumpel spontan eins ziehen.</p>
+        </div>
+      </div>
+
+      <div class="decision-actions">
+        <button id="dailyRecommendationButton" class="primary-button" type="button">
+          Rezept des Tages
+        </button>
+
+        <button id="dailyRecommendationAgainButton" class="secondary-button" type="button">
+          Noch eins
+        </button>
+
+        <button id="surpriseRecipeButton" class="ghost-button" type="button">
+          Überrasch mich
+        </button>
+      </div>
+
+      <div id="dailyRecommendationResult" class="daily-recommendation-result empty-daily-recommendation" aria-live="polite">
+        <strong>Noch keine Tagesidee gewählt.</strong>
+        <span>Drück auf „Rezept des Tages“ oder „Überrasch mich“.</span>
+      </div>
+    </section>
+
+    <section class="card pantry-card">
+      <div class="card-title">
+        <div>
+          <p class="eyebrow">Vorratskammer</p>
+          <h3>Habe ich fast immer da</h3>
+          <p>Speichere Standardzutaten wie Reis, Nudeln, Eier oder Öl. Küchenkumpel rechnet sie dann automatisch mit ein.</p>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <input
+          id="pantryInput"
+          type="text"
+          placeholder="z. B. Reis, Öl, Eier"
+          autocomplete="off"
+        />
+
+        <button id="addPantryButton" type="button">
+          Speichern
+        </button>
+      </div>
+
+      <div class="pantry-quick-row" aria-label="Schnelle Vorratszutaten">
+        <button class="pantry-quick-button" type="button" data-pantry-quick="öl">Öl</button>
+        <button class="pantry-quick-button" type="button" data-pantry-quick="salz">Salz</button>
+        <button class="pantry-quick-button" type="button" data-pantry-quick="pfeffer">Pfeffer</button>
+        <button class="pantry-quick-button" type="button" data-pantry-quick="nudeln">Nudeln</button>
+        <button class="pantry-quick-button" type="button" data-pantry-quick="reis">Reis</button>
+        <button class="pantry-quick-button" type="button" data-pantry-quick="eier">Eier</button>
+        <button class="pantry-quick-button" type="button" data-pantry-quick="käse">Käse</button>
+        <button class="pantry-quick-button" type="button" data-pantry-quick="brot">Brot</button>
+        <button class="pantry-quick-button" type="button" data-pantry-quick="zwiebeln">Zwiebeln</button>
+        <button class="pantry-quick-button" type="button" data-pantry-quick="knoblauch">Knoblauch</button>
+      </div>
+
+      <div class="pantry-list-head">
+        <h4>Gespeicherter Vorrat</h4>
+        <button id="clearPantryButton" class="ghost-button tiny-action-button" type="button">
+          Vorrat leeren
+        </button>
+      </div>
+
+      <div id="pantryItems" class="selected-ingredients pantry-items" aria-live="polite"></div>
     </section>
 
     <section class="card rescue-card">
@@ -462,6 +541,52 @@
       <button class="filter-button" data-filter="vegetarisch" type="button" aria-pressed="false">Vegetarisch</button>
       <button class="filter-button" data-filter="heissluftfritteuse" type="button" aria-pressed="false">Heißluftfritteuse</button>
       <button class="filter-button" data-filter="zu heiß zum kochen" type="button" aria-pressed="false">Zu heiß zum Kochen</button>
+    </section>
+
+
+
+    <section class="card recipe-sort-card" aria-label="Rezeptvorschläge sortieren">
+      <div class="sort-row">
+        <div>
+          <p class="eyebrow">Sortieren</p>
+          <h3>Wie soll Küchenkumpel sortieren?</h3>
+        </div>
+
+        <label class="sort-select-label">
+          <span class="visually-hidden">Sortierung auswählen</span>
+          <select id="recipeSortSelect">
+            <option value="smart">Beste Treffer</option>
+            <option value="fast">Schnellste zuerst</option>
+            <option value="few-dishes">Wenig Abwasch zuerst</option>
+            <option value="cheap">Günstigste zuerst</option>
+            <option value="light">Leicht/frisch zuerst</option>
+            <option value="filling">Sattmacher zuerst</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="card recipe-search-card" aria-label="Rezepte durchsuchen">
+      <div class="card-title">
+        <div>
+          <p class="eyebrow">Stöbern</p>
+          <h3>Rezeptsuche</h3>
+          <p>Such direkt nach Wrap, Kartoffel, Feta, Salat, Airfryer oder wonach dir gerade ist.</p>
+        </div>
+      </div>
+
+      <div class="input-row search-row">
+        <input
+          id="recipeSearchInput"
+          type="search"
+          placeholder="Rezept, Zutat oder Kategorie suchen"
+          autocomplete="off"
+        />
+
+        <button id="clearRecipeSearchButton" class="ghost-button" type="button">
+          Suche löschen
+        </button>
+      </div>
     </section>
 
     <section id="airfryerSpecial" class="airfryer-special-card card">
@@ -521,6 +646,16 @@
           <p>Hier landen deine Küchenideen, die du nicht wieder verlieren willst.</p>
         </div>
 
+        <div class="section-actions favorite-actions">
+          <button id="exportFavoritesButton" class="ghost-button" type="button">
+            Favoriten kopieren
+          </button>
+
+          <button id="clearFavoritesButton" class="ghost-button" type="button">
+            Favoriten leeren
+          </button>
+        </div>
+
         <img
           id="favoriteMascot"
           class="section-mascot favorite-mascot"
@@ -530,6 +665,23 @@
       </div>
 
       <div id="favoriteResults" class="recipe-grid"></div>
+    </section>
+
+
+    <section id="recentRecipes" class="results-section recent-recipes-section hidden">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Zuletzt angesehen</p>
+          <h3>Gerade geöffnet</h3>
+          <p>Die letzten Rezeptkarten, die du dir angeschaut hast.</p>
+        </div>
+
+        <button id="clearRecentButton" class="ghost-button" type="button">
+          Verlauf leeren
+        </button>
+      </div>
+
+      <div id="recentRecipeResults" class="recipe-grid"></div>
     </section>
 
     <section id="recipes" class="results-section">
@@ -543,6 +695,42 @@
       </div>
 
       <div id="recipeResults" class="recipe-grid" aria-live="polite"></div>
+    </section>
+
+
+    <section id="shoppingList" class="results-section shopping-list-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Einkaufszettel</p>
+          <h3>Fehlende Zutaten</h3>
+          <p>Sammle fehlende Zutaten aus Rezepten, hake sie ab oder kopiere die Liste fürs Handy.</p>
+        </div>
+
+        <div class="shopping-actions">
+          <button id="copyShoppingListButton" class="ghost-button" type="button">
+            Liste kopieren
+          </button>
+
+          <button id="clearShoppingListButton" class="ghost-button" type="button">
+            Liste leeren
+          </button>
+        </div>
+      </div>
+
+      <div id="shoppingListItems" class="shopping-list-items" aria-live="polite"></div>
+    </section>
+
+
+    <section id="appStats" class="results-section app-stats-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Überblick</p>
+          <h3>Küchenkumpel in Zahlen</h3>
+          <p>Ein kleiner Blick auf Rezepte, Favoriten, Vorrat und Einkaufsliste.</p>
+        </div>
+      </div>
+
+      <div id="appStatsGrid" class="stats-grid" aria-live="polite"></div>
     </section>
 
     <footer id="about" class="app-footer">

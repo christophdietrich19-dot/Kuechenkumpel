@@ -1,40 +1,40 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.10.0",
+  version: "1.12.0",
 
   badge: "UPDATE",
 
   title: "Neu bei Küchenkumpel",
 
-  subtitle: "Zu heiß zum Kochen? Dann bleibt die Küche entspannter.",
+  subtitle: "Mehr Komfort beim Stöbern, Kochen und Planen.",
 
-  image: "assets/images/themes/sommer/kochtopf-idee.png",
+  image: "assets/images/themes/standard/kochtopf-idee.png",
 
-  imageAlt: "Küchenkumpel mit Sommerideen",
+  imageAlt: "Küchenkumpel mit Komfortfunktionen",
 
-  mascot: "assets/images/themes/sommer/kochtopf-idee.png",
+  mascot: "assets/images/themes/standard/kochtopf-idee.png",
 
-  mascotAlt: "Küchenkumpel mit Sommerideen",
+  mascotAlt: "Küchenkumpel mit Komfortfunktionen",
 
   items: [
     {
-      icon: "☀️",
-      title: "Zu heiß zum Kochen",
-      text: "50 neue Ideen für warme Tage: frisch, leicht und ohne langes Stehen am Herd."
+      icon: "🎲",
+      title: "Überrasch mich",
+      text: "Küchenkumpel kann jetzt spontan ein Rezept ziehen, passend zu Filter, Suche oder Vorrat."
     },
     {
-      icon: "🥗",
-      title: "Salate, Bowls und Wraps",
-      text: "Mehr schnelle Mittagessen und Abendessen, die satt machen, aber nicht schwer wirken."
+      icon: "👨‍🍳",
+      title: "Kochmodus und Timer",
+      text: "Im Rezept gibt es jetzt Schritt-für-Schritt-Ansicht, Timer, Teilen und Druckansicht."
     },
     {
-      icon: "🧊",
-      title: "Wenig Herd, wenig Stress",
-      text: "Viele Rezepte funktionieren kalt, lauwarm oder mit nur wenigen Minuten Kochzeit."
+      icon: "♡",
+      title: "Favoriten und Verlauf",
+      text: "Favoriten lassen sich kopieren oder leeren. Zuletzt angesehene Rezepte bleiben griffbereit."
     },
     {
-      icon: "🍽",
-      title: "Jetzt 180 Rezeptideen",
-      text: "Die bisherigen Rezepte bleiben erhalten. Der Sommerblock kommt einfach dazu."
+      icon: "📊",
+      title: "Mehr Überblick",
+      text: "Sortierung, Hinweise, kleine Statistik und Küchenkumpel-Fragen machen die App runder."
     }
   ],
 

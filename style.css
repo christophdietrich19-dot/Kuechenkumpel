@@ -1446,3 +1446,310 @@ body[data-theme="airfryer"] .theme-preview-mascot-wrap .welcome-mascot{width:min
 .airfryer-brand-strip strong{
   letter-spacing: .05em;
 }
+
+
+/* 1.11.0 App-Funktionen: Suche, Vorratskammer, Einkaufszettel */
+.recipe-search-card,
+.pantry-card,
+.shopping-list-section {
+  position: relative;
+}
+
+.search-row input,
+.pantry-card input {
+  min-width: 0;
+}
+
+.pantry-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.pantry-quick-button {
+  border: 1px solid rgba(126, 74, 25, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text, #352313);
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.pantry-quick-button:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 247, 231, 0.95);
+  border-color: rgba(242, 138, 33, 0.42);
+}
+
+.pantry-list-head,
+.shopping-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.tiny-action-button {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.empty-mini-state {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--muted, #7f6651);
+}
+
+.pantry-chip {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.shopping-list-items {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.shopping-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(126, 74, 25, 0.12);
+}
+
+.shopping-list-item label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.shopping-list-item input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: #f28a21;
+}
+
+.shopping-list-item span {
+  word-break: break-word;
+}
+
+.shopping-list-item.done span {
+  text-decoration: line-through;
+  opacity: 0.62;
+}
+
+.recipe-search-card .ghost-button,
+.shopping-actions .ghost-button,
+.pantry-list-head .ghost-button {
+  white-space: nowrap;
+}
+
+@media (max-width: 620px) {
+  .shopping-actions,
+  .pantry-list-head {
+    align-items: stretch;
+  }
+
+  .shopping-actions .ghost-button,
+  .pantry-list-head .ghost-button,
+  .recipe-search-card .ghost-button {
+    width: 100%;
+  }
+}
+
+
+/* 1.12.0 Komfortfunktionen ohne PWA */
+.decision-actions,
+.modal-action-row,
+.cook-mode-actions,
+.section-actions,
+.favorite-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.daily-recommendation-section .daily-recommendation-result {
+  margin-top: 1rem;
+}
+
+.sort-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.sort-select-label select {
+  border: 1px solid rgba(126, 74, 25, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--text, #352313);
+  padding: 0.75rem 1rem;
+  font: inherit;
+}
+
+.smart-suggestions {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(126, 74, 25, 0.12);
+}
+
+.smart-suggestions-copy {
+  display: grid;
+  gap: 0.15rem;
+  margin-bottom: 0.7rem;
+}
+
+.smart-suggestions-copy span {
+  color: var(--muted, #7f6651);
+}
+
+.smart-suggestion-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.smart-suggestion-button {
+  border: 1px solid rgba(126, 74, 25, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 247, 231, 0.92);
+  padding: 0.45rem 0.7rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.recipe-hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.8rem 0 1rem;
+}
+
+.recipe-hints span {
+  border-radius: 999px;
+  background: rgba(255, 247, 231, 0.95);
+  border: 1px solid rgba(242, 138, 33, 0.18);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.92rem;
+  color: var(--text, #352313);
+}
+
+.recipe-timer-panel,
+.cook-mode-panel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 24px;
+  background: rgba(255, 247, 231, 0.9);
+  border: 1px solid rgba(126, 74, 25, 0.14);
+}
+
+.recipe-timer-panel strong {
+  display: inline-block;
+  min-width: 5.5rem;
+  font-size: 1.5rem;
+}
+
+.cook-mode-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.cook-mode-panel p {
+  font-size: 1.08rem;
+  line-height: 1.6;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.stat-card {
+  border-radius: 24px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(126, 74, 25, 0.12);
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.stat-card span {
+  color: var(--muted, #7f6651);
+}
+
+.recent-recipes-section.hidden,
+.smart-suggestions.hidden,
+.recipe-timer-panel.hidden,
+.cook-mode-panel.hidden {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .decision-actions > *,
+  .modal-action-row > *,
+  .cook-mode-actions > *,
+  .favorite-actions > * {
+    width: 100%;
+  }
+
+  .sort-select-label,
+  .sort-select-label select {
+    width: 100%;
+  }
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  .welcome-screen,
+  .bottom-nav,
+  .app > section,
+  .app-footer,
+  .modal-backdrop,
+  .modal-action-row,
+  .recipe-timer-panel,
+  .cook-mode-panel,
+  .portion-panel,
+  .close-button {
+    display: none !important;
+  }
+
+  .modal,
+  .modal.hidden {
+    display: block !important;
+    position: static !important;
+  }
+
+  .modal-card {
+    box-shadow: none !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+}

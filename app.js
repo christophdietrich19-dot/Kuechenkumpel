@@ -60,10 +60,33 @@ const favoritePreviewText = document.getElementById("favoritePreviewText");
 const showFavoritesButton = document.getElementById("showFavoritesButton");
 const favoritesSection = document.getElementById("favorites");
 const favoriteResults = document.getElementById("favoriteResults");
+const exportFavoritesButton = document.getElementById("exportFavoritesButton");
+const clearFavoritesButton = document.getElementById("clearFavoritesButton");
+const recentRecipesSection = document.getElementById("recentRecipes");
+const recentRecipeResults = document.getElementById("recentRecipeResults");
+const clearRecentButton = document.getElementById("clearRecentButton");
+const appStatsGrid = document.getElementById("appStatsGrid");
 const recipesSection = document.getElementById("recipes");
 const recipeResults = document.getElementById("recipeResults");
 const resultCounter = document.getElementById("resultCounter");
 const toggleMoreRecipesButton = document.getElementById("toggleMoreRecipesButton");
+
+const recipeSearchInput = document.getElementById("recipeSearchInput");
+const clearRecipeSearchButton = document.getElementById("clearRecipeSearchButton");
+const recipeSortSelect = document.getElementById("recipeSortSelect");
+const surpriseRecipeButton = document.getElementById("surpriseRecipeButton");
+const smartSuggestionsContainer = document.getElementById("smartSuggestions");
+
+const pantryInput = document.getElementById("pantryInput");
+const addPantryButton = document.getElementById("addPantryButton");
+const pantryQuickButtons = document.querySelectorAll("[data-pantry-quick]");
+const pantryItemsContainer = document.getElementById("pantryItems");
+const clearPantryButton = document.getElementById("clearPantryButton");
+
+const shoppingListSection = document.getElementById("shoppingList");
+const shoppingListItemsContainer = document.getElementById("shoppingListItems");
+const copyShoppingListButton = document.getElementById("copyShoppingListButton");
+const clearShoppingListButton = document.getElementById("clearShoppingListButton");
 
 const recipeModal = document.getElementById("recipeModal");
 const modalBackdrop = document.getElementById("modalBackdrop");
@@ -80,7 +103,16 @@ const navSections = [
 
 let selectedIngredients = [];
 let favoriteRecipeIds = [];
+let pantryItems = [];
+let shoppingListItems = [];
+let recentRecipeIds = [];
+let recipeSearchTerm = "";
+let activeSort = "smart";
 let activeFilter = "all";
+let currentModalRecipeId = null;
+let cookingStepIndex = 0;
+let recipeTimerInterval = null;
+let recipeTimerRemainingSeconds = 0;
 let activeTheme = "standard";
 let activeMood = "normal";
 let currentModalPortions = 2;
@@ -95,6 +127,9 @@ const THEME_KEY = "kuechenkumpelTheme";
 const HIDE_WELCOME_KEY = "kuechenkumpelHideWelcome";
 const MOOD_KEY = "kuechenkumpelMood";
 const FAVORITES_KEY = "kuechenkumpelFavorites";
+const PANTRY_KEY = "kuechenkumpelPantry";
+const SHOPPING_LIST_KEY = "kuechenkumpelShoppingList";
+const RECENT_RECIPES_KEY = "kuechenkumpelRecentRecipes";
 const UPDATE_SEEN_KEY = "kuechenkumpelSeenUpdateVersion";
 
 const mascotFiles = {
@@ -962,6 +997,200 @@ function saveFavorites() {
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteRecipeIds));
 }
 
+function exportFavorites() {
+  const favoriteRecipes = favoriteRecipeIds
+    .map((id) => recipes.find((recipe) => recipe.id === id))
+    .filter(Boolean);
+
+  if (favoriteRecipes.length === 0) {
+    updateBuddyTextOnly("Du hast noch keine Favoriten gespeichert.");
+    return;
+  }
+
+  const text = favoriteRecipes
+    .map((recipe) => `• ${recipe.title} · ${recipe.time}`)
+    .join("\n");
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => updateBuddyTextOnly("Favoriten kopiert. Gute Liste."))
+      .catch(() => updateBuddyTextOnly("Kopieren hat leider nicht geklappt."));
+  } else {
+    updateBuddyTextOnly("Kopieren wird in diesem Browser nicht unterstützt.");
+  }
+}
+
+function clearFavorites() {
+  favoriteRecipeIds = [];
+  saveFavorites();
+  favoritesVisible = false;
+  updateBuddyTextOnly("Favoriten geleert.");
+  renderAll();
+}
+
+function loadRecentRecipes() {
+  try {
+    const savedRecent = JSON.parse(localStorage.getItem(RECENT_RECIPES_KEY) || "[]");
+
+    if (Array.isArray(savedRecent)) {
+      recentRecipeIds = savedRecent
+        .map(Number)
+        .filter(Boolean)
+        .filter((id, index, list) => list.indexOf(id) === index)
+        .slice(0, 8);
+    }
+  } catch {
+    recentRecipeIds = [];
+  }
+}
+
+function saveRecentRecipes() {
+  localStorage.setItem(RECENT_RECIPES_KEY, JSON.stringify(recentRecipeIds));
+}
+
+function addRecentRecipe(recipeId) {
+  recentRecipeIds = [
+    recipeId,
+    ...recentRecipeIds.filter((id) => id !== recipeId)
+  ].slice(0, 8);
+
+  saveRecentRecipes();
+}
+
+function clearRecentRecipes() {
+  recentRecipeIds = [];
+  saveRecentRecipes();
+  renderAll();
+  updateBuddyTextOnly("Verlauf geleert.");
+}
+
+function renderRecentRecipes() {
+  if (!recentRecipesSection || !recentRecipeResults) return;
+
+  const recentRecipes = recentRecipeIds
+    .map((id) => recipes.find((recipe) => recipe.id === id))
+    .filter(Boolean);
+
+  recentRecipesSection.classList.toggle("hidden", recentRecipes.length === 0);
+
+  if (recentRecipes.length === 0) {
+    recentRecipeResults.innerHTML = "";
+    return;
+  }
+
+  recentRecipeResults.innerHTML = recentRecipes
+    .map((recipe) => createRecipeCard(createFavoriteMatch(recipe), false))
+    .join("");
+}
+
+
+function loadPantry() {
+  try {
+    const savedPantry = JSON.parse(localStorage.getItem(PANTRY_KEY) || "[]");
+
+    if (Array.isArray(savedPantry)) {
+      pantryItems = savedPantry
+        .map((item) => canonicalIngredient(item))
+        .filter(Boolean)
+        .filter((item, index, list) => list.indexOf(item) === index);
+    }
+  } catch {
+    pantryItems = [];
+  }
+}
+
+function savePantry() {
+  localStorage.setItem(PANTRY_KEY, JSON.stringify(pantryItems));
+}
+
+function pantryItemExists(name) {
+  const normalizedName = canonicalIngredient(name);
+  return pantryItems.includes(normalizedName);
+}
+
+function addPantryItem(name) {
+  const normalizedName = canonicalIngredient(name);
+
+  if (!normalizedName || pantryItemExists(normalizedName)) {
+    if (pantryInput) pantryInput.value = "";
+    return;
+  }
+
+  pantryItems.push(normalizedName);
+  savePantry();
+
+  if (pantryInput) pantryInput.value = "";
+
+  moreRecipesVisible = false;
+  cachedDailyRecommendationPool = [];
+  dailyRecommendationIndex = 0;
+
+  updateBuddyTextOnly(`${displayIngredientName(normalizedName)} ist jetzt in deiner Vorratskammer.`);
+  renderAll();
+}
+
+function removePantryItem(name) {
+  const normalizedName = canonicalIngredient(name);
+  pantryItems = pantryItems.filter((item) => item !== normalizedName);
+  savePantry();
+
+  cachedDailyRecommendationPool = [];
+  dailyRecommendationIndex = 0;
+
+  renderAll();
+}
+
+function clearPantry() {
+  pantryItems = [];
+  savePantry();
+
+  cachedDailyRecommendationPool = [];
+  dailyRecommendationIndex = 0;
+
+  updateBuddyTextOnly("Vorratskammer geleert. Wir rechnen wieder nur mit den aktuellen Zutaten.");
+  renderAll();
+}
+
+function renderPantryItems() {
+  if (!pantryItemsContainer) return;
+
+  if (pantryItems.length === 0) {
+    pantryItemsContainer.innerHTML = `
+      <div class="empty-mini-state">
+        Noch nichts gespeichert. Tipp oben ein paar Standardzutaten an.
+      </div>
+    `;
+  } else {
+    pantryItemsContainer.innerHTML = pantryItems
+      .map((item) => {
+        return `
+          <div class="ingredient-chip pantry-chip">
+            <span>${escapeHtml(displayIngredientName(item))}</span>
+
+            <button
+              class="chip-button"
+              type="button"
+              title="Aus Vorratskammer entfernen"
+              aria-label="${escapeHtml(displayIngredientName(item))} aus Vorratskammer entfernen"
+              data-remove-pantry="${escapeHtml(item)}"
+            >×</button>
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  if (clearPantryButton) {
+    clearPantryButton.disabled = pantryItems.length === 0;
+  }
+
+  document.querySelectorAll("[data-remove-pantry]").forEach((button) => {
+    button.addEventListener("click", () => removePantryItem(button.dataset.removePantry || ""));
+  });
+}
+
+
 function isFavorite(recipeId) {
   return favoriteRecipeIds.includes(Number(recipeId));
 }
@@ -1036,7 +1265,11 @@ function initMood() {
 
 function ingredientExists(name) {
   const normalizedName = canonicalIngredient(name);
-  return selectedIngredients.some((ingredient) => ingredient.name === normalizedName);
+
+  return (
+    selectedIngredients.some((ingredient) => ingredient.name === normalizedName) ||
+    pantryItems.includes(normalizedName)
+  );
 }
 
 function addIngredient(name) {
@@ -1099,7 +1332,12 @@ function toggleUrgent(name) {
 }
 
 function getSelectedNames() {
-  return selectedIngredients.map((ingredient) => ingredient.name);
+  const names = [
+    ...selectedIngredients.map((ingredient) => ingredient.name),
+    ...pantryItems
+  ];
+
+  return names.filter((name, index, list) => list.indexOf(name) === index);
 }
 
 function getUrgentNames() {
@@ -1238,13 +1476,166 @@ function scoreRecipe(recipe) {
   };
 }
 
-function getMatches() {
-  if (selectedIngredients.length === 0) return [];
 
-  return recipes
-    .map(scoreRecipe)
-    .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score);
+function hasRecipeSearch() {
+  return normalize(recipeSearchTerm).length > 0;
+}
+
+function hasBrowseCriteria() {
+  return activeFilter !== "all" || hasRecipeSearch();
+}
+
+function getActiveFilterLabel() {
+  const activeButton = Array.from(filterButtons).find((button) => button.dataset.filter === activeFilter);
+  return activeButton ? activeButton.textContent.trim() : activeFilter;
+}
+
+function recipeMatchesActiveFilter(recipe) {
+  if (activeFilter === "all") return true;
+
+  const tags = recipe.tags || [];
+  const normalizedFilter = normalize(activeFilter);
+
+  return tags.some((tag) => normalize(tag) === normalizedFilter);
+}
+
+function recipeMatchesSearch(recipe) {
+  const search = normalize(recipeSearchTerm);
+
+  if (!search) return true;
+
+  return getRecipeSearchText(recipe).includes(search);
+}
+
+function createBrowseMatch(recipe) {
+  return {
+    recipe,
+    matchingMain: [],
+    substituteMain: [],
+    missingMain: recipe.main || [],
+    matchingOptional: [],
+    score: scoreBrowseRecipe(recipe)
+  };
+}
+
+function scoreBrowseRecipe(recipe) {
+  let score = 0;
+  const tags = recipe.tags || [];
+  const text = getRecipeSearchText(recipe);
+
+  if (recipeMatchesActiveFilter(recipe)) score += 20;
+  if (hasRecipeSearch() && text.includes(normalize(recipeSearchTerm))) score += 18;
+  if (tags.includes("schnell")) score += 4;
+  if (recipe.dishes === "wenig") score += 3;
+  if (recipe.cost === "günstig") score += 2;
+  if (tags.includes("zu heiß zum kochen")) score += 2;
+
+  return score;
+}
+
+function getRecipeMinutes(recipe) {
+  const values = [
+    recipe.timeTotal,
+    recipe.timePrep,
+    recipe.timeCook,
+    recipe.airfryerTime
+  ];
+
+  for (const value of values) {
+    const match = String(value || "").match(/(\d+)/);
+
+    if (match) {
+      return Number(match[1]);
+    }
+  }
+
+  return 999;
+}
+
+function getDishScore(recipe) {
+  if (recipe.dishes === "wenig") return 1;
+  if (recipe.dishes === "mittel") return 2;
+  return 3;
+}
+
+function getCostScore(recipe) {
+  if (recipe.cost === "günstig") return 1;
+  if (recipe.cost === "normal") return 2;
+  return 3;
+}
+
+function getFillingScore(recipe) {
+  const text = normalizeSearchValue([recipe.satiety, recipe.feeling, ...(recipe.tags || [])].join(" "));
+
+  if (text.includes("richtig deftig") || text.includes("macht satt") || text.includes("sättigend")) return 3;
+  if (text.includes("leicht bis satt")) return 2;
+  return 1;
+}
+
+function getLightScore(recipe) {
+  const text = normalizeSearchValue([recipe.category, recipe.feeling, recipe.satiety, ...(recipe.tags || [])].join(" "));
+
+  let score = 0;
+  if (text.includes("frisch")) score += 3;
+  if (text.includes("leicht")) score += 3;
+  if (text.includes("sommer")) score += 2;
+  if (text.includes("zu heiss zum kochen") || text.includes("zu heiß zum kochen")) score += 2;
+  if (text.includes("soulfood") || text.includes("deftig")) score -= 2;
+
+  return score;
+}
+
+function sortMatches(matches) {
+  const list = [...matches];
+
+  if (activeSort === "fast") {
+    return list.sort((a, b) => getRecipeMinutes(a.recipe) - getRecipeMinutes(b.recipe) || b.score - a.score);
+  }
+
+  if (activeSort === "few-dishes") {
+    return list.sort((a, b) => getDishScore(a.recipe) - getDishScore(b.recipe) || b.score - a.score);
+  }
+
+  if (activeSort === "cheap") {
+    return list.sort((a, b) => getCostScore(a.recipe) - getCostScore(b.recipe) || b.score - a.score);
+  }
+
+  if (activeSort === "light") {
+    return list.sort((a, b) => getLightScore(b.recipe) - getLightScore(a.recipe) || b.score - a.score);
+  }
+
+  if (activeSort === "filling") {
+    return list.sort((a, b) => getFillingScore(b.recipe) - getFillingScore(a.recipe) || b.score - a.score);
+  }
+
+  return list.sort((a, b) => b.score - a.score || (a.recipe.id || 0) - (b.recipe.id || 0));
+}
+
+function getBrowseMatches() {
+  return sortMatches(
+    recipes
+      .filter(recipeMatchesActiveFilter)
+      .filter(recipeMatchesSearch)
+      .map(createBrowseMatch)
+  );
+}
+
+function getMatches() {
+  const hasIngredientContext = getSelectedNames().length > 0;
+
+  if (!hasIngredientContext && !hasBrowseCriteria()) return [];
+
+  if (!hasIngredientContext) {
+    return getBrowseMatches();
+  }
+
+  return sortMatches(
+    recipes
+      .map(scoreRecipe)
+      .filter((item) => item.score > 0)
+      .filter((item) => recipeMatchesActiveFilter(item.recipe))
+      .filter((item) => recipeMatchesSearch(item.recipe))
+  );
 }
 
 function getBuddyMascotPath() {
@@ -1292,6 +1683,75 @@ function updateBuddyMessage() {
   }
 
   updateBuddyTextOnly(message);
+}
+
+
+function getSmartIngredientSuggestions() {
+  const selectedNames = getSelectedNames();
+
+  if (selectedNames.length >= 4) return [];
+
+  const baseSuggestions = ["eier", "brot", "käse", "joghurt", "reis", "nudeln", "kartoffeln", "gurke", "tomaten", "feta"];
+  const matches = recipes
+    .map(scoreRecipe)
+    .filter((item) => item.score > -8)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 16);
+
+  const counts = new Map();
+
+  matches.forEach((match) => {
+    (match.missingMain || []).forEach((ingredient) => {
+      const name = canonicalIngredient(ingredient);
+
+      if (!name || selectedNames.includes(name)) return;
+
+      counts.set(name, (counts.get(name) || 0) + 1);
+    });
+  });
+
+  const ranked = Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([name]) => name);
+
+  return [...ranked, ...baseSuggestions]
+    .map(canonicalIngredient)
+    .filter(Boolean)
+    .filter((name, index, list) => list.indexOf(name) === index)
+    .filter((name) => !selectedNames.includes(name))
+    .slice(0, 6);
+}
+
+function renderSmartSuggestions() {
+  if (!smartSuggestionsContainer) return;
+
+  const suggestions = getSmartIngredientSuggestions();
+
+  if (suggestions.length === 0) {
+    smartSuggestionsContainer.classList.add("hidden");
+    smartSuggestionsContainer.innerHTML = "";
+    return;
+  }
+
+  smartSuggestionsContainer.classList.remove("hidden");
+  smartSuggestionsContainer.innerHTML = `
+    <div class="smart-suggestions-copy">
+      <strong>Küchenkumpel fragt nach:</strong>
+      <span>Hast du vielleicht noch eins davon da?</span>
+    </div>
+
+    <div class="smart-suggestion-buttons">
+      ${suggestions.map((name) => `
+        <button class="smart-suggestion-button" type="button" data-suggest-ingredient="${escapeHtml(name)}">
+          ${escapeHtml(displayIngredientName(name))}
+        </button>
+      `).join("")}
+    </div>
+  `;
+
+  smartSuggestionsContainer.querySelectorAll("[data-suggest-ingredient]").forEach((button) => {
+    button.addEventListener("click", () => addIngredient(button.dataset.suggestIngredient || ""));
+  });
 }
 
 function renderQuickIngredients() {
@@ -1406,14 +1866,15 @@ function createRecipeCard(match, isRecommendation) {
   const { recipe, matchingMain, missingMain, matchingOptional } = match;
   const cardClass = isRecommendation ? "recommendation-card" : "recipe-card";
   const badgeText = isRecommendation ? "Bester Treffer" : "Rezeptidee";
+  const hasIngredientContext = getSelectedNames().length > 0;
 
-  const missingText = missingMain.length > 0
-    ? formatList(missingMain)
-    : "Du hast alles Wichtige. Sehr stabil.";
+  const missingText = hasIngredientContext
+    ? (missingMain.length > 0 ? formatList(missingMain) : "Du hast alles Wichtige. Sehr stabil.")
+    : "Zutaten siehst du im Rezept. Du kannst sie direkt auf die Einkaufsliste setzen.";
 
-  const optionalText = matchingOptional.length > 0
-    ? formatList(matchingOptional)
-    : "Extras sind nice, aber kein Muss.";
+  const optionalText = hasIngredientContext
+    ? (matchingOptional.length > 0 ? formatList(matchingOptional) : "Extras sind nice, aber kein Muss.")
+    : "Filter und Suche haben dieses Rezept gefunden.";
 
   return `
     <article class="${cardClass}">
@@ -1441,7 +1902,9 @@ function createRecipeCard(match, isRecommendation) {
         <div class="match-info">
           <div class="match-line">
             <strong>Passt:</strong>
-            ${matchingMain.length > 0 ? escapeHtml(formatList(matchingMain)) : "noch nicht viel, aber wir versuchen es."}
+            ${hasIngredientContext
+              ? (matchingMain.length > 0 ? escapeHtml(formatList(matchingMain)) : "noch nicht viel, aber wir versuchen es.")
+              : "passt zum aktuellen Filter oder Suchbegriff."}
           </div>
 
           <div class="missing-line">
@@ -1463,6 +1926,14 @@ function createRecipeCard(match, isRecommendation) {
           <button class="ghost-button" data-copy-missing="${recipe.id}" type="button">
             Fehlendes kopieren
           </button>
+
+          <button class="ghost-button" data-add-shopping="${recipe.id}" type="button">
+            Auf Einkaufsliste
+          </button>
+
+          <button class="ghost-button" data-share-card="${recipe.id}" type="button">
+            Teilen
+          </button>
         </div>
       </div>
     </article>
@@ -1482,6 +1953,19 @@ function attachRecipeActionEvents() {
     });
   });
 
+  document.querySelectorAll("[data-add-shopping]").forEach((button) => {
+    button.addEventListener("click", () => {
+      addMissingToShoppingList(Number(button.dataset.addShopping));
+    });
+  });
+
+  document.querySelectorAll("[data-share-card]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const recipe = recipes.find((item) => item.id === Number(button.dataset.shareCard));
+      if (recipe) shareRecipe(recipe);
+    });
+  });
+
   document.querySelectorAll("[data-toggle-favorite]").forEach((button) => {
     button.addEventListener("click", () => {
       toggleFavorite(Number(button.dataset.toggleFavorite));
@@ -1493,11 +1977,14 @@ function renderRecommendations() {
   if (!topRecommendation) return;
 
   const matches = getMatches();
+  const hasIngredientContext = getSelectedNames().length > 0;
 
-  if (selectedIngredients.length === 0) {
+  if (!hasIngredientContext) {
     topRecommendation.innerHTML = `
       <div class="empty-state">
-        Trag ein paar Zutaten ein. Dann zeige ich dir hier direkt den besten Treffer.
+        ${hasBrowseCriteria()
+          ? "Stöbermodus aktiv. Die passenden Rezepte findest du unten in den Vorschlägen."
+          : "Trag ein paar Zutaten ein. Dann zeige ich dir hier direkt den besten Treffer."}
       </div>
     `;
     return;
@@ -1548,6 +2035,9 @@ function renderFavorites() {
 
   favoritesSection.classList.toggle("hidden", !favoritesVisible);
 
+  if (exportFavoritesButton) exportFavoritesButton.disabled = favoriteRecipeIds.length === 0;
+  if (clearFavoritesButton) clearFavoritesButton.disabled = favoriteRecipeIds.length === 0;
+
   const favoriteRecipes = favoriteRecipeIds
     .map((id) => recipes.find((recipe) => recipe.id === id))
     .filter(Boolean);
@@ -1569,9 +2059,10 @@ function renderFavorites() {
 function renderRecipeResults() {
   if (!recipeResults || !resultCounter) return;
 
-  const hasIngredients = selectedIngredients.length > 0;
+  const hasIngredientContext = getSelectedNames().length > 0;
   const matches = getMatches();
   const hasToggleButton = !!toggleMoreRecipesButton;
+  const browsing = !hasIngredientContext && hasBrowseCriteria();
 
   if (!hasToggleButton) {
     moreRecipesVisible = true;
@@ -1584,8 +2075,8 @@ function renderRecipeResults() {
     toggleMoreRecipesButton.setAttribute("aria-expanded", String(moreRecipesVisible));
   }
 
-  if (!hasIngredients) {
-    resultCounter.textContent = "Noch keine Zutaten eingetragen.";
+  if (!hasIngredientContext && !hasBrowseCriteria()) {
+    resultCounter.textContent = "Gib Zutaten ein oder wähle einen Filter zum Stöbern.";
 
     if (hasToggleButton) {
       toggleMoreRecipesButton.disabled = true;
@@ -1596,7 +2087,7 @@ function renderRecipeResults() {
     recipeResults.classList.add("hidden");
     recipeResults.innerHTML = `
       <div class="empty-state">
-        Trag ein paar Zutaten ein. Dann kommen hier weitere Ideen.
+        Du kannst Zutaten eintragen, nach Rezepten suchen oder direkt einen Filter wie „Zu heiß zum Kochen“ öffnen.
       </div>
     `;
     return;
@@ -1614,13 +2105,13 @@ function renderRecipeResults() {
     recipeResults.classList.add("hidden");
     recipeResults.innerHTML = `
       <div class="empty-state">
-        Im Moment gibt es keine weiteren Vorschläge. Eine Zutat mehr würde helfen.
+        Dazu finde ich gerade nichts. Such etwas allgemeiner oder nimm einen anderen Filter.
       </div>
     `;
     return;
   }
 
-  if (matches.length === 1) {
+  if (matches.length === 1 && hasIngredientContext) {
     resultCounter.textContent = "Ein guter Treffer gefunden.";
 
     if (hasToggleButton) {
@@ -1641,9 +2132,16 @@ function renderRecipeResults() {
     return;
   }
 
-  const visibleMatches = matches.slice(1, 13);
+  const visibleMatches = hasIngredientContext
+    ? matches.slice(1, 13)
+    : matches.slice(0, 30);
 
-  resultCounter.textContent = `${matches.length} Idee${matches.length === 1 ? "" : "n"} gefunden.`;
+  if (browsing) {
+    const label = activeFilter !== "all" ? getActiveFilterLabel() : "Suche";
+    resultCounter.textContent = `${matches.length} Idee${matches.length === 1 ? "" : "n"} für ${label} gefunden.`;
+  } else {
+    resultCounter.textContent = `${matches.length} Idee${matches.length === 1 ? "" : "n"} gefunden.`;
+  }
 
   if (hasToggleButton) {
     toggleMoreRecipesButton.disabled = false;
@@ -1815,7 +2313,17 @@ function scoreDailyRecipe(recipe) {
 }
 
 function getDailyRecommendationPool() {
+  const baseMatches = getMatches();
+
+  if (baseMatches.length > 0) {
+    return baseMatches
+      .slice(0, 30)
+      .map((match) => match.recipe);
+  }
+
   return recipes
+    .filter(recipeMatchesActiveFilter)
+    .filter(recipeMatchesSearch)
     .map((recipe) => ({ recipe, score: scoreDailyRecipe(recipe) }))
     .sort((a, b) => b.score - a.score)
     .map((item) => item.recipe);
@@ -1937,13 +2445,34 @@ function recommendDailyRecipe(useNext = false) {
   }, 80);
 }
 
+
+function surpriseRecipe() {
+  const pool = getMatches().length > 0
+    ? getMatches().map((match) => match.recipe)
+    : recipes;
+
+  if (!pool.length) {
+    updateBuddyTextOnly("Ich finde gerade keine Rezepte zum Überraschen.");
+    return;
+  }
+
+  const recipe = pool[Math.floor(Math.random() * pool.length)];
+
+  updateBuddyTextOnly(`Überraschung: ${recipe.title}. Klingt nach Plan.`);
+  openRecipeModal(recipe.id);
+}
+
 function openRecipeModal(recipeId) {
   if (!recipeModal || !modalContent) return;
 
   const recipe = recipes.find((item) => item.id === recipeId);
   if (!recipe) return;
 
+  currentModalRecipeId = recipe.id;
   currentModalPortions = recipe.portions || 2;
+  cookingStepIndex = 0;
+  stopRecipeTimer(false);
+  addRecentRecipe(recipe.id);
 
   renderRecipeModal(recipe);
   recipeModal.classList.remove("hidden");
@@ -1979,6 +2508,50 @@ function renderRecipeModal(recipe) {
       </div>
     </div>
 
+    <div class="modal-action-row">
+      <button id="toggleCookModeButton" class="ghost-button" type="button">
+        Kochmodus
+      </button>
+
+      <button id="startRecipeTimerButton" class="ghost-button" type="button">
+        Timer starten
+      </button>
+
+      <button id="shareRecipeButton" class="ghost-button" type="button">
+        Teilen
+      </button>
+
+      <button id="printRecipeButton" class="ghost-button" type="button">
+        Drucken
+      </button>
+    </div>
+
+    <div id="recipeTimerPanel" class="recipe-timer-panel hidden" aria-live="polite">
+      <strong id="recipeTimerDisplay">00:00</strong>
+      <button id="stopRecipeTimerButton" class="ghost-button" type="button">
+        Timer stoppen
+      </button>
+    </div>
+
+    <div id="cookModePanel" class="cook-mode-panel hidden" aria-live="polite">
+      <div class="cook-mode-head">
+        <strong>Kochmodus</strong>
+        <span id="cookModeCounter">Schritt 1</span>
+      </div>
+
+      <p id="cookModeStepText"></p>
+
+      <div class="cook-mode-actions">
+        <button id="previousCookStepButton" class="ghost-button" type="button">
+          Zurück
+        </button>
+
+        <button id="nextCookStepButton" class="ghost-button" type="button">
+          Weiter
+        </button>
+      </div>
+    </div>
+
     <div class="recipe-meta">
       <span class="meta-pill">Zeit · ${escapeHtml(recipe.time)}</span>
       <span class="meta-pill">Vorbereitung · ${escapeHtml(recipe.timePrep || "nach Gefühl")}</span>
@@ -1990,6 +2563,8 @@ function renderRecipeModal(recipe) {
       ${recipe.airfryerTemperature ? `<span class="meta-pill">Airfryer · ${escapeHtml(recipe.airfryerTemperature)}</span>` : ""}
       ${recipe.airfryerTime ? `<span class="meta-pill">Garzeit · ${escapeHtml(recipe.airfryerTime)}</span>` : ""}
     </div>
+
+    ${renderRecipeHints(recipe)}
 
     <div class="detail-box">
       <strong>Abwasch:</strong> ${escapeHtml(recipe.dishesText)}
@@ -2042,12 +2617,203 @@ function renderRecipeModal(recipe) {
   if (decreaseButton) decreaseButton.addEventListener("click", () => changeModalPortions(recipe, -1));
   if (increaseButton) increaseButton.addEventListener("click", () => changeModalPortions(recipe, 1));
 
+  const toggleCookModeButton = document.getElementById("toggleCookModeButton");
+  const previousCookStepButton = document.getElementById("previousCookStepButton");
+  const nextCookStepButton = document.getElementById("nextCookStepButton");
+  const startRecipeTimerButton = document.getElementById("startRecipeTimerButton");
+  const stopRecipeTimerButton = document.getElementById("stopRecipeTimerButton");
+  const shareRecipeButton = document.getElementById("shareRecipeButton");
+  const printRecipeButton = document.getElementById("printRecipeButton");
+
+  if (toggleCookModeButton) toggleCookModeButton.addEventListener("click", () => toggleCookMode(recipe));
+  if (previousCookStepButton) previousCookStepButton.addEventListener("click", () => changeCookStep(recipe, -1));
+  if (nextCookStepButton) nextCookStepButton.addEventListener("click", () => changeCookStep(recipe, 1));
+  if (startRecipeTimerButton) startRecipeTimerButton.addEventListener("click", () => startRecipeTimer(recipe));
+  if (stopRecipeTimerButton) stopRecipeTimerButton.addEventListener("click", () => stopRecipeTimer(true));
+  if (shareRecipeButton) shareRecipeButton.addEventListener("click", () => shareRecipe(recipe));
+  if (printRecipeButton) printRecipeButton.addEventListener("click", () => window.print());
+
+  renderCookModeStep(recipe);
+
   const favoriteButton = modalContent.querySelector("[data-toggle-favorite]");
 
   if (favoriteButton) {
     favoriteButton.addEventListener("click", () => {
       toggleFavorite(Number(favoriteButton.dataset.toggleFavorite));
     });
+  }
+}
+
+
+function renderRecipeHints(recipe) {
+  const hints = getRecipeHints(recipe);
+
+  if (hints.length === 0) return "";
+
+  return `
+    <div class="recipe-hints">
+      ${hints.map((hint) => `<span>${escapeHtml(hint)}</span>`).join("")}
+    </div>
+  `;
+}
+
+function getRecipeHints(recipe) {
+  const text = normalizeSearchValue([
+    recipe.name,
+    recipe.category,
+    recipe.shortDescription,
+    ...(recipe.ingredients || []).map((ingredient) => ingredient.name),
+    ...(recipe.tags || [])
+  ].join(" "));
+
+  const hints = [];
+
+  if ((recipe.tags || []).includes("vegetarisch")) hints.push("vegetarisch");
+  if (text.includes("hähnchen") || text.includes("haehnchen") || text.includes("schinken") || text.includes("wurst") || text.includes("hack")) hints.push("mit Fleisch");
+  if (text.includes("lachs") || text.includes("thunfisch") || text.includes("garnelen") || text.includes("fisch")) hints.push("mit Fisch");
+  if (text.includes("ei") || text.includes("eier")) hints.push("enthält Ei");
+  if (text.includes("feta") || text.includes("käse") || text.includes("kaese") || text.includes("joghurt") || text.includes("quark") || text.includes("milch") || text.includes("mozzarella")) hints.push("milchhaltig");
+  if (text.includes("brot") || text.includes("wrap") || text.includes("nudeln") || text.includes("pasta") || text.includes("baguette") || text.includes("pita")) hints.push("gluten möglich");
+  if ((recipe.tags || []).includes("zu heiß zum kochen")) hints.push("wenig Herd");
+
+  return hints.filter((hint, index, list) => list.indexOf(hint) === index).slice(0, 6);
+}
+
+function toggleCookMode(recipe) {
+  const panel = document.getElementById("cookModePanel");
+
+  if (!panel) return;
+
+  panel.classList.toggle("hidden");
+  renderCookModeStep(recipe);
+}
+
+function renderCookModeStep(recipe) {
+  const steps = recipe.steps || [];
+  const stepText = document.getElementById("cookModeStepText");
+  const counter = document.getElementById("cookModeCounter");
+  const previousButton = document.getElementById("previousCookStepButton");
+  const nextButton = document.getElementById("nextCookStepButton");
+
+  if (!stepText || !counter) return;
+
+  if (steps.length === 0) {
+    stepText.textContent = "Für dieses Rezept sind keine Schritte hinterlegt.";
+    counter.textContent = "Keine Schritte";
+    return;
+  }
+
+  cookingStepIndex = Math.min(Math.max(cookingStepIndex, 0), steps.length - 1);
+  stepText.textContent = steps[cookingStepIndex];
+  counter.textContent = `Schritt ${cookingStepIndex + 1} von ${steps.length}`;
+
+  if (previousButton) previousButton.disabled = cookingStepIndex === 0;
+  if (nextButton) nextButton.disabled = cookingStepIndex === steps.length - 1;
+}
+
+function changeCookStep(recipe, direction) {
+  const steps = recipe.steps || [];
+
+  if (steps.length === 0) return;
+
+  cookingStepIndex = Math.min(Math.max(cookingStepIndex + direction, 0), steps.length - 1);
+  renderCookModeStep(recipe);
+}
+
+function getRecipeTimerMinutes(recipe) {
+  const candidates = [recipe.airfryerTime, recipe.timeCook, recipe.timeTotal];
+
+  for (const candidate of candidates) {
+    const match = String(candidate || "").match(/(\d+)/);
+
+    if (match) return Math.max(1, Number(match[1]));
+  }
+
+  return 10;
+}
+
+function updateRecipeTimerDisplay() {
+  const display = document.getElementById("recipeTimerDisplay");
+
+  if (!display) return;
+
+  const minutes = Math.floor(recipeTimerRemainingSeconds / 60);
+  const seconds = recipeTimerRemainingSeconds % 60;
+
+  display.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function startRecipeTimer(recipe) {
+  const panel = document.getElementById("recipeTimerPanel");
+
+  if (!panel) return;
+
+  stopRecipeTimer(false);
+
+  recipeTimerRemainingSeconds = getRecipeTimerMinutes(recipe) * 60;
+  panel.classList.remove("hidden");
+  updateRecipeTimerDisplay();
+
+  recipeTimerInterval = window.setInterval(() => {
+    recipeTimerRemainingSeconds = Math.max(0, recipeTimerRemainingSeconds - 1);
+    updateRecipeTimerDisplay();
+
+    if (recipeTimerRemainingSeconds === 0) {
+      stopRecipeTimer(false);
+      updateBuddyTextOnly("Timer fertig. Bitte einmal nach dem Essen schauen.");
+    }
+  }, 1000);
+
+  updateBuddyTextOnly(`Timer für ${getRecipeTimerMinutes(recipe)} Minuten läuft.`);
+}
+
+function stopRecipeTimer(showMessage = true) {
+  if (recipeTimerInterval) {
+    window.clearInterval(recipeTimerInterval);
+    recipeTimerInterval = null;
+  }
+
+  const panel = document.getElementById("recipeTimerPanel");
+
+  if (panel && recipeTimerRemainingSeconds === 0) {
+    panel.classList.add("hidden");
+  }
+
+  recipeTimerRemainingSeconds = 0;
+
+  if (showMessage) {
+    updateBuddyTextOnly("Timer gestoppt.");
+  }
+}
+
+function getRecipeShareText(recipe) {
+  return [
+    `Küchenkumpel empfiehlt: ${recipe.title}`,
+    `Zeit: ${recipe.time}`,
+    recipe.shortDescription || "",
+    "",
+    "Geöffnet über Küchenkumpel:"
+  ].filter(Boolean).join("\n");
+}
+
+function shareRecipe(recipe) {
+  const text = getRecipeShareText(recipe);
+
+  if (navigator.share) {
+    navigator.share({
+      title: recipe.title,
+      text
+    }).catch(() => {});
+    return;
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => updateBuddyTextOnly("Rezepttext kopiert. Teilen kann kommen."))
+      .catch(() => updateBuddyTextOnly("Teilen hat leider nicht geklappt."));
+  } else {
+    updateBuddyTextOnly("Teilen wird in diesem Browser nicht unterstützt.");
   }
 }
 
@@ -2117,16 +2883,187 @@ function closeRecipeModal() {
   }
 
   document.body.classList.remove("modal-open");
+  stopRecipeTimer(false);
+}
+
+function loadShoppingList() {
+  try {
+    const savedShoppingList = JSON.parse(localStorage.getItem(SHOPPING_LIST_KEY) || "[]");
+
+    if (Array.isArray(savedShoppingList)) {
+      shoppingListItems = savedShoppingList
+        .map((item) => {
+          if (typeof item === "string") {
+            return { name: canonicalIngredient(item), done: false };
+          }
+
+          return {
+            name: canonicalIngredient(item.name),
+            done: Boolean(item.done)
+          };
+        })
+        .filter((item) => item.name)
+        .filter((item, index, list) => list.findIndex((entry) => entry.name === item.name) === index);
+    }
+  } catch {
+    shoppingListItems = [];
+  }
+}
+
+function saveShoppingList() {
+  localStorage.setItem(SHOPPING_LIST_KEY, JSON.stringify(shoppingListItems));
+}
+
+function getMissingMainIngredients(recipe) {
+  const selectedNames = getSelectedNames();
+
+  return (recipe.main || []).filter((ingredient) => {
+    return !selectedNames.some((selectedName) => isExactIngredientMatch(ingredient, selectedName));
+  });
+}
+
+function addShoppingItem(name) {
+  const normalizedName = canonicalIngredient(name);
+
+  if (!normalizedName || shoppingListItems.some((item) => item.name === normalizedName)) {
+    return false;
+  }
+
+  shoppingListItems.push({
+    name: normalizedName,
+    done: false
+  });
+
+  return true;
+}
+
+function addMissingToShoppingList(recipeId) {
+  const recipe = recipes.find((item) => item.id === recipeId);
+  if (!recipe) return;
+
+  const missing = getMissingMainIngredients(recipe);
+
+  if (missing.length === 0) {
+    updateBuddyTextOnly("Für dieses Rezept fehlt dir nichts Wichtiges.");
+    return;
+  }
+
+  const added = missing.filter(addShoppingItem);
+  saveShoppingList();
+  renderShoppingList();
+
+  if (added.length === 0) {
+    updateBuddyTextOnly("Die fehlenden Zutaten stehen schon auf deiner Einkaufsliste.");
+  } else {
+    updateBuddyTextOnly(`Auf die Einkaufsliste gesetzt: ${formatList(added)}.`);
+  }
+
+  shoppingListSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function toggleShoppingItem(name) {
+  const normalizedName = canonicalIngredient(name);
+
+  shoppingListItems = shoppingListItems.map((item) => {
+    if (item.name === normalizedName) {
+      return { ...item, done: !item.done };
+    }
+
+    return item;
+  });
+
+  saveShoppingList();
+  renderShoppingList();
+}
+
+function removeShoppingItem(name) {
+  const normalizedName = canonicalIngredient(name);
+  shoppingListItems = shoppingListItems.filter((item) => item.name !== normalizedName);
+  saveShoppingList();
+  renderShoppingList();
+}
+
+function clearShoppingList() {
+  shoppingListItems = [];
+  saveShoppingList();
+  renderShoppingList();
+  updateBuddyTextOnly("Einkaufszettel geleert.");
+}
+
+function renderShoppingList() {
+  if (!shoppingListItemsContainer) return;
+
+  if (shoppingListItems.length === 0) {
+    shoppingListItemsContainer.innerHTML = `
+      <div class="empty-state">
+        Noch nichts auf der Liste. Öffne ein Rezept und tippe auf „Auf Einkaufsliste“.
+      </div>
+    `;
+  } else {
+    shoppingListItemsContainer.innerHTML = shoppingListItems
+      .map((item) => {
+        const label = displayIngredientName(item.name);
+
+        return `
+          <div class="shopping-list-item ${item.done ? "done" : ""}">
+            <label>
+              <input
+                type="checkbox"
+                ${item.done ? "checked" : ""}
+                data-toggle-shopping="${escapeHtml(item.name)}"
+              />
+              <span>${escapeHtml(label)}</span>
+            </label>
+
+            <button
+              class="chip-button"
+              type="button"
+              data-remove-shopping="${escapeHtml(item.name)}"
+              aria-label="${escapeHtml(label)} von Einkaufsliste entfernen"
+            >×</button>
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  if (copyShoppingListButton) copyShoppingListButton.disabled = shoppingListItems.length === 0;
+  if (clearShoppingListButton) clearShoppingListButton.disabled = shoppingListItems.length === 0;
+
+  document.querySelectorAll("[data-toggle-shopping]").forEach((input) => {
+    input.addEventListener("change", () => toggleShoppingItem(input.dataset.toggleShopping || ""));
+  });
+
+  document.querySelectorAll("[data-remove-shopping]").forEach((button) => {
+    button.addEventListener("click", () => removeShoppingItem(button.dataset.removeShopping || ""));
+  });
+}
+
+function copyShoppingList() {
+  if (shoppingListItems.length === 0) {
+    updateBuddyTextOnly("Der Einkaufszettel ist leer.");
+    return;
+  }
+
+  const text = shoppingListItems
+    .map((item) => `${item.done ? "✓" : "•"} ${displayIngredientName(item.name)}`)
+    .join("\n");
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => updateBuddyTextOnly("Einkaufszettel kopiert. Sehr erwachsen von uns."))
+      .catch(() => updateBuddyTextOnly("Kopieren hat leider nicht geklappt."));
+  } else {
+    updateBuddyTextOnly("Kopieren wird in diesem Browser nicht unterstützt.");
+  }
 }
 
 function copyMissingIngredients(recipeId) {
   const recipe = recipes.find((item) => item.id === recipeId);
   if (!recipe) return;
 
-  const selectedNames = getSelectedNames();
-  const missing = recipe.main.filter((ingredient) => {
-    return !selectedNames.some((selectedName) => isExactIngredientMatch(ingredient, selectedName));
-  });
+  const missing = getMissingMainIngredients(recipe);
 
   if (missing.length === 0) {
     updateBuddyTextOnly("Da fehlt nichts Wichtiges. Der Einkaufszettel darf heute Pause machen.");
@@ -2147,7 +3084,7 @@ function copyMissingIngredients(recipeId) {
 
 function setActiveFilter(filter) {
   activeFilter = filter;
-  moreRecipesVisible = false;
+  moreRecipesVisible = filter !== "all" || hasRecipeSearch();
   cachedDailyRecommendationPool = [];
 
   filterButtons.forEach((button) => {
@@ -2159,15 +3096,46 @@ function setActiveFilter(filter) {
   renderAll();
 }
 
+
+function renderAppStats() {
+  if (!appStatsGrid) return;
+
+  const summerCount = recipes.filter((recipe) => (recipe.tags || []).includes("zu heiß zum kochen")).length;
+  const airfryerCount = recipes.filter((recipe) => (recipe.tags || []).includes("heissluftfritteuse")).length;
+
+  const stats = [
+    { label: "Rezepte", value: recipes.length },
+    { label: "Sommerideen", value: summerCount },
+    { label: "Heißluftideen", value: airfryerCount },
+    { label: "Favoriten", value: favoriteRecipeIds.length },
+    { label: "Vorrat", value: pantryItems.length },
+    { label: "Einkaufsliste", value: shoppingListItems.length }
+  ];
+
+  appStatsGrid.innerHTML = stats
+    .map((item) => `
+      <div class="stat-card">
+        <strong>${escapeHtml(String(item.value))}</strong>
+        <span>${escapeHtml(item.label)}</span>
+      </div>
+    `)
+    .join("");
+}
+
 function renderAll() {
   refreshRecipes();
 
   renderQuickIngredients();
   renderSelectedIngredients();
+  renderPantryItems();
+  renderSmartSuggestions();
   renderRecommendations();
   renderRecipeResults();
   renderFavoritePreview();
   renderFavorites();
+  renderRecentRecipes();
+  renderShoppingList();
+  renderAppStats();
   attachRecipeActionEvents();
   updateActiveNavByScroll();
 }
@@ -2321,6 +3289,78 @@ function bindEvents() {
     });
   }
 
+  if (recipeSearchInput) {
+    recipeSearchInput.addEventListener("input", () => {
+      recipeSearchTerm = recipeSearchInput.value || "";
+      moreRecipesVisible = true;
+      cachedDailyRecommendationPool = [];
+      renderAll();
+    });
+  }
+
+  if (clearRecipeSearchButton) {
+    clearRecipeSearchButton.addEventListener("click", () => {
+      recipeSearchTerm = "";
+
+      if (recipeSearchInput) {
+        recipeSearchInput.value = "";
+        recipeSearchInput.focus();
+      }
+
+      renderAll();
+    });
+  }
+
+  if (recipeSortSelect) {
+    recipeSortSelect.addEventListener("change", () => {
+      activeSort = recipeSortSelect.value || "smart";
+      moreRecipesVisible = hasBrowseCriteria();
+      renderAll();
+    });
+  }
+
+  if (surpriseRecipeButton) {
+    surpriseRecipeButton.addEventListener("click", surpriseRecipe);
+  }
+
+  if (exportFavoritesButton) {
+    exportFavoritesButton.addEventListener("click", exportFavorites);
+  }
+
+  if (clearFavoritesButton) {
+    clearFavoritesButton.addEventListener("click", clearFavorites);
+  }
+
+  if (clearRecentButton) {
+    clearRecentButton.addEventListener("click", clearRecentRecipes);
+  }
+
+  if (addPantryButton) {
+    addPantryButton.addEventListener("click", () => addPantryItem(pantryInput ? pantryInput.value : ""));
+  }
+
+  if (pantryInput) {
+    pantryInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") addPantryItem(pantryInput.value);
+    });
+  }
+
+  pantryQuickButtons.forEach((button) => {
+    button.addEventListener("click", () => addPantryItem(button.dataset.pantryQuick || ""));
+  });
+
+  if (clearPantryButton) {
+    clearPantryButton.addEventListener("click", clearPantry);
+  }
+
+  if (copyShoppingListButton) {
+    copyShoppingListButton.addEventListener("click", copyShoppingList);
+  }
+
+  if (clearShoppingListButton) {
+    clearShoppingListButton.addEventListener("click", clearShoppingList);
+  }
+
   if (toggleMoreIngredientsButton) {
     toggleMoreIngredientsButton.addEventListener("click", () => {
       moreIngredientsVisible = !moreIngredientsVisible;
@@ -2447,6 +3487,9 @@ function initApp() {
 
   bindEvents();
   loadFavorites();
+  loadPantry();
+  loadShoppingList();
+  loadRecentRecipes();
   initTheme();
   initMood();
   initWelcomeScreen();
