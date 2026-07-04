@@ -74,6 +74,8 @@ const toggleMoreRecipesButton = document.getElementById("toggleMoreRecipesButton
 const recipeSearchInput = document.getElementById("recipeSearchInput");
 const clearRecipeSearchButton = document.getElementById("clearRecipeSearchButton");
 const recipeSortSelect = document.getElementById("recipeSortSelect");
+const homeActionButtons = document.querySelectorAll("[data-home-scroll]");
+const homeSurpriseButton = document.getElementById("homeSurpriseButton");
 const surpriseRecipeButton = document.getElementById("surpriseRecipeButton");
 const smartSuggestionsContainer = document.getElementById("smartSuggestions");
 
@@ -1863,21 +1865,23 @@ function createFavoriteButton(recipe) {
 }
 
 function createRecipeCard(match, isRecommendation) {
-  const { recipe, matchingMain, missingMain, matchingOptional } = match;
+  const { recipe, matchingMain, missingMain } = match;
   const cardClass = isRecommendation ? "recommendation-card" : "recipe-card";
   const badgeText = isRecommendation ? "Bester Treffer" : "Rezeptidee";
   const hasIngredientContext = getSelectedNames().length > 0;
 
-  const missingText = hasIngredientContext
-    ? (missingMain.length > 0 ? formatList(missingMain) : "Du hast alles Wichtige. Sehr stabil.")
-    : "Zutaten siehst du im Rezept. Du kannst sie direkt auf die Einkaufsliste setzen.";
+  const statusText = hasIngredientContext
+    ? (missingMain.length > 0
+      ? `${missingMain.length} wichtige Zutat${missingMain.length === 1 ? "" : "en"} fehlt${missingMain.length === 1 ? "" : "en"} noch`
+      : "Alles Wichtige ist da")
+    : "Passt zu Filter oder Suche";
 
-  const optionalText = hasIngredientContext
-    ? (matchingOptional.length > 0 ? formatList(matchingOptional) : "Extras sind nice, aber kein Muss.")
-    : "Filter und Suche haben dieses Rezept gefunden.";
+  const matchText = hasIngredientContext && matchingMain.length > 0
+    ? `Passt mit ${formatList(matchingMain.slice(0, 3))}`
+    : "Details und Anleitung im Rezept";
 
   return `
-    <article class="${cardClass}">
+    <article class="${cardClass} recipe-card-compact">
       ${getRecipeImageMarkup(recipe, isRecommendation)}
 
       <div class="recipe-card-content">
@@ -1888,47 +1892,26 @@ function createRecipeCard(match, isRecommendation) {
 
         <h4>${escapeHtml(recipe.title)}</h4>
 
-        <p class="recipe-saying">${escapeHtml(recipe.saying)}</p>
+        <p class="recipe-saying compact-saying">${escapeHtml(recipe.saying)}</p>
 
-        <div class="recipe-meta">
-          <span class="meta-pill">Zeit · ${escapeHtml(recipe.time)}</span>
-          <span class="meta-pill">Abwasch · ${escapeHtml(recipe.dishes || "normal")}</span>
-          <span class="meta-pill">Kosten · ${escapeHtml(recipe.cost || "normal")}</span>
-          <span class="meta-pill">Sättigung · ${escapeHtml(recipe.filling)}</span>
-          <span class="meta-pill">Gefühl · ${escapeHtml(recipe.feeling || "Alltag")}</span>
-          ${recipe.airfryerTemperature ? `<span class="meta-pill">Airfryer · ${escapeHtml(recipe.airfryerTemperature)}</span>` : ""}
+        <div class="recipe-quick-meta">
+          <span>${escapeHtml(recipe.time)}</span>
+          <span>${escapeHtml(recipe.category || "Rezept")}</span>
+          ${recipe.airfryerTemperature ? `<span>${escapeHtml(recipe.airfryerTemperature)}</span>` : ""}
         </div>
 
-        <div class="match-info">
-          <div class="match-line">
-            <strong>Passt:</strong>
-            ${hasIngredientContext
-              ? (matchingMain.length > 0 ? escapeHtml(formatList(matchingMain)) : "noch nicht viel, aber wir versuchen es.")
-              : "passt zum aktuellen Filter oder Suchbegriff."}
-          </div>
-
-          <div class="missing-line">
-            <strong>${missingMain.length > 0 ? "Fehlt:" : "Status:"}</strong>
-            ${escapeHtml(missingText)}
-          </div>
-
-          <div class="match-line">
-            <strong>Extra:</strong>
-            ${escapeHtml(optionalText)}
-          </div>
+        <div class="compact-card-status">
+          <strong>${escapeHtml(statusText)}</strong>
+          <span>${escapeHtml(matchText)}</span>
         </div>
 
-        <div class="recipe-actions">
+        <div class="recipe-actions compact-actions">
           <button class="small-button" data-open-recipe="${recipe.id}" type="button">
-            Rezept ansehen
-          </button>
-
-          <button class="ghost-button" data-copy-missing="${recipe.id}" type="button">
-            Fehlendes kopieren
+            Ansehen
           </button>
 
           <button class="ghost-button" data-add-shopping="${recipe.id}" type="button">
-            Auf Einkaufsliste
+            Einkauf
           </button>
 
           <button class="ghost-button" data-share-card="${recipe.id}" type="button">
@@ -2484,6 +2467,171 @@ function openRecipeModal(recipeId) {
   }
 }
 
+
+function getRecipeMainNames(recipe, limit = 6) {
+  return (recipe.ingredients || [])
+    .map((ingredient) => ingredient.name)
+    .filter(Boolean)
+    .slice(0, limit)
+    .map(displayIngredientName);
+}
+
+function getRecipeContextFlags(recipe) {
+  const tags = recipe.tags || [];
+  const searchText = normalizeSearchValue([
+    recipe.title,
+    recipe.category,
+    recipe.shortDescription,
+    recipe.deviceNote,
+    ...(recipe.steps || []),
+    ...(recipe.ingredients || []).map((ingredient) => ingredient.name),
+    ...tags
+  ].join(" "));
+
+  return {
+    airfryer: tags.includes("heissluftfritteuse") || searchText.includes("airfryer") || searchText.includes("heissluft"),
+    summer: tags.includes("zu heiß zum kochen") || tags.includes("zu heiss zum kochen") || searchText.includes("sommer"),
+    leftovers: tags.includes("muss weg") || searchText.includes("reste") || searchText.includes("muss weg"),
+    noCook: searchText.includes("ohne kochen") || searchText.includes("kalt") || searchText.includes("salat") || searchText.includes("wrap"),
+    pan: searchText.includes("pfanne") || searchText.includes("braten") || searchText.includes("anbraten"),
+    oven: searchText.includes("ofen") || searchText.includes("backen")
+  };
+}
+
+function getDetailedSteps(recipe) {
+  const originalSteps = (recipe.steps || []).filter(Boolean);
+  const flags = getRecipeContextFlags(recipe);
+  const mainNames = getRecipeMainNames(recipe);
+  const steps = [];
+
+  steps.push({
+    title: "Vorbereitung",
+    text: getPreparationText(recipe, flags, mainNames),
+    tip: getPreparationTip(flags)
+  });
+
+  originalSteps.forEach((step, index) => {
+    steps.push({
+      title: `Zubereitung ${index + 1}`,
+      text: expandRecipeStep(recipe, step, index, flags),
+      tip: getStepTip(recipe, step, index, flags)
+    });
+  });
+
+  steps.push({
+    title: "Abschmecken & servieren",
+    text: getFinishText(recipe, flags),
+    tip: getFinishTip(flags)
+  });
+
+  return steps;
+}
+
+function getPreparationText(recipe, flags, mainNames) {
+  const ingredientsText = mainNames.length > 0
+    ? `Leg dir zuerst ${mainNames.join(", ")} und die restlichen Zutaten bereit.`
+    : "Leg dir zuerst alle Zutaten bereit.";
+
+  if (flags.airfryer) {
+    return `${ingredientsText} Tupfe feuchte Zutaten kurz trocken, damit sie in der Heißluftfritteuse besser bräunen. Heize das Gerät nur vor, wenn dein Modell das braucht, und halte den Korb frei genug, damit die Luft zirkulieren kann.`;
+  }
+
+  if (flags.summer || flags.noCook) {
+    return `${ingredientsText} Wasche Gemüse und Kräuter gründlich, schneide alles mundgerecht und rühre Soßen oder Dressings separat an. So bleibt das Gericht frisch und wird nicht matschig, bevor es auf den Teller kommt.`;
+  }
+
+  if (flags.leftovers) {
+    return `${ingredientsText} Prüfe Reste kurz auf Geruch und Konsistenz, schneide trockene oder unschöne Stellen weg und sortiere alles so vor, dass du beim Kochen nicht suchen musst.`;
+  }
+
+  return `${ingredientsText} Schneide Gemüse möglichst gleichmäßig, stelle Gewürze griffbereit und such dir Pfanne, Topf oder Schüssel vorher raus. Dadurch läuft die Zubereitung ruhiger und nichts brennt an, während du noch schnippelst.`;
+}
+
+function getPreparationTip(flags) {
+  if (flags.airfryer) return "Nicht zu voll machen: lieber in zwei Runden garen als einen überladenen Korb riskieren.";
+  if (flags.summer || flags.noCook) return "Kalte Komponenten erst kurz vor dem Essen mischen, dann bleibt alles knackiger.";
+  if (flags.leftovers) return "Reste sind perfekt, aber nur, wenn sie noch gut riechen und sauber gelagert wurden.";
+  return "Einmal vorbereiten spart am Ende mehr Zeit als hektisches Nachschneiden.";
+}
+
+function expandRecipeStep(recipe, step, index, flags) {
+  const cleanStep = String(step || "").trim();
+  const normalizedStep = normalizeSearchValue(cleanStep);
+  let addition = "";
+
+  if (normalizedStep.includes("schneid") || normalizedStep.includes("würfel") || normalizedStep.includes("wuerfel")) {
+    addition = "Achte auf ähnliche Stückgrößen, dann wird später alles gleichmäßiger gar und das Mundgefühl wird besser.";
+  } else if (normalizedStep.includes("anbrat") || normalizedStep.includes("brat")) {
+    addition = "Arbeite lieber mit mittlerer bis guter Hitze und rühre regelmäßig um, damit Röstaromen entstehen, aber nichts bitter wird.";
+  } else if (normalizedStep.includes("koch") || normalizedStep.includes("garen")) {
+    addition = "Lass es nicht unnötig stark blubbern. Ein ruhiges Köcheln reicht meistens und gibt dir mehr Kontrolle.";
+  } else if (normalizedStep.includes("misch") || normalizedStep.includes("verrühr") || normalizedStep.includes("vermeng")) {
+    addition = "Mische erst vorsichtig und gib Flüssigkeit oder Dressing lieber nach und nach dazu, bis die Konsistenz passt.";
+  } else if (normalizedStep.includes("würz") || normalizedStep.includes("wuerz") || normalizedStep.includes("abschmeck")) {
+    addition = "Würze in kleinen Schritten. Salz, Säure und etwas Schärfe lieber am Ende fein einstellen.";
+  } else if (flags.airfryer) {
+    addition = "Schüttle oder wende nach etwa der Hälfte der Zeit, damit die Oberfläche rundherum Farbe bekommt.";
+  } else if (flags.summer || flags.noCook) {
+    addition = "Wenn du das Gericht vorbereitest, bewahre frische und cremige Bestandteile getrennt auf und mische sie erst beim Servieren.";
+  } else {
+    addition = "Nimm dir hier einen Moment Zeit und probiere kurz, ob Konsistenz und Würzung schon in die richtige Richtung gehen.";
+  }
+
+  if (cleanStep.length > 120) return cleanStep;
+
+  return `${cleanStep} ${addition}`;
+}
+
+function getStepTip(recipe, step, index, flags) {
+  const normalizedStep = normalizeSearchValue(step);
+
+  if (flags.airfryer) return "Bei Heißluft lieber einmal früher kontrollieren. Geräte garen je nach Modell unterschiedlich.";
+  if (normalizedStep.includes("soße") || normalizedStep.includes("sosse") || normalizedStep.includes("dressing")) return "Soßen dürfen zuerst etwas kräftiger schmecken, weil sie sich später mit den Zutaten verteilen.";
+  if (normalizedStep.includes("pfanne") || normalizedStep.includes("brat")) return "Wenn es zu schnell dunkel wird: Hitze runter, nicht hektisch werden.";
+  if (flags.summer || flags.noCook) return "Frische Kräuter oder etwas Zitronensaft heben kalte Gerichte direkt an.";
+  if (flags.leftovers) return "Reste vertragen oft etwas mehr Würze, weil sie beim Aufwärmen milder wirken.";
+  return index === 0 ? "Der erste Schritt entscheidet oft über Ruhe oder Chaos in der Küche." : "Kurz probieren ist erlaubt. Küchenkumpel petzt nicht.";
+}
+
+function getFinishText(recipe, flags) {
+  if (flags.airfryer) {
+    return "Lass das Gericht nach dem Garen ein bis zwei Minuten stehen, damit sich Hitze und Saft verteilen. Prüfe dann die Konsistenz, würze bei Bedarf nach und serviere es am besten direkt, solange es noch knusprig ist.";
+  }
+
+  if (flags.summer || flags.noCook) {
+    return "Mische empfindliche Zutaten erst ganz zum Schluss unter. Probier einmal auf Salz, Säure und Frische, gib bei Bedarf etwas Zitrone, Joghurt, Öl oder Kräuter dazu und serviere alles möglichst frisch.";
+  }
+
+  if (flags.leftovers) {
+    return "Probier zum Schluss bewusst: Braucht es Salz, Säure, Schärfe oder etwas Cremigkeit? Gerade Restegerichte werden mit einem kleinen frischen Abschluss deutlich besser.";
+  }
+
+  return "Schalte die Hitze aus, probiere in Ruhe und stell Salz, Pfeffer, Säure oder Cremigkeit ein. Richte das Essen dann direkt an und gib, wenn vorhanden, noch etwas Frisches oder Knuspriges darüber.";
+}
+
+function getFinishTip(flags) {
+  if (flags.airfryer) return "Knusprige Sachen nicht abdecken, sonst werden sie weich.";
+  if (flags.summer || flags.noCook) return "Frische Gerichte wirken sofort besser, wenn sie nicht zu lange herumstehen.";
+  if (flags.leftovers) return "Ein frischer Abschluss macht aus Resteessen wieder ein richtiges Gericht.";
+  return "Am Ende entscheidet Abschmecken mehr als jede genaue Mengenangabe.";
+}
+
+function renderDetailedStepCards(recipe) {
+  return getDetailedSteps(recipe)
+    .map((step, index) => `
+      <li class="detailed-step-card">
+        <div class="step-number">${index + 1}</div>
+
+        <div class="step-copy">
+          <h5>${escapeHtml(step.title)}</h5>
+          <p>${escapeHtml(step.text)}</p>
+          ${step.tip ? `<small>${escapeHtml(step.tip)}</small>` : ""}
+        </div>
+      </li>
+    `)
+    .join("");
+}
+
 function renderRecipeModal(recipe) {
   modalContent.innerHTML = `
     <div class="modal-recipe-hero">
@@ -2508,22 +2656,38 @@ function renderRecipeModal(recipe) {
       </div>
     </div>
 
-    <div class="modal-action-row">
-      <button id="toggleCookModeButton" class="ghost-button" type="button">
-        Kochmodus
-      </button>
+    <div class="modal-action-groups">
+      <div class="modal-action-group">
+        <span>Kochen</span>
 
-      <button id="startRecipeTimerButton" class="ghost-button" type="button">
-        Timer starten
-      </button>
+        <div class="modal-action-row">
+          <button id="toggleCookModeButton" class="ghost-button" type="button">
+            Kochmodus
+          </button>
 
-      <button id="shareRecipeButton" class="ghost-button" type="button">
-        Teilen
-      </button>
+          <button id="startRecipeTimerButton" class="ghost-button" type="button">
+            Timer
+          </button>
+        </div>
+      </div>
 
-      <button id="printRecipeButton" class="ghost-button" type="button">
-        Drucken
-      </button>
+      <div class="modal-action-group">
+        <span>Planen</span>
+
+        <div class="modal-action-row">
+          <button id="addModalShoppingButton" class="ghost-button" type="button">
+            Einkaufsliste
+          </button>
+
+          <button id="shareRecipeButton" class="ghost-button" type="button">
+            Teilen
+          </button>
+
+          <button id="printRecipeButton" class="ghost-button" type="button">
+            Drucken
+          </button>
+        </div>
+      </div>
     </div>
 
     <div id="recipeTimerPanel" class="recipe-timer-panel hidden" aria-live="polite">
@@ -2595,9 +2759,9 @@ function renderRecipeModal(recipe) {
       ${renderIngredientList(recipe)}
     </ul>
 
-    <h4 class="modal-section-title">Zubereitung</h4>
-    <ol>
-      ${(recipe.steps || []).map((step) => `<li>${escapeHtml(step)}</li>`).join("")}
+    <h4 class="modal-section-title">Ausführliche Anleitung</h4>
+    <ol class="detailed-step-list">
+      ${renderDetailedStepCards(recipe)}
     </ol>
 
     <div class="recipe-tip-box">
@@ -2622,6 +2786,7 @@ function renderRecipeModal(recipe) {
   const nextCookStepButton = document.getElementById("nextCookStepButton");
   const startRecipeTimerButton = document.getElementById("startRecipeTimerButton");
   const stopRecipeTimerButton = document.getElementById("stopRecipeTimerButton");
+  const addModalShoppingButton = document.getElementById("addModalShoppingButton");
   const shareRecipeButton = document.getElementById("shareRecipeButton");
   const printRecipeButton = document.getElementById("printRecipeButton");
 
@@ -2630,6 +2795,7 @@ function renderRecipeModal(recipe) {
   if (nextCookStepButton) nextCookStepButton.addEventListener("click", () => changeCookStep(recipe, 1));
   if (startRecipeTimerButton) startRecipeTimerButton.addEventListener("click", () => startRecipeTimer(recipe));
   if (stopRecipeTimerButton) stopRecipeTimerButton.addEventListener("click", () => stopRecipeTimer(true));
+  if (addModalShoppingButton) addModalShoppingButton.addEventListener("click", () => addMissingToShoppingList(recipe.id));
   if (shareRecipeButton) shareRecipeButton.addEventListener("click", () => shareRecipe(recipe));
   if (printRecipeButton) printRecipeButton.addEventListener("click", () => window.print());
 
@@ -2689,7 +2855,7 @@ function toggleCookMode(recipe) {
 }
 
 function renderCookModeStep(recipe) {
-  const steps = recipe.steps || [];
+  const steps = getDetailedSteps(recipe);
   const stepText = document.getElementById("cookModeStepText");
   const counter = document.getElementById("cookModeCounter");
   const previousButton = document.getElementById("previousCookStepButton");
@@ -2704,7 +2870,8 @@ function renderCookModeStep(recipe) {
   }
 
   cookingStepIndex = Math.min(Math.max(cookingStepIndex, 0), steps.length - 1);
-  stepText.textContent = steps[cookingStepIndex];
+  const currentStep = steps[cookingStepIndex];
+  stepText.textContent = `${currentStep.title}: ${currentStep.text}${currentStep.tip ? " Tipp: " + currentStep.tip : ""}`;
   counter.textContent = `Schritt ${cookingStepIndex + 1} von ${steps.length}`;
 
   if (previousButton) previousButton.disabled = cookingStepIndex === 0;
@@ -2712,7 +2879,7 @@ function renderCookModeStep(recipe) {
 }
 
 function changeCookStep(recipe, direction) {
-  const steps = recipe.steps || [];
+  const steps = getDetailedSteps(recipe);
 
   if (steps.length === 0) return;
 
@@ -2958,6 +3125,10 @@ function addMissingToShoppingList(recipeId) {
     updateBuddyTextOnly(`Auf die Einkaufsliste gesetzt: ${formatList(added)}.`);
   }
 
+  if (shoppingListSection && "open" in shoppingListSection) {
+    shoppingListSection.open = true;
+  }
+
   shoppingListSection?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -2992,6 +3163,10 @@ function clearShoppingList() {
 
 function renderShoppingList() {
   if (!shoppingListItemsContainer) return;
+
+  if (shoppingListSection) {
+    shoppingListSection.classList.toggle("is-empty", shoppingListItems.length === 0);
+  }
 
   if (shoppingListItems.length === 0) {
     shoppingListItemsContainer.innerHTML = `
@@ -3322,6 +3497,32 @@ function bindEvents() {
   if (surpriseRecipeButton) {
     surpriseRecipeButton.addEventListener("click", surpriseRecipe);
   }
+
+  if (homeSurpriseButton) {
+    homeSurpriseButton.addEventListener("click", surpriseRecipe);
+  }
+
+  homeActionButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const targetId = button.dataset.homeScroll || "";
+      const target = document.getElementById(targetId);
+
+      if (!target) return;
+
+      if (target.tagName === "DETAILS") {
+        target.open = true;
+      }
+
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      if (target instanceof HTMLInputElement) {
+        setTimeout(() => target.focus(), 250);
+      } else {
+        const input = target.querySelector("input, select, button");
+        if (input) setTimeout(() => input.focus(), 250);
+      }
+    });
+  });
 
   if (exportFavoritesButton) {
     exportFavoritesButton.addEventListener("click", exportFavorites);

@@ -1,35 +1,40 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.12.1",
+  version: "1.13.0",
 
-  badge: "FEINSCHLIFF",
+  badge: "UPDATE",
 
-  title: "Küchenkumpel ist leichter geworden",
+  title: "Küchenkumpel ist aufgeräumter",
 
-  subtitle: "Weniger Ballast, schnellerer Start und bessere Bedienbarkeit.",
+  subtitle: "Weniger voll auf der Startseite und mehr Hilfe im Rezept.",
 
   image: "assets/images/themes/standard/kochtopf-idee.png",
 
-  imageAlt: "Küchenkumpel mit Performance-Feinschliff",
+  imageAlt: "Küchenkumpel mit aufgeräumter Rezeptansicht",
 
   mascot: "assets/images/themes/standard/kochtopf-idee.png",
 
-  mascotAlt: "Küchenkumpel mit Performance-Feinschliff",
+  mascotAlt: "Küchenkumpel mit aufgeräumter Rezeptansicht",
 
   items: [
     {
-      icon: "⚡",
-      title: "Bilder optimiert",
-      text: "Die großen Maskottchen- und Logo-Bilder wurden deutlich verkleinert, ohne Pfade oder Namen zu ändern."
+      icon: "🧭",
+      title: "Neuer Schnellstart",
+      text: "Drei klare Wege: Zutaten eingeben, Rezepte stöbern oder direkt überraschen lassen."
     },
     {
-      icon: "🖼️",
-      title: "Bilder laden ruhiger",
-      text: "Nicht sofort sichtbare Bilder werden später geladen und blockieren den Start weniger."
+      icon: "🧹",
+      title: "Weniger voll",
+      text: "Vorratskammer, Einkaufsliste und Statistik sind jetzt einklappbar und drängen sich nicht mehr nach vorn."
     },
     {
-      icon: "⌨️",
-      title: "Tastaturfreundlicher",
-      text: "Buttons, Links und Eingaben haben jetzt ein besser sichtbares Fokus-Highlight."
+      icon: "🍳",
+      title: "Ausführlichere Anleitung",
+      text: "Rezepte bekommen eine ruhigere Schritt-für-Schritt-Ansicht mit Vorbereitung, Tipps und Servierhinweis."
+    },
+    {
+      icon: "📋",
+      title: "Kompaktere Rezeptkarten",
+      text: "Die Übersicht zeigt weniger Kleinkram. Details stehen dort, wo sie hingehören: im Rezept."
     }
   ],
 
