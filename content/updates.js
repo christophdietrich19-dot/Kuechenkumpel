@@ -1,44 +1,44 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.13.4",
+  version: "1.13.5",
 
-  badge: "LOGIK-FIX",
+  badge: "THEME-FIX",
 
-  title: "Auswählen, suchen, Abend retten",
+  title: "Die echten Küchenkumpel sind zurück",
 
-  subtitle: "Die Zutatenwahl bleibt jetzt wirklich an Ort und Stelle, mehrere Zutaten werden gemeinsam geprüft und der Notfallknopf zieht drei zufällige Rezeptideen.",
+  subtitle: "Alle Bereiche laden wieder ausschließlich die originalen PNG-Motive des gewählten Themes. Es wurden keine Figuren, Farben oder Designs neu interpretiert.",
 
   image: "assets/images/themes/standard/kochtopf-idee.png",
 
-  imageAlt: "Küchenkumpel mit einer Rezeptidee",
+  imageAlt: "Originaler Küchenkumpel mit einer Rezeptidee",
 
   mascot: "assets/images/themes/standard/kochtopf-idee.png",
 
-  mascotAlt: "Küchenkumpel mit einer Rezeptidee",
+  mascotAlt: "Originaler Küchenkumpel mit einer Rezeptidee",
 
   items: [
     {
-      icon: "🧺",
-      title: "Erst sammeln, dann suchen",
-      text: "Beim Antippen oder Entfernen einer Zutat bleibt die aktuelle Bildschirmposition erhalten. Erst „Daraus was kochen“ springt bewusst zu den Ergebnissen."
+      icon: "🖼️",
+      title: "Originale Motive",
+      text: "Küchenkumpel lädt wieder die unveränderten PNG-Dateien der jeweiligen Themenwelt. Fehlerhafte oder veraltete WebP-Dateien werden nicht mehr verwendet."
     },
     {
-      icon: "✓",
-      title: "Alle gewählten Zutaten zählen",
-      text: "Bei mehreren ausgewählten Zutaten werden nur noch Rezepte gezeigt, in denen wirklich jede gewählte Zutat vorkommt."
+      icon: "🎭",
+      title: "Alle Themen wieder getrennt",
+      text: "Standard, Heißluft, Frühling, Ostern, Sommer, Herbst, Halloween und Weihnachten verwenden wieder ihre eigenen Figuren."
     },
     {
-      icon: "🎲",
-      title: "Abendessen per Zufall retten",
-      text: "„Rette mein Abendessen“ zeigt jetzt eine zufällige Hauptidee und zwei weitere Alternativen, unabhängig von der Zutatenwahl."
+      icon: "🔄",
+      title: "Jeder Bereich wechselt mit",
+      text: "Auch Entscheidung, Notfallmodus und die Sprechblase des Küchenkumpels werden beim Themenwechsel zuverlässig aktualisiert."
     },
     {
-      icon: "§",
-      title: "Rechtliches bleibt in der App",
-      text: "Impressum und Datenschutz sind jetzt eigene Küchenkumpel-Seiten und führen nicht mehr zuerst auf das Portfolio."
+      icon: "🧹",
+      title: "Alter Bildcache umgangen",
+      text: "Eine neue Bildversion sorgt dafür, dass der Browser nicht länger ein altes, fehlerhaftes Motiv aus dem Cache übernimmt."
     }
   ],
 
-  footerText: "Optik, Motive und Küchenkumpel bleiben unverändert. Neu ist nur der Ablauf dahinter.",
+  footerText: "Zutatenlogik, Zufallsfunktion, Rezepte und Rechteseiten aus Version 1.13.4 bleiben unverändert.",
 
-  buttonText: "Loskochen"
+  buttonText: "Weiter"
 };
