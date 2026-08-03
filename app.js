@@ -31,7 +31,8 @@ const ideaMascot = document.getElementById("ideaMascot");
 const favoriteMascot = document.getElementById("favoriteMascot");
 const favoritesListMascot = document.getElementById("favoritesListMascot");
 const footerMascot = document.getElementById("footerMascot");
-const dailyRecommendationMascot = document.getElementById("dailyRecommendationMascot");
+const decisionMascot = document.getElementById("decisionMascot");
+const rescueMascot = document.getElementById("rescueMascot");
 const themeHeroText = document.getElementById("themeHeroText");
 
 const moodOptionButtons = document.querySelectorAll("[data-mood]");
@@ -891,10 +892,11 @@ function getLegacyMascotPath(mascotKey) {
 }
 
 function createMascotPathCandidates(themeName, mascotKey) {
+  // Die originalen PNG-Dateien sind die verbindliche Bildquelle.
+  // WebP-Versionen werden bewusst nicht verwendet, damit Theme, Transparenz
+  // und Motiv exakt den freigegebenen Originalen entsprechen.
   const candidates = [
-    getThemeMascotPath(themeName, mascotKey, "webp"),
     getThemeMascotPath(themeName, mascotKey, "png"),
-    getStandardMascotPath(mascotKey, "webp"),
     getStandardMascotPath(mascotKey, "png"),
     getLegacyMascotPath(mascotKey)
   ];
@@ -1022,12 +1024,14 @@ function updateThemeMascots() {
   setMascotImage(welcomeMascot, "welcome");
   setMascotImage(heroMascot, "hero");
   setMascotImage(moodMascot, getCurrentMoodMascotKey());
+  setMascotImage(decisionMascot, "idea");
   setMascotImage(sectionMascot, "section");
   setMascotImage(ideaMascot, "idea");
   setMascotImage(favoriteMascot, "favorite");
   setMascotImage(favoritesListMascot, "favorite");
+  setMascotImage(rescueMascot, "rescue");
   setMascotImage(footerMascot, "footer");
-  setMascotImage(dailyRecommendationMascot, "daily");
+  setMascotImage(buddyMessage?.querySelector(".buddy-mascot"), "buddy");
 
   if (themeHeroText) {
     themeHeroText.textContent = getDaytimeSettings().heroText;
@@ -1869,11 +1873,11 @@ function rescueDinner() {
 }
 
 function getBuddyMascotPath() {
-  return addAssetVersion(getThemeMascotPath(activeTheme, "buddy", "webp"));
+  return addAssetVersion(getThemeMascotPath(activeTheme, "buddy", "png"));
 }
 
 function getBuddyMascotFallbackPath() {
-  return addAssetVersion(getThemeMascotPath(activeTheme, "buddy", "png"));
+  return addAssetVersion(getStandardMascotPath("buddy", "png"));
 }
 
 function updateBuddyTextOnly(text) {
