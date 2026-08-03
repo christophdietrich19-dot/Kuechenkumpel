@@ -1,6 +1,6 @@
 window.KUECHENKUMPEL_VERSION = {
-  app: "1.13.1",
+  app: "1.13.4",
   recipes: "180-rezepte-zu-heiss-zum-kochen",
-  images: "optimized-png",
-  build: "layoutfix-filter-sortierung"
+  images: "theme-webp-lossless",
+  build: "zutatenlogik-zufall-und-rechtliches"
 };

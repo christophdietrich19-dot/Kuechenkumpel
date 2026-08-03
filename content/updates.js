@@ -1,39 +1,44 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.13.1",
+  version: "1.13.4",
 
-  badge: "FIX",
+  badge: "LOGIK-FIX",
 
-  title: "Küchenkumpel hat Luft bekommen",
+  title: "Auswählen, suchen, Abend retten",
 
-  subtitle: "Filter, Sortierung und Tageskarte sind jetzt ruhiger gesetzt.",
+  subtitle: "Die Zutatenwahl bleibt jetzt wirklich an Ort und Stelle, mehrere Zutaten werden gemeinsam geprüft und der Notfallknopf zieht drei zufällige Rezeptideen.",
 
   image: "assets/images/themes/standard/kochtopf-idee.png",
 
-  imageAlt: "Küchenkumpel mit Layout-Feinschliff",
+  imageAlt: "Küchenkumpel mit einer Rezeptidee",
 
   mascot: "assets/images/themes/standard/kochtopf-idee.png",
 
-  mascotAlt: "Küchenkumpel mit Layout-Feinschliff",
+  mascotAlt: "Küchenkumpel mit einer Rezeptidee",
 
   items: [
     {
-      icon: "🧹",
-      title: "Filter sauber umgebrochen",
-      text: "Die Kategorien laufen nicht mehr rechts aus dem sichtbaren Bereich."
+      icon: "🧺",
+      title: "Erst sammeln, dann suchen",
+      text: "Beim Antippen oder Entfernen einer Zutat bleibt die aktuelle Bildschirmposition erhalten. Erst „Daraus was kochen“ springt bewusst zu den Ergebnissen."
     },
     {
-      icon: "↕️",
-      title: "Sortierung kompakter",
-      text: "Die Sortierbox nimmt weniger Platz ein und wirkt weniger wuchtig."
+      icon: "✓",
+      title: "Alle gewählten Zutaten zählen",
+      text: "Bei mehreren ausgewählten Zutaten werden nur noch Rezepte gezeigt, in denen wirklich jede gewählte Zutat vorkommt."
     },
     {
       icon: "🎲",
-      title: "Tagesidee ruhiger",
-      text: "Der Bereich Rezept des Tages ist kompakter und besser lesbar."
+      title: "Abendessen per Zufall retten",
+      text: "„Rette mein Abendessen“ zeigt jetzt eine zufällige Hauptidee und zwei weitere Alternativen, unabhängig von der Zutatenwahl."
+    },
+    {
+      icon: "§",
+      title: "Rechtliches bleibt in der App",
+      text: "Impressum und Datenschutz sind jetzt eigene Küchenkumpel-Seiten und führen nicht mehr zuerst auf das Portfolio."
     }
   ],
 
-  footerText: "Schön, dass du wieder da bist.",
+  footerText: "Optik, Motive und Küchenkumpel bleiben unverändert. Neu ist nur der Ablauf dahinter.",
 
   buttonText: "Loskochen"
 };
