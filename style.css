@@ -2159,3 +2159,23 @@ textarea:focus-visible,
     width: 100%;
   }
 }
+
+/* 1.13.3: Ruhiger Zutatenfluss */
+.selected-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.selected-actions .primary-button,
+.selected-actions .ghost-button {
+  min-height: 44px;
+}
+
+@media (max-width: 620px) {
+  .selected-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

@@ -5,4 +5,10 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://christophdietrich19-dot.github.io/Kuechenkumpel/impressum.html</loc>
+  </url>
+  <url>
+    <loc>https://christophdietrich19-dot.github.io/Kuechenkumpel/datenschutz.html</loc>
+  </url>
 </urlset>

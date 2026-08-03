@@ -44,6 +44,8 @@ const quickIngredientsContainer = document.getElementById("quickIngredients");
 const toggleMoreIngredientsButton = document.getElementById("toggleMoreIngredientsButton");
 const selectedArea = document.getElementById("selectedArea");
 const selectedIngredientsContainer = document.getElementById("selectedIngredients");
+const findRecipesButton = document.getElementById("findRecipesButton");
+const clearSelectedIngredientsButton = document.getElementById("clearSelectedIngredientsButton");
 
 const buddyMessage = document.getElementById("buddyMessage");
 const filterButtons = document.querySelectorAll(".filter-button");
@@ -77,6 +79,7 @@ const recipeSortSelect = document.getElementById("recipeSortSelect");
 const homeActionButtons = document.querySelectorAll("[data-home-scroll]");
 const homeSurpriseButton = document.getElementById("homeSurpriseButton");
 const surpriseRecipeButton = document.getElementById("surpriseRecipeButton");
+const noMoodButton = document.getElementById("noMoodButton");
 const smartSuggestionsContainer = document.getElementById("smartSuggestions");
 
 const pantryInput = document.getElementById("pantryInput");
@@ -122,6 +125,9 @@ let dailyRecommendationIndex = 0;
 let cachedDailyRecommendationPool = [];
 let moreIngredientsVisible = false;
 let moreRecipesVisible = false;
+let ingredientSearchSubmitted = false;
+let rescueModeActive = false;
+let rescueRecipeIds = [];
 let favoritesVisible = false;
 let appStartLocked = false;
 
@@ -491,6 +497,7 @@ function canonicalIngredient(value) {
   if (["ei", "eier"].includes(text)) return "eier";
   if (["kaese", "käse"].includes(text)) return "käse";
   if (["nudel", "nudeln", "pasta", "spaghetti", "makkaroni"].includes(text)) return "nudeln";
+  if (["suesskartoffel", "suesskartoffeln"].includes(text)) return "süßkartoffeln";
   if (["kartoffel", "kartoffeln"].includes(text)) return "kartoffeln";
   if (["tomate", "tomaten"].includes(text)) return "tomaten";
   if (["dosentomaten", "dosen tomaten"].includes(text)) return "dosentomaten";
@@ -534,6 +541,11 @@ function canonicalIngredient(value) {
   return text;
 }
 
+function textContainsEgg(value) {
+  const text = normalizeSearchValue(value);
+  return /(^|\s)(ei|eier|eiern|eiweiss)(?=\s|$)/.test(text);
+}
+
 function capitalize(value) {
   if (!value) return "";
   return value.charAt(0).toUpperCase() + value.slice(1);
@@ -545,6 +557,7 @@ function displayIngredientName(value) {
     käse: "Käse",
     nudeln: "Nudeln",
     kartoffeln: "Kartoffeln",
+    süßkartoffeln: "Süßkartoffeln",
     tomaten: "Tomaten",
     dosentomaten: "Dosentomaten",
     "passierte tomaten": "passierte Tomaten",
@@ -570,6 +583,12 @@ function displayIngredientName(value) {
     hackfleisch: "Hackfleisch",
     hähnchen: "Hähnchen",
     thunfisch: "Thunfisch",
+    lachs: "Lachs",
+    garnelen: "Garnelen",
+    feta: "Feta",
+    mozzarella: "Mozzarella",
+    gurke: "Gurke",
+    kichererbsen: "Kichererbsen",
     bohnen: "Bohnen",
     mais: "Mais",
     linsen: "Linsen",
@@ -624,42 +643,73 @@ function getRecipeSource() {
 }
 
 function simplifyIngredientName(value) {
-  const text = normalize(value);
+  const text = normalizeSearchValue(value);
 
-  if (text.includes("nudel") || text.includes("spaghetti") || text.includes("pasta")) return "nudeln";
+  if (!text) return "";
+
+  if (
+    text.includes("heissluft") ||
+    text.includes("airfryer") ||
+    text.includes("air fryer") ||
+    text.includes("ninja")
+  ) {
+    return "heißluftfritteuse";
+  }
+
+  if (text.includes("nudel") || text.includes("spaghetti") || text.includes("pasta") || text.includes("makkaroni")) return "nudeln";
   if (text.includes("reis")) return "reis";
+  if (text.includes("suesskartoffel")) return "süßkartoffeln";
   if (text.includes("kartoffel")) return "kartoffeln";
-  if (text.includes("ei")) return "eier";
-  if (text.includes("käse") || text.includes("kaese")) return "käse";
+
+  if (text.includes("passierte tomate") || text.includes("tomatensosse")) return "passierte tomaten";
+  if (text.includes("dosentomate") || text.includes("dosen tomate")) return "dosentomaten";
   if (text.includes("tomate")) return "tomaten";
-  if (text.includes("zwiebel")) return "zwiebel";
-  if (text.includes("brot")) return "brot";
-  if (text.includes("brötchen") || text.includes("broetchen")) return "brötchen";
-  if (text.includes("paprika")) return "paprika";
-  if (text.includes("gemüse") || text.includes("gemuese")) return "gemüse";
-  if (text.includes("milch")) return "milch";
-  if (text.includes("sahne")) return "sahne";
-  if (text.includes("frischkäse") || text.includes("frischkaese")) return "frischkäse";
+
+  if (text.includes("frischkaese")) return "frischkäse";
+  if (text.includes("kokosmilch")) return "kokosmilch";
+  if (text.includes("kaese")) return "käse";
+  if (text.includes("feta")) return "feta";
+  if (text.includes("mozzarella")) return "mozzarella";
   if (text.includes("schmand")) return "schmand";
   if (text.includes("quark")) return "quark";
   if (text.includes("joghurt")) return "joghurt";
-  if (text.includes("thunfisch")) return "thunfisch";
+  if (text.includes("sahne")) return "sahne";
+  if (text.includes("milch")) return "milch";
+
+  if (textContainsEgg(text)) return "eier";
+
   if (text.includes("hack")) return "hackfleisch";
-  if (text.includes("hähnchen") || text.includes("haehnchen") || text.includes("huhn")) return "hähnchen";
+  if (text.includes("haehnchen") || text.includes("huhn") || text.includes("chicken")) return "hähnchen";
+  if (text.includes("thunfisch")) return "thunfisch";
+  if (text.includes("lachs")) return "lachs";
+  if (text.includes("garnele")) return "garnelen";
+
   if (text.includes("bohne")) return "bohnen";
-  if (text.includes("mais")) return "mais";
   if (text.includes("linse")) return "linsen";
+  if (text.includes("kichererbse")) return "kichererbsen";
+  if (text.includes("mais")) return "mais";
+
+  if (text.includes("gemuesebruehe") || text.includes("bruehe")) return "brühe";
+  if (text.includes("tk gemuese") || text.includes("tiefkuehlgemuese")) return "tk-gemüse";
+  if (text.includes("paprika")) return "paprika";
+  if (text.includes("zucchini")) return "zucchini";
+  if (text.includes("moehre") || text.includes("karotte")) return "möhren";
+  if (text.includes("brokkoli")) return "brokkoli";
+  if (text.includes("pilz") || text.includes("champignon")) return "pilze";
+  if (text.includes("spinat")) return "spinat";
+  if (text.includes("gurke")) return "gurke";
+  if (text.includes("gemuese")) return "gemüse";
+
+  if (text.includes("broetchen")) return "brötchen";
+  if (text.includes("baguette")) return "baguette";
+  if (text.includes("toast")) return "toast";
+  if (text.includes("brot")) return "brot";
+
+  if (text.includes("zwiebel")) return "zwiebel";
+  if (text.includes("knoblauch")) return "knoblauch";
   if (text.includes("hafer")) return "haferflocken";
   if (text.includes("mehl")) return "mehl";
-  if (text.includes("knoblauch")) return "knoblauch";
-  if (text.includes("öl") || text.includes("oel")) return "öl";
-  if (text.includes("brühe") || text.includes("bruehe")) return "brühe";
-  if (text.includes("heißluft") || text.includes("heissluft") || text.includes("airfryer") || text.includes("air fryer") || text.includes("ninja")) return "heißluftfritteuse";
-  if (text.includes("zucchini")) return "zucchini";
-  if (text.includes("möhren") || text.includes("karotte")) return "möhren";
-  if (text.includes("brokkoli")) return "brokkoli";
-  if (text.includes("pilz")) return "pilze";
-  if (text.includes("spinat")) return "spinat";
+  if (text.includes("oel")) return "öl";
 
   return "";
 }
@@ -815,23 +865,41 @@ function refreshRecipes() {
 
 refreshRecipes();
 
-function getThemeMascotPath(themeName, mascotKey) {
-  const settings = themeSettings[themeName] || themeSettings.standard;
+function getMascotFileName(mascotKey, extension = "png") {
   const fileName = mascotFiles[mascotKey] || mascotFiles.hero;
+
+  return fileName.replace(/\.[a-z0-9]+$/i, `.${extension}`);
+}
+
+function getThemeMascotPath(themeName, mascotKey, extension = "png") {
+  const settings = themeSettings[themeName] || themeSettings.standard;
+  const fileName = getMascotFileName(mascotKey, extension);
 
   return `assets/images/themes/${settings.folder}/${fileName}`;
 }
 
-function getStandardMascotPath(mascotKey) {
-  const fileName = mascotFiles[mascotKey] || mascotFiles.hero;
+function getStandardMascotPath(mascotKey, extension = "png") {
+  const fileName = getMascotFileName(mascotKey, extension);
 
   return `assets/images/themes/standard/${fileName}`;
 }
 
 function getLegacyMascotPath(mascotKey) {
-  const fileName = mascotFiles[mascotKey] || mascotFiles.hero;
+  const fileName = getMascotFileName(mascotKey, "png");
 
   return `assets/images/${fileName}`;
+}
+
+function createMascotPathCandidates(themeName, mascotKey) {
+  const candidates = [
+    getThemeMascotPath(themeName, mascotKey, "webp"),
+    getThemeMascotPath(themeName, mascotKey, "png"),
+    getStandardMascotPath(mascotKey, "webp"),
+    getStandardMascotPath(mascotKey, "png"),
+    getLegacyMascotPath(mascotKey)
+  ];
+
+  return candidates.filter((path, index) => path && candidates.indexOf(path) === index);
 }
 
 
@@ -899,26 +967,21 @@ window.handleRecipeImageError = handleRecipeImageError;
 function setMascotImage(imageElement, mascotKey) {
   if (!imageElement) return;
 
-  const themePath = getThemeMascotPath(activeTheme, mascotKey);
-  const standardPath = getStandardMascotPath(mascotKey);
-  const legacyPath = getLegacyMascotPath(mascotKey);
+  const paths = createMascotPathCandidates(activeTheme, mascotKey).map(addAssetVersion);
+  let pathIndex = 0;
 
   imageElement.onerror = () => {
-    if (imageElement.src.includes(`/themes/${activeTheme}/`)) {
-      imageElement.onerror = () => {
-        imageElement.onerror = null;
-        imageElement.src = legacyPath;
-      };
+    pathIndex += 1;
 
-      imageElement.src = standardPath;
+    if (pathIndex >= paths.length) {
+      imageElement.onerror = null;
       return;
     }
 
-    imageElement.onerror = null;
-    imageElement.src = legacyPath;
+    imageElement.src = paths[pathIndex];
   };
 
-  imageElement.src = themePath;
+  imageElement.src = paths[pathIndex] || "";
 }
 
 function setTheme(themeName, shouldSave = false) {
@@ -1268,10 +1331,49 @@ function initMood() {
 function ingredientExists(name) {
   const normalizedName = canonicalIngredient(name);
 
-  return (
-    selectedIngredients.some((ingredient) => ingredient.name === normalizedName) ||
-    pantryItems.includes(normalizedName)
-  );
+  return selectedIngredients.some((ingredient) => ingredient.name === normalizedName);
+}
+
+function resetIngredientSearch() {
+  ingredientSearchSubmitted = false;
+  rescueModeActive = false;
+  rescueRecipeIds = [];
+  moreRecipesVisible = false;
+  cachedDailyRecommendationPool = [];
+  dailyRecommendationIndex = 0;
+}
+
+function preserveViewport(renderCallback) {
+  const scrollLeft = window.scrollX;
+  const scrollTop = window.scrollY;
+
+  renderCallback();
+
+  const restore = () => {
+    window.scrollTo({ left: scrollLeft, top: scrollTop, behavior: "auto" });
+  };
+
+  restore();
+  requestAnimationFrame(() => {
+    restore();
+    requestAnimationFrame(restore);
+  });
+  setTimeout(restore, 120);
+}
+
+function renderIngredientSelectionState(message = "") {
+  preserveViewport(() => {
+    renderQuickIngredients();
+    renderSelectedIngredients();
+    renderSmartSuggestions();
+    renderRecommendations();
+    renderRecipeResults();
+    attachRecipeActionEvents();
+
+    if (message) {
+      updateBuddyTextOnly(message);
+    }
+  });
 }
 
 function addIngredient(name) {
@@ -1289,11 +1391,40 @@ function addIngredient(name) {
 
   if (ingredientInput) ingredientInput.value = "";
 
-  moreRecipesVisible = false;
+  resetIngredientSearch();
+  renderIngredientSelectionState();
+}
+
+function removeIngredient(name) {
+  selectedIngredients = selectedIngredients.filter((ingredient) => ingredient.name !== name);
+
+  resetIngredientSearch();
+  renderIngredientSelectionState();
+}
+
+function clearSelectedIngredients() {
+  selectedIngredients = [];
+
+  resetIngredientSearch();
+  renderIngredientSelectionState("Alles klar, Auswahl geleert. Wir fangen wieder frisch an.");
+}
+
+function submitIngredientSearch() {
+  const selectedNames = getExplicitSelectedNames();
+
+  if (selectedNames.length === 0) {
+    updateBuddyTextOnly("Gib mir erst eine Zutat, dann kann ich sinnvoll loslegen.");
+    return;
+  }
+
+  ingredientSearchSubmitted = true;
+  rescueModeActive = false;
+  rescueRecipeIds = [];
+  moreRecipesVisible = true;
   cachedDailyRecommendationPool = [];
   dailyRecommendationIndex = 0;
 
-  updateBuddyMessage();
+  updateBuddyTextOnly(`Ich suche jetzt passend zu ${formatList(selectedNames)}.`);
   renderAll();
 
   if (topRecommendation) {
@@ -1301,17 +1432,6 @@ function addIngredient(name) {
       topRecommendation.closest("section")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 80);
   }
-}
-
-function removeIngredient(name) {
-  selectedIngredients = selectedIngredients.filter((ingredient) => ingredient.name !== name);
-
-  moreRecipesVisible = false;
-  cachedDailyRecommendationPool = [];
-  dailyRecommendationIndex = 0;
-
-  updateBuddyMessage();
-  renderAll();
 }
 
 function toggleUrgent(name) {
@@ -1326,20 +1446,31 @@ function toggleUrgent(name) {
     return ingredient;
   });
 
-  cachedDailyRecommendationPool = [];
-  dailyRecommendationIndex = 0;
+  resetIngredientSearch();
+  renderIngredientSelectionState();
+}
 
-  updateBuddyMessage();
-  renderAll();
+function getExplicitSelectedNames() {
+  const names = selectedIngredients.map((ingredient) => ingredient.name);
+
+  return names.filter((name, index, list) => list.indexOf(name) === index);
 }
 
 function getSelectedNames() {
   const names = [
-    ...selectedIngredients.map((ingredient) => ingredient.name),
+    ...getExplicitSelectedNames(),
     ...pantryItems
   ];
 
   return names.filter((name, index, list) => list.indexOf(name) === index);
+}
+
+function hasPendingIngredientSelection() {
+  return getExplicitSelectedNames().length > 0 && !ingredientSearchSubmitted;
+}
+
+function hasSubmittedIngredientSearch() {
+  return getExplicitSelectedNames().length > 0 && ingredientSearchSubmitted;
 }
 
 function getUrgentNames() {
@@ -1352,17 +1483,47 @@ function isExactIngredientMatch(recipeIngredient, selectedIngredient) {
   const recipeValue = canonicalIngredient(recipeIngredient);
   const selectedValue = canonicalIngredient(selectedIngredient);
 
+  if (!recipeValue || !selectedValue) return false;
   if (recipeValue === selectedValue) return true;
 
-  const groups = [
-    ["eier", "ei"],
-    ["tomaten", "dosentomaten", "passierte tomaten"],
-    ["brot", "toast", "brötchen", "baguette"],
-    ["gemüse", "tk-gemüse", "paprika", "zucchini", "möhren", "brokkoli", "pilze", "spinat"],
-    ["brühe", "gemüsebrühe"]
-  ];
+  const selectedIngredientAliases = {
+    gemüse: ["tk-gemüse", "paprika", "zucchini", "möhren", "brokkoli", "pilze", "spinat"],
+    "tk-gemüse": ["gemüse"],
+    brot: ["toast", "brötchen", "baguette"],
+    brühe: ["gemüsebrühe"]
+  };
 
-  return groups.some((group) => group.includes(recipeValue) && group.includes(selectedValue));
+  return (selectedIngredientAliases[selectedValue] || []).includes(recipeValue);
+}
+
+function getRecipeIngredientNames(recipe) {
+  const names = [
+    ...(recipe.main || []),
+    ...(recipe.optional || []),
+    ...((recipe.ingredients || []).map((ingredient) => simplifyIngredientName(ingredient.name) || ingredient.name))
+  ].map(canonicalIngredient).filter(Boolean);
+
+  return names.filter((name, index, list) => list.indexOf(name) === index);
+}
+
+function recipeMatchesSubmittedIngredients(recipe) {
+  const selectedNames = getExplicitSelectedNames();
+
+  if (selectedNames.length === 0) return true;
+
+  const wantsAirfryer = selectedNames.includes("heißluftfritteuse");
+  const selectedIngredientNames = selectedNames.filter((name) => name !== "heißluftfritteuse");
+  const recipeIngredients = getRecipeIngredientNames(recipe);
+  const recipeTags = recipe.tags || [];
+
+  const matchesDevice = !wantsAirfryer || recipeTags.includes("heissluftfritteuse") || recipeTags.includes("airfryer");
+  const matchesIngredient = selectedIngredientNames.length === 0
+    ? true
+    : selectedIngredientNames.every((selectedName) => {
+        return recipeIngredients.some((ingredientName) => isExactIngredientMatch(ingredientName, selectedName));
+      });
+
+  return matchesDevice && matchesIngredient;
 }
 
 function scoreRecipe(recipe) {
@@ -1623,8 +1784,9 @@ function getBrowseMatches() {
 }
 
 function getMatches() {
-  const hasIngredientContext = getSelectedNames().length > 0;
+  const hasIngredientContext = hasSubmittedIngredientSearch();
 
+  if (hasPendingIngredientSelection()) return [];
   if (!hasIngredientContext && !hasBrowseCriteria()) return [];
 
   if (!hasIngredientContext) {
@@ -1633,19 +1795,85 @@ function getMatches() {
 
   return sortMatches(
     recipes
+      .filter(recipeMatchesSubmittedIngredients)
       .map(scoreRecipe)
-      .filter((item) => item.score > 0)
       .filter((item) => recipeMatchesActiveFilter(item.recipe))
       .filter((item) => recipeMatchesSearch(item.recipe))
   );
 }
 
+function createRescueMatch(recipe, index) {
+  return {
+    recipe,
+    matchingMain: [],
+    substituteMain: [],
+    missingMain: [],
+    matchingOptional: [],
+    score: 0,
+    context: "rescue",
+    rescueIndex: index
+  };
+}
+
+function getRescueMatches() {
+  return rescueRecipeIds
+    .map((id, index) => {
+      const recipe = recipes.find((item) => item.id === id);
+      return recipe ? createRescueMatch(recipe, index) : null;
+    })
+    .filter(Boolean);
+}
+
+function pickRandomRescueRecipes(count = 3) {
+  const previousIds = new Set(rescueRecipeIds);
+  let pool = recipes.filter((recipe) => !previousIds.has(recipe.id));
+
+  if (pool.length < count) {
+    pool = [...recipes];
+  }
+
+  for (let index = pool.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [pool[index], pool[randomIndex]] = [pool[randomIndex], pool[index]];
+  }
+
+  return pool.slice(0, Math.min(count, pool.length));
+}
+
+function rescueDinner() {
+  const pickedRecipes = pickRandomRescueRecipes(3);
+
+  if (pickedRecipes.length === 0) {
+    updateBuddyTextOnly("Ich finde gerade keine Rezepte zum Retten.");
+    return;
+  }
+
+  rescueRecipeIds = pickedRecipes.map((recipe) => recipe.id);
+  rescueModeActive = true;
+  ingredientSearchSubmitted = false;
+  moreRecipesVisible = true;
+  cachedDailyRecommendationPool = [];
+  dailyRecommendationIndex = 0;
+
+  renderRecommendations();
+  renderRecipeResults();
+  attachRecipeActionEvents();
+
+  updateBuddyTextOnly("Abendessen gerettet. Ich habe dir drei zufällige Ideen gezogen.");
+
+  if (topRecommendation) {
+    setTimeout(() => {
+      topRecommendation.closest("section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  }
+}
+
 function getBuddyMascotPath() {
-  return getThemeMascotPath(activeTheme, "buddy");
+  return addAssetVersion(getThemeMascotPath(activeTheme, "buddy", "webp"));
 }
 
 function getBuddyMascotFallbackPath() {
-  return getStandardMascotPath("buddy");
+  return addAssetVersion(getThemeMascotPath(activeTheme, "buddy", "png"));
 }
 
 function updateBuddyTextOnly(text) {
@@ -1793,6 +2021,9 @@ function renderSelectedIngredients() {
   selectedArea.classList.toggle("hidden", selectedIngredients.length === 0);
   selectedIngredientsContainer.innerHTML = "";
 
+  if (findRecipesButton) findRecipesButton.disabled = selectedIngredients.length === 0;
+  if (clearSelectedIngredientsButton) clearSelectedIngredientsButton.disabled = selectedIngredients.length === 0;
+
   selectedIngredients.forEach((ingredient) => {
     const chip = document.createElement("div");
     chip.className = ingredient.urgent ? "ingredient-chip urgent" : "ingredient-chip";
@@ -1866,19 +2097,26 @@ function createFavoriteButton(recipe) {
 
 function createRecipeCard(match, isRecommendation) {
   const { recipe, matchingMain, missingMain } = match;
+  const isRescue = match.context === "rescue";
   const cardClass = isRecommendation ? "recommendation-card" : "recipe-card";
-  const badgeText = isRecommendation ? "Bester Treffer" : "Rezeptidee";
-  const hasIngredientContext = getSelectedNames().length > 0;
+  const badgeText = isRescue
+    ? (isRecommendation ? "Abendessen gerettet" : "Zufällige Alternative")
+    : (isRecommendation ? "Bester Treffer" : "Rezeptidee");
+  const hasIngredientContext = !isRescue && hasSubmittedIngredientSearch();
 
-  const statusText = hasIngredientContext
-    ? (missingMain.length > 0
-      ? `${missingMain.length} wichtige Zutat${missingMain.length === 1 ? "" : "en"} fehlt${missingMain.length === 1 ? "" : "en"} noch`
-      : "Alles Wichtige ist da")
-    : "Passt zu Filter oder Suche";
+  const statusText = isRescue
+    ? "Zufällig für dich gezogen"
+    : (hasIngredientContext
+      ? (missingMain.length > 0
+        ? `${missingMain.length} wichtige Zutat${missingMain.length === 1 ? "" : "en"} fehlt${missingMain.length === 1 ? "" : "en"} noch`
+        : "Alles Wichtige ist da")
+      : "Passt zu Filter oder Suche");
 
-  const matchText = hasIngredientContext && matchingMain.length > 0
-    ? `Passt mit ${formatList(matchingMain.slice(0, 3))}`
-    : "Details und Anleitung im Rezept";
+  const matchText = isRescue
+    ? "Einfach ansehen oder noch einmal würfeln"
+    : (hasIngredientContext && matchingMain.length > 0
+      ? `Passt mit ${formatList(matchingMain.slice(0, 3))}`
+      : "Details und Anleitung im Rezept");
 
   return `
     <article class="${cardClass} recipe-card-compact">
@@ -1959,8 +2197,26 @@ function attachRecipeActionEvents() {
 function renderRecommendations() {
   if (!topRecommendation) return;
 
+  if (rescueModeActive) {
+    const rescueMatches = getRescueMatches();
+
+    topRecommendation.innerHTML = rescueMatches.length > 0
+      ? createRecipeCard(rescueMatches[0], true)
+      : `<div class="empty-state">Ich konnte gerade keine Zufallsidee ziehen.</div>`;
+    return;
+  }
+
   const matches = getMatches();
-  const hasIngredientContext = getSelectedNames().length > 0;
+  const hasIngredientContext = hasSubmittedIngredientSearch();
+
+  if (hasPendingIngredientSelection()) {
+    topRecommendation.innerHTML = `
+      <div class="empty-state">
+        Wähl in Ruhe alles aus. Erst mit „Daraus was kochen“ suche ich dir passende Rezepte raus.
+      </div>
+    `;
+    return;
+  }
 
   if (!hasIngredientContext) {
     topRecommendation.innerHTML = `
@@ -1976,7 +2232,7 @@ function renderRecommendations() {
   if (matches.length === 0) {
     topRecommendation.innerHTML = `
       <div class="empty-state">
-        Hm. Damit wird’s gerade schwierig. Gib mir noch eine Zutat, dann wird’s besser.
+        Dafür habe ich keinen vollständigen Treffer. Nimm eine Zutat raus oder stell die Auswahl etwas breiter auf.
       </div>
     `;
     return;
@@ -2042,7 +2298,28 @@ function renderFavorites() {
 function renderRecipeResults() {
   if (!recipeResults || !resultCounter) return;
 
-  const hasIngredientContext = getSelectedNames().length > 0;
+  if (rescueModeActive) {
+    const rescueMatches = getRescueMatches();
+    const alternatives = rescueMatches.slice(1);
+
+    resultCounter.textContent = rescueMatches.length > 1
+      ? `${rescueMatches.length} zufällige Ideen für heute Abend.`
+      : "Eine zufällige Idee für heute Abend.";
+
+    if (toggleMoreRecipesButton) {
+      toggleMoreRecipesButton.disabled = true;
+      toggleMoreRecipesButton.setAttribute("aria-expanded", "true");
+    }
+
+    recipeResults.classList.remove("hidden");
+    recipeResults.innerHTML = alternatives.length > 0
+      ? alternatives.map((match) => createRecipeCard(match, false)).join("")
+      : `<div class="empty-state">Die Hauptidee findest du direkt darüber.</div>`;
+    return;
+  }
+
+  const hasIngredientContext = hasSubmittedIngredientSearch();
+  const pendingIngredientSelection = hasPendingIngredientSelection();
   const matches = getMatches();
   const hasToggleButton = !!toggleMoreRecipesButton;
   const browsing = !hasIngredientContext && hasBrowseCriteria();
@@ -2056,6 +2333,24 @@ function renderRecipeResults() {
       ? "Vorschläge ausblenden"
       : "Mehr Vorschläge zeigen";
     toggleMoreRecipesButton.setAttribute("aria-expanded", String(moreRecipesVisible));
+  }
+
+  if (pendingIngredientSelection) {
+    resultCounter.textContent = "Zutaten ausgewählt. Drück auf „Daraus was kochen“, wenn ich suchen soll.";
+
+    if (hasToggleButton) {
+      toggleMoreRecipesButton.disabled = true;
+      toggleMoreRecipesButton.setAttribute("aria-expanded", "false");
+    }
+
+    moreRecipesVisible = false;
+    recipeResults.classList.add("hidden");
+    recipeResults.innerHTML = `
+      <div class="empty-state">
+        Ich warte noch. Du kannst erst mehrere Zutaten sammeln und danach bewusst loslegen.
+      </div>
+    `;
+    return;
   }
 
   if (!hasIngredientContext && !hasBrowseCriteria()) {
@@ -2088,7 +2383,7 @@ function renderRecipeResults() {
     recipeResults.classList.add("hidden");
     recipeResults.innerHTML = `
       <div class="empty-state">
-        Dazu finde ich gerade nichts. Such etwas allgemeiner oder nimm einen anderen Filter.
+        Dafür gibt es gerade keinen vollständigen Treffer. Entferne eine Zutat oder starte eine neue Auswahl.
       </div>
     `;
     return;
@@ -2122,6 +2417,9 @@ function renderRecipeResults() {
   if (browsing) {
     const label = activeFilter !== "all" ? getActiveFilterLabel() : "Suche";
     resultCounter.textContent = `${matches.length} Idee${matches.length === 1 ? "" : "n"} für ${label} gefunden.`;
+  } else if (hasIngredientContext) {
+    const label = formatList(getExplicitSelectedNames());
+    resultCounter.textContent = `${matches.length} Idee${matches.length === 1 ? "" : "n"} passend zu ${label} gefunden.`;
   } else {
     resultCounter.textContent = `${matches.length} Idee${matches.length === 1 ? "" : "n"} gefunden.`;
   }
@@ -2198,6 +2496,7 @@ function scoreDailyRecipe(recipe) {
   const season = getSeasonMode();
   const daytimeMode = getDaytimeMode();
   const text = getRecipeSearchText(recipe);
+  const wantsAirfryer = getSelectedNames().includes("heißluftfritteuse");
   let score = 0;
 
   if (recipe.difficulty === "einfach") score += 3;
@@ -2245,7 +2544,7 @@ function scoreDailyRecipe(recipe) {
   }
 
   if (daytimeMode === "morgen") {
-    if ((recipe.tags || []).includes("frühstück") || text.includes("brot") || text.includes("ei") || text.includes("hafer")) score += 7;
+    if ((recipe.tags || []).includes("frühstück") || text.includes("brot") || textContainsEgg(text) || text.includes("hafer")) score += 7;
     if ((recipe.tags || []).includes("schnell")) score += 4;
     if ((recipe.tags || []).includes("ofen") || text.includes("auflauf")) score -= 5;
   }
@@ -2257,7 +2556,7 @@ function scoreDailyRecipe(recipe) {
 
   if (daytimeMode === "nachmittag") {
     if ((recipe.tags || []).includes("schnell")) score += 3;
-    if (text.includes("brot") || text.includes("ei") || text.includes("nudel")) score += 2;
+    if (text.includes("brot") || textContainsEgg(text) || text.includes("nudel")) score += 2;
   }
 
   if (daytimeMode === "abend") {
@@ -2360,6 +2659,8 @@ function renderDailyRecommendation() {
         src="${escapeHtml(getRecipeImagePath(recipe))}"
         data-fallback="${escapeHtml(getRecipeFallbackImagePath(recipe))}"
         alt="${escapeHtml(recipe.imageAlt || recipe.title)}"
+        loading="lazy"
+        decoding="async"
       />
 
       <div class="daily-recommendation-copy">
@@ -2837,7 +3138,7 @@ function getRecipeHints(recipe) {
   if ((recipe.tags || []).includes("vegetarisch")) hints.push("vegetarisch");
   if (text.includes("hähnchen") || text.includes("haehnchen") || text.includes("schinken") || text.includes("wurst") || text.includes("hack")) hints.push("mit Fleisch");
   if (text.includes("lachs") || text.includes("thunfisch") || text.includes("garnelen") || text.includes("fisch")) hints.push("mit Fisch");
-  if (text.includes("ei") || text.includes("eier")) hints.push("enthält Ei");
+  if (textContainsEgg(text)) hints.push("enthält Ei");
   if (text.includes("feta") || text.includes("käse") || text.includes("kaese") || text.includes("joghurt") || text.includes("quark") || text.includes("milch") || text.includes("mozzarella")) hints.push("milchhaltig");
   if (text.includes("brot") || text.includes("wrap") || text.includes("nudeln") || text.includes("pasta") || text.includes("baguette") || text.includes("pita")) hints.push("gluten möglich");
   if ((recipe.tags || []).includes("zu heiß zum kochen")) hints.push("wenig Herd");
@@ -3259,6 +3560,8 @@ function copyMissingIngredients(recipeId) {
 
 function setActiveFilter(filter) {
   activeFilter = filter;
+  rescueModeActive = false;
+  rescueRecipeIds = [];
   moreRecipesVisible = filter !== "all" || hasRecipeSearch();
   cachedDailyRecommendationPool = [];
 
@@ -3464,9 +3767,19 @@ function bindEvents() {
     });
   }
 
+  if (findRecipesButton) {
+    findRecipesButton.addEventListener("click", submitIngredientSearch);
+  }
+
+  if (clearSelectedIngredientsButton) {
+    clearSelectedIngredientsButton.addEventListener("click", clearSelectedIngredients);
+  }
+
   if (recipeSearchInput) {
     recipeSearchInput.addEventListener("input", () => {
       recipeSearchTerm = recipeSearchInput.value || "";
+      rescueModeActive = false;
+      rescueRecipeIds = [];
       moreRecipesVisible = true;
       cachedDailyRecommendationPool = [];
       renderAll();
@@ -3476,6 +3789,8 @@ function bindEvents() {
   if (clearRecipeSearchButton) {
     clearRecipeSearchButton.addEventListener("click", () => {
       recipeSearchTerm = "";
+      rescueModeActive = false;
+      rescueRecipeIds = [];
 
       if (recipeSearchInput) {
         recipeSearchInput.value = "";
@@ -3500,6 +3815,10 @@ function bindEvents() {
 
   if (homeSurpriseButton) {
     homeSurpriseButton.addEventListener("click", surpriseRecipe);
+  }
+
+  if (noMoodButton) {
+    noMoodButton.addEventListener("click", rescueDinner);
   }
 
   homeActionButtons.forEach((button) => {
