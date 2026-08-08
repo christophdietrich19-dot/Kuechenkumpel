@@ -43,7 +43,7 @@
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="assets/images/branding/apple-touch-icon.png" />
 
-  <link rel="stylesheet" href="style.css?v=1.13.5" />
+  <link rel="stylesheet" href="style.css?v=1.14.0" />
 </head>
 
 <body data-theme="standard">
@@ -588,9 +588,44 @@
       <button class="filter-button" data-filter="vegetarisch" type="button" aria-pressed="false">Vegetarisch</button>
       <button class="filter-button" data-filter="heissluftfritteuse" type="button" aria-pressed="false">Heißluftfritteuse</button>
       <button class="filter-button" data-filter="zu heiß zum kochen" type="button" aria-pressed="false">Zu heiß zum Kochen</button>
+      <button class="filter-button wellness-main-filter" data-filter="bewusst & lecker" type="button" aria-pressed="false"><span aria-hidden="true">🥗</span> Bewusst & lecker</button>
     </section>
 
+    <section id="wellnessPanel" class="card wellness-panel hidden" aria-labelledby="wellnessTitle">
+      <div class="wellness-heading">
+        <div class="wellness-icon" aria-hidden="true">🥗</div>
+        <div>
+          <p class="eyebrow">Neuer Hauptbereich</p>
+          <h3 id="wellnessTitle">Bewusst & lecker</h3>
+          <p>Normale Zutaten, ehrliche Portionen und Gerichte, die zu deinem Alltag passen.</p>
+        </div>
+      </div>
 
+      <div class="wellness-control-group">
+        <strong>Was suchst du?</strong>
+        <div class="wellness-chip-row" role="group" aria-label="Unterbereich auswählen">
+          <button class="wellness-chip active" type="button" data-wellness-sub="all" aria-pressed="true">Alle</button>
+          <button class="wellness-chip" type="button" data-wellness-sub="meal prep" aria-pressed="false">Meal Prep</button>
+          <button class="wellness-chip" type="button" data-wellness-sub="salate & bowls" aria-pressed="false">Salate & Bowls</button>
+          <button class="wellness-chip" type="button" data-wellness-sub="proteinreich" aria-pressed="false">Proteinreich</button>
+          <button class="wellness-chip" type="button" data-wellness-sub="leicht & sättigend" aria-pressed="false">Leicht & sättigend</button>
+        </div>
+      </div>
+
+      <div class="wellness-control-group">
+        <div class="wellness-label-row">
+          <strong>Dein Ziel</strong>
+          <button id="resetWellnessGoalButton" class="text-button" type="button">Ziel zurücksetzen</button>
+        </div>
+        <div class="wellness-goal-grid" role="group" aria-label="Ernährungsziel auswählen">
+          <button class="wellness-goal" type="button" data-wellness-goal="abnehmen" aria-pressed="false"><strong>Abnehmen</strong><span>kalorienbewusst, protein- und ballaststoffreich</span></button>
+          <button class="wellness-goal" type="button" data-wellness-goal="halten" aria-pressed="false"><strong>Gewicht halten</strong><span>ausgewogene Mischung</span></button>
+          <button class="wellness-goal" type="button" data-wellness-goal="muskelaufbau" aria-pressed="false"><strong>Muskelaufbau</strong><span>proteinreich und etwas energiereicher</span></button>
+          <button class="wellness-goal" type="button" data-wellness-goal="ausgewogen" aria-pressed="false"><strong>Einfach ausgewogen essen</strong><span>breit, praktisch und alltagstauglich</span></button>
+        </div>
+        <p class="wellness-privacy-note">Deine Auswahl wird nur lokal in diesem Browser gespeichert.</p>
+      </div>
+    </section>
 
     <section class="card recipe-sort-card" aria-label="Rezeptvorschläge sortieren">
       <div class="sort-row">
@@ -892,9 +927,12 @@
   <script src="content/recipes/fruehstueck-snack.js"></script>
   <script src="content/recipes/heissluftfritteuse.js"></script>
   <script src="content/recipes/zu-heiss-zum-kochen.js"></script>
-  <script src="content/recipes/index.js"></script>
-  <script src="content/updates.js?v=1.13.5"></script>
-  <script src="content/version.js?v=1.13.5"></script>
-  <script src="app.js?v=1.13.5"></script>
+  <script src="content/recipes/bewusst-lecker.js"></script>
+  <script src="content/nutrition.js?v=1.14.0"></script>
+  <script src="content/recipes/index.js?v=1.14.0"></script>
+  <script src="content/variants.js?v=1.14.0"></script>
+  <script src="content/updates.js?v=1.14.0"></script>
+  <script src="content/version.js?v=1.14.0"></script>
+  <script src="app.js?v=1.14.0"></script>
 </body>
 </html>

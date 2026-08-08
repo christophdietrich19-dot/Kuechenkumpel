@@ -2179,3 +2179,103 @@ textarea:focus-visible,
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   Küchenkumpel 1.14.0 – Bewusst & lecker
+   ========================================================= */
+.wellness-main-filter{gap:7px}.wellness-panel{position:relative;overflow:hidden;background:radial-gradient(circle at 100% 0,var(--theme-bg-b),transparent 34%),linear-gradient(145deg,var(--theme-card-strong),var(--theme-card))}.wellness-heading{display:flex;align-items:center;gap:14px;margin-bottom:20px}.wellness-heading h3{margin:0 0 6px;color:var(--theme-deep);font-size:clamp(1.35rem,4vw,2rem)}.wellness-heading p:not(.eyebrow){margin:0;color:var(--muted);line-height:1.5}.wellness-icon{display:grid;place-items:center;width:62px;height:62px;flex:0 0 62px;border-radius:22px;background:var(--theme-soft-2);border:1px solid var(--border);font-size:2rem;box-shadow:var(--shadow-soft)}.wellness-control-group{display:grid;gap:10px;padding-top:16px;margin-top:16px;border-top:1px solid var(--border)}.wellness-label-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.wellness-chip-row{display:flex;flex-wrap:wrap;gap:8px}.wellness-chip{min-height:42px;padding:10px 14px;border-radius:999px;background:var(--theme-card-strong);color:var(--text);border:1px solid var(--border);font-weight:800}.wellness-chip.active{background:var(--theme-button-alt);color:#fff;border-color:transparent;box-shadow:0 10px 22px rgba(38,63,43,.18)}.wellness-goal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.wellness-goal{display:grid;gap:4px;min-height:82px;padding:13px;text-align:left;border-radius:20px;background:var(--theme-card-strong);color:var(--text);border:1px solid var(--border)}.wellness-goal strong{color:var(--theme-deep)}.wellness-goal span{color:var(--muted);font-size:.82rem;line-height:1.35}.wellness-goal.active{background:var(--theme-soft-2);border-color:var(--theme-accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--theme-accent) 22%,transparent)}.text-button{padding:4px 0;background:transparent;color:var(--theme-accent-dark);font-weight:800;text-decoration:underline;text-underline-offset:3px}.wellness-privacy-note{margin:0;color:var(--muted);font-size:.8rem}.nutrition-card-line{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nutrition-card-line span{display:inline-flex;align-items:baseline;gap:4px;padding:7px 10px;border-radius:999px;background:var(--theme-soft);border:1px solid var(--border);color:var(--muted);font-size:.78rem}.nutrition-card-line strong{color:var(--theme-deep);font-size:.9rem}.compact-card-status.status-all{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.28)}.compact-card-status.status-fast{background:rgba(245,158,11,.11);border-color:rgba(245,158,11,.3)}.compact-card-status.status-ideas{background:rgba(59,130,246,.09);border-color:rgba(59,130,246,.22)}.match-group{display:grid;gap:12px;margin:0 0 26px}.match-group-heading{padding:13px 15px;border-radius:20px;background:var(--theme-card);border:1px solid var(--border)}.match-group-heading h4{margin:0 0 4px;color:var(--theme-deep);font-size:1.16rem}.match-group-heading p{margin:0;color:var(--muted);line-height:1.42}.nutrition-panel,.diet-panel,.meal-prep-panel,.missing-panel,.substitution-panel{margin:18px 0;padding:16px;border-radius:24px;background:var(--theme-soft);border:1px solid var(--border)}.nutrition-panel-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.nutrition-panel-head h4{margin:0;color:var(--theme-deep)}.nutrition-note{max-width:180px;color:var(--muted);font-size:.75rem;text-align:right}.nutrition-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.nutrition-grid div{display:grid;gap:2px;min-width:0;padding:10px 8px;text-align:center;border-radius:16px;background:var(--theme-card-strong);border:1px solid var(--border)}.nutrition-grid strong{color:var(--theme-deep);font-size:1.05rem}.nutrition-grid span{color:var(--muted);font-size:.72rem}.nutrition-total{margin:10px 0 6px;color:var(--text);font-weight:800;line-height:1.4}.nutrition-panel>small{display:block;color:var(--muted);line-height:1.4}.diet-panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.diet-panel div{padding:12px;border-radius:16px;background:var(--theme-card-strong);border:1px solid var(--border)}.diet-panel strong{color:var(--theme-deep)}.diet-panel p{margin:5px 0 0;color:var(--muted);line-height:1.45}.meal-prep-title{display:flex;align-items:center;gap:10px;margin-bottom:12px}.meal-prep-title>span{font-size:1.8rem}.meal-prep-title div{display:grid;gap:2px}.meal-prep-title small{color:var(--muted)}.meal-prep-panel dl{display:grid;gap:8px;margin:0}.meal-prep-panel dl div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;padding:9px 0;border-top:1px solid var(--border)}.meal-prep-panel dt{font-weight:900;color:var(--theme-deep)}.meal-prep-panel dd{margin:0;color:var(--muted);line-height:1.4}.meal-prep-warning{margin:12px 0 0;padding:10px 12px;border-radius:14px;background:rgba(245,158,11,.12);color:var(--text);line-height:1.45}.missing-panel strong,.substitution-panel>strong{color:var(--theme-deep);font-size:1.05rem}.missing-panel p{margin:6px 0 0;color:var(--muted)}.missing-panel ul,.substitution-panel ul{display:grid;gap:7px;margin:10px 0 13px;padding-left:18px}.missing-panel li{color:var(--text)}.missing-panel li span{color:var(--muted);font-size:.82rem}.missing-panel.all-there{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.25)}.substitution-panel small{display:block;color:var(--muted);line-height:1.4}.shopping-list-item label span{display:grid;gap:2px}.shopping-list-item label small{color:var(--muted);font-size:.78rem;font-weight:700}.shopping-list-item.done label small{text-decoration:line-through}.hidden{display:none!important}
+@media(max-width:620px){.wellness-heading{align-items:flex-start}.wellness-icon{width:52px;height:52px;flex-basis:52px;border-radius:18px;font-size:1.65rem}.wellness-goal-grid{grid-template-columns:1fr}.nutrition-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.nutrition-grid div:last-child{grid-column:span 2}.nutrition-panel-head{display:grid}.nutrition-note{max-width:none;text-align:left}.diet-panel{grid-template-columns:1fr}.meal-prep-panel dl div{grid-template-columns:1fr;gap:3px}.wellness-label-row{align-items:flex-start}.match-group .recipe-grid{grid-template-columns:1fr}}
+@media(max-width:390px){.wellness-chip{width:100%;justify-content:center}.nutrition-grid{grid-template-columns:1fr}.nutrition-grid div:last-child{grid-column:auto}.wellness-heading{display:grid}.wellness-icon{width:48px;height:48px}}
+
+/* 1.14.0: Zutaten werden gesammelt, ohne dass Browser-Scroll-Anker die Ansicht verschieben. */
+html {
+  overflow-anchor: none;
+}
+
+/* 1.14.0: geprüfte Rezeptvarianten */
+.verified-variants-panel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border-soft, rgba(83, 69, 51, 0.18));
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.verified-variants-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.verified-variants-head h4 {
+  margin: 0.15rem 0 0;
+}
+
+.variant-current-label {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(105, 132, 88, 0.13);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.variant-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.variant-button {
+  min-height: 42px;
+  padding: 0.62rem 0.85rem;
+  border: 1px solid rgba(82, 70, 53, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.variant-button:hover,
+.variant-button:focus-visible,
+.variant-button.active {
+  border-color: rgba(91, 123, 73, 0.72);
+  background: rgba(111, 145, 91, 0.18);
+}
+
+.variant-description {
+  margin: 0.8rem 0 0.25rem;
+  line-height: 1.55;
+}
+
+.variant-note {
+  display: block;
+  margin-top: 0.65rem;
+  line-height: 1.45;
+  opacity: 0.76;
+}
+
+@media (max-width: 620px) {
+  .verified-variants-head {
+    display: block;
+  }
+
+  .variant-current-label {
+    display: inline-flex;
+    margin-top: 0.55rem;
+  }
+
+  .variant-button-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .variant-button {
+    width: 100%;
+    text-align: left;
+  }
+}

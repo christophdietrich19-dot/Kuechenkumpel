@@ -51,6 +51,10 @@ const clearSelectedIngredientsButton = document.getElementById("clearSelectedIng
 const buddyMessage = document.getElementById("buddyMessage");
 const filterButtons = document.querySelectorAll(".filter-button");
 const airfryerShortcutButton = document.getElementById("airfryerShortcutButton");
+const wellnessPanel = document.getElementById("wellnessPanel");
+const wellnessSubButtons = document.querySelectorAll("[data-wellness-sub]");
+const wellnessGoalButtons = document.querySelectorAll("[data-wellness-goal]");
+const resetWellnessGoalButton = document.getElementById("resetWellnessGoalButton");
 
 const dailyRecommendationSection = document.getElementById("dailyRecommendationSection");
 const dailyRecommendationResult = document.getElementById("dailyRecommendationResult");
@@ -131,6 +135,8 @@ let rescueModeActive = false;
 let rescueRecipeIds = [];
 let favoritesVisible = false;
 let appStartLocked = false;
+let activeWellnessSub = "all";
+let activeWellnessGoal = "";
 
 const THEME_KEY = "kuechenkumpelTheme";
 const HIDE_WELCOME_KEY = "kuechenkumpelHideWelcome";
@@ -140,6 +146,7 @@ const PANTRY_KEY = "kuechenkumpelPantry";
 const SHOPPING_LIST_KEY = "kuechenkumpelShoppingList";
 const RECENT_RECIPES_KEY = "kuechenkumpelRecentRecipes";
 const UPDATE_SEEN_KEY = "kuechenkumpelSeenUpdateVersion";
+const WELLNESS_GOAL_KEY = "kuechenkumpelWellnessGoal";
 
 const mascotFiles = {
   welcome: "kochtopf-hallo.png",
@@ -1350,6 +1357,9 @@ function resetIngredientSearch() {
 function preserveViewport(renderCallback) {
   const scrollLeft = window.scrollX;
   const scrollTop = window.scrollY;
+  const root = document.documentElement;
+  const previousOverflowAnchor = root.style.overflowAnchor;
+  root.style.overflowAnchor = "none";
 
   renderCallback();
 
@@ -1362,17 +1372,33 @@ function preserveViewport(renderCallback) {
     restore();
     requestAnimationFrame(restore);
   });
-  setTimeout(restore, 120);
+  setTimeout(restore, 80);
+  setTimeout(() => {
+    restore();
+    root.style.overflowAnchor = previousOverflowAnchor;
+  }, 240);
+}
+
+function updateQuickIngredientSelectionState() {
+  if (!quickIngredientsContainer) return;
+  const buttons = Array.from(quickIngredientsContainer.querySelectorAll("button"));
+  if (buttons.length !== quickIngredients.length) {
+    renderQuickIngredients();
+    return;
+  }
+  buttons.forEach((button, index) => {
+    const ingredient = quickIngredients[index];
+    button.classList.toggle("selected", ingredientExists(ingredient.name));
+  });
 }
 
 function renderIngredientSelectionState(message = "") {
   preserveViewport(() => {
-    renderQuickIngredients();
+    // Der angeklickte Button bleibt im DOM. Dadurch verliert der Browser seinen
+    // Bezugspunkt nicht und die Ansicht bleibt beim Sammeln exakt stehen.
+    updateQuickIngredientSelectionState();
     renderSelectedIngredients();
     renderSmartSuggestions();
-    renderRecommendations();
-    renderRecipeResults();
-    attachRecipeActionEvents();
 
     if (message) {
       updateBuddyTextOnly(message);
@@ -4004,12 +4030,788 @@ function bindEvents() {
   });
 }
 
+
+/* =========================================================
+   Küchenkumpel 1.14.0 – Bewusst & lecker
+   ========================================================= */
+
+const legacyBuildTags114 = buildTags;
+buildTags = function buildTags114(recipe) {
+  const tags = legacyBuildTags114(recipe);
+  const add = (value) => {
+    const normalized = normalize(value);
+    if (normalized && !tags.includes(normalized)) tags.push(normalized);
+  };
+
+  (recipe.wellnessTags || []).forEach(add);
+  if ((recipe.categories || []).includes("bewusst-lecker")) add("bewusst & lecker");
+  if (recipe.mealPrep) add("meal prep");
+  if (recipe.diet?.vegetarian || recipe.vegetarian) add("vegetarisch");
+  if (recipe.diet?.vegan || recipe.vegan) add("vegan");
+  if (recipe.nutrition?.labels?.proteinreich) add("proteinreich");
+  if (recipe.nutrition?.labels?.ballaststoffreich) add("ballaststoffreich");
+  if (recipe.nutrition?.labels?.leichtSaettigend) add("leicht & sättigend");
+  if (recipe.nutrition?.labels?.kalorienbewusst) add("kalorienbewusst");
+  return tags;
+};
+
+extractRecipeMainIngredients = function extractRecipeMainIngredients114(recipe) {
+  const ingredients = recipe.ingredients || [];
+  const found = [];
+  ingredients.forEach((ingredient, index) => {
+    if (ingredient.optional || ingredient.main === false) return;
+    const simplified = ingredient.canonical
+      ? canonicalIngredient(ingredient.canonical)
+      : simplifyIngredientName(ingredient.name);
+    if (simplified && !found.includes(simplified)) found.push(simplified);
+  });
+  return found.slice(0, 6);
+};
+
+extractRecipeOptionalIngredients = function extractRecipeOptionalIngredients114(recipe) {
+  const ingredients = recipe.ingredients || [];
+  const found = [];
+  ingredients.forEach((ingredient) => {
+    if (!ingredient.optional && ingredient.main !== false) return;
+    const simplified = ingredient.canonical
+      ? canonicalIngredient(ingredient.canonical)
+      : simplifyIngredientName(ingredient.name);
+    if (simplified && !found.includes(simplified)) found.push(simplified);
+  });
+  return found.slice(0, 10);
+};
+
+const legacyGetRecipeSearchText114 = getRecipeSearchText;
+getRecipeSearchText = function getRecipeSearchText114(recipe) {
+  return `${legacyGetRecipeSearchText114(recipe)} ${normalize([
+    ...(recipe.wellnessTags || []),
+    recipe.wellnessPrimary || "",
+    ...(recipe.diet?.allergens || []),
+    recipe.diet?.vegetarian ? "vegetarisch" : "",
+    recipe.diet?.vegan ? "vegan" : "",
+    recipe.mealPrep ? "meal prep" : ""
+  ].join(" "))}`;
+};
+
+function getWellnessTags114(recipe) {
+  return [...new Set([
+    ...(recipe.wellnessTags || []),
+    ...(recipe.tags || []),
+    ...(recipe.categories || []),
+    recipe.wellnessPrimary || ""
+  ].map(normalize).filter(Boolean))];
+}
+
+function isWellnessRecipe114(recipe) {
+  return (recipe.categories || []).includes("bewusst-lecker") || getWellnessTags114(recipe).includes("bewusst & lecker");
+}
+
+function matchesWellnessSub114(recipe) {
+  if (activeFilter !== "bewusst & lecker") return true;
+  if (!isWellnessRecipe114(recipe)) return false;
+  if (activeWellnessSub === "all") return true;
+  return getWellnessTags114(recipe).includes(normalize(activeWellnessSub));
+}
+
+recipeMatchesActiveFilter = function recipeMatchesActiveFilter114(recipe) {
+  if (activeFilter === "all") return true;
+  if (activeFilter === "bewusst & lecker") return matchesWellnessSub114(recipe);
+  const normalizedFilter = normalize(activeFilter);
+  return (recipe.tags || []).some((tag) => normalize(tag) === normalizedFilter);
+};
+
+function getGoalScore114(recipe) {
+  if (!activeWellnessGoal) return 0;
+  const n = recipe.nutrition?.perPortion || {};
+  const labels = recipe.nutrition?.labels || {};
+  let score = 0;
+
+  if (activeWellnessGoal === "abnehmen") {
+    if (labels.kalorienbewusst) score += 10;
+    if (labels.proteinreich) score += 7;
+    if (labels.ballaststoffreich) score += 6;
+    if (labels.leichtSaettigend) score += 8;
+    if (n.kcal > 700) score -= 8;
+  }
+
+  if (activeWellnessGoal === "halten") {
+    if (n.kcal >= 350 && n.kcal <= 750) score += 8;
+    if (n.protein >= 20) score += 4;
+    if (n.fiber >= 5) score += 4;
+  }
+
+  if (activeWellnessGoal === "muskelaufbau") {
+    if (labels.proteinreich) score += 12;
+    score += Math.min(8, Math.floor((Number(n.protein) || 0) / 8));
+    if (n.kcal >= 500) score += 4;
+  }
+
+  if (activeWellnessGoal === "ausgewogen") {
+    if (n.protein >= 18) score += 5;
+    if (n.fiber >= 5) score += 5;
+    if (n.kcal >= 350 && n.kcal <= 750) score += 5;
+  }
+
+  return score;
+}
+
+function recipeMatchesExplicitSelection114(recipe) {
+  const explicit = getExplicitSelectedNames();
+  if (explicit.length === 0) return true;
+  const recipeIngredients = getRecipeIngredientNames(recipe);
+  const wantsAirfryer = explicit.includes("heißluftfritteuse");
+  const foodSelections = explicit.filter((name) => name !== "heißluftfritteuse");
+  const deviceOkay = !wantsAirfryer || (recipe.tags || []).some((tag) => ["airfryer", "heissluftfritteuse"].includes(normalize(tag)));
+  const foodsOkay = foodSelections.every((selected) => recipeIngredients.some((item) => isExactIngredientMatch(item, selected)));
+  return deviceOkay && foodsOkay;
+}
+
+function getIngredientMatchState114(recipe) {
+  const available = getSelectedNames();
+  const main = recipe.main || [];
+  const optional = recipe.optional || [];
+  const matchingMain = main.filter((ingredient) => available.some((item) => isExactIngredientMatch(ingredient, item)));
+  const missingMain = main.filter((ingredient) => !available.some((item) => isExactIngredientMatch(ingredient, item)));
+  const matchingOptional = optional.filter((ingredient) => available.some((item) => isExactIngredientMatch(ingredient, item)));
+  const statusTier = missingMain.length === 0 ? "all" : missingMain.length <= 1 ? "fast" : "ideas";
+  return { matchingMain, missingMain, matchingOptional, statusTier };
+}
+
+scoreRecipe = function scoreRecipe114(recipe) {
+  const state = getIngredientMatchState114(recipe);
+  const selectedNames = getSelectedNames();
+  const urgentNames = getUrgentNames();
+  let score = state.statusTier === "all" ? 100 : state.statusTier === "fast" ? 65 : 30;
+  score += state.matchingMain.length * 9;
+  score += state.matchingOptional.length * 2;
+  score -= state.missingMain.length * 5;
+
+  urgentNames.forEach((urgent) => {
+    if ((recipe.main || []).some((item) => isExactIngredientMatch(item, urgent))) score += 10;
+  });
+
+  if (activeMood === "kein-bock" || activeMood === "schnell") {
+    if ((recipe.tags || []).includes("schnell")) score += 8;
+    if (recipe.dishes === "wenig") score += 5;
+  }
+  if (activeMood === "muss-weg" && (recipe.tags || []).includes("muss weg")) score += 8;
+  if (activeMood === "guenstig" && recipe.cost === "günstig") score += 8;
+  if (activeMood === "satt" && ((recipe.tags || []).includes("sättigend") || recipe.nutrition?.perPortion?.protein >= 25)) score += 7;
+  if (activeMood === "verwoehn" && ((recipe.tags || []).includes("soulfood") || (recipe.tags || []).includes("cremig"))) score += 7;
+  if (activeFilter !== "all" && recipeMatchesActiveFilter(recipe)) score += 12;
+  score += getGoalScore114(recipe);
+
+  return {
+    recipe,
+    matchingMain: state.matchingMain,
+    substituteMain: [],
+    missingMain: state.missingMain,
+    matchingOptional: state.matchingOptional,
+    statusTier: state.statusTier,
+    score
+  };
+};
+
+const legacyCreateBrowseMatch114 = createBrowseMatch;
+createBrowseMatch = function createBrowseMatch114(recipe) {
+  const match = legacyCreateBrowseMatch114(recipe);
+  match.statusTier = "browse";
+  match.score += getGoalScore114(recipe);
+  return match;
+};
+
+const legacySortMatches114 = sortMatches;
+sortMatches = function sortMatches114(matches) {
+  const tierRank = { all: 0, fast: 1, ideas: 2, browse: 3 };
+  const sorted = legacySortMatches114(matches);
+  if (activeSort !== "smart") return sorted;
+  return sorted.sort((a, b) => (tierRank[a.statusTier] ?? 9) - (tierRank[b.statusTier] ?? 9) || b.score - a.score);
+};
+
+getBrowseMatches = function getBrowseMatches114() {
+  return sortMatches(
+    recipes
+      .filter(recipeMatchesActiveFilter)
+      .filter(matchesWellnessSub114)
+      .filter(recipeMatchesSearch)
+      .map(createBrowseMatch)
+  );
+};
+
+getMatches = function getMatches114() {
+  const hasIngredientContext = hasSubmittedIngredientSearch();
+  if (hasPendingIngredientSelection()) return [];
+  if (!hasIngredientContext && !hasBrowseCriteria()) return [];
+  if (!hasIngredientContext) return getBrowseMatches();
+
+  return sortMatches(
+    recipes
+      .filter(recipeMatchesExplicitSelection114)
+      .filter(recipeMatchesActiveFilter)
+      .filter(matchesWellnessSub114)
+      .filter(recipeMatchesSearch)
+      .map(scoreRecipe)
+  );
+};
+
+function nutritionCardMarkup114(recipe) {
+  const n = recipe.nutrition?.perPortion;
+  if (!n || !Number.isFinite(Number(n.kcal))) return "";
+  return `
+    <div class="nutrition-card-line" aria-label="Ungefähre Nährwerte pro Portion">
+      <span><strong>${Math.round(n.kcal)}</strong> kcal</span>
+      <span><strong>${formatNumber(Number(n.protein) || 0)}</strong> g Eiweiß</span>
+    </div>
+  `;
+}
+
+function statusCopy114(match, hasIngredientContext) {
+  if (!hasIngredientContext || match.context === "rescue") return null;
+  if (match.statusTier === "all") return { badge: "Alles da", title: "Alles Wichtige ist da", detail: "Du kannst direkt loslegen." };
+  if (match.statusTier === "fast") return {
+    badge: "Fast passend",
+    title: `Fehlt noch: ${formatList((match.missingMain || []).slice(0, 2))}`,
+    detail: "Nur eine wichtige Zutat fehlt."
+  };
+  return { badge: "Weitere Idee", title: "Dir fehlen mehrere Zutaten", detail: "Die Richtung passt trotzdem zu deiner Auswahl." };
+}
+
+createRecipeCard = function createRecipeCard114(match, isRecommendation) {
+  const { recipe, matchingMain = [], missingMain = [] } = match;
+  const isRescue = match.context === "rescue";
+  const cardClass = isRecommendation ? "recommendation-card" : "recipe-card";
+  const hasIngredientContext = !isRescue && hasSubmittedIngredientSearch();
+  const status = statusCopy114(match, hasIngredientContext);
+  const badge = isRescue
+    ? (isRecommendation ? "Abendessen gerettet" : "Zufällige Alternative")
+    : status?.badge || (isRecommendation ? "Bester Treffer" : "Rezeptidee");
+
+  return `
+    <article class="${cardClass} recipe-card-compact" data-match-tier="${escapeHtml(match.statusTier || "browse")}">
+      ${getRecipeImageMarkup(recipe, isRecommendation)}
+      <div class="recipe-card-content">
+        <div class="recipe-card-topline">
+          <span class="recipe-card-badge">${escapeHtml(badge)}</span>
+          ${createFavoriteButton(recipe)}
+        </div>
+        <h4>${escapeHtml(recipe.title)}</h4>
+        <p class="recipe-saying compact-saying">${escapeHtml(recipe.saying)}</p>
+        <div class="recipe-quick-meta">
+          <span>${escapeHtml(recipe.time)}</span>
+          <span>${escapeHtml(recipe.category || "Rezept")}</span>
+          ${recipe.mealPrep ? `<span>Meal Prep</span>` : ""}
+        </div>
+        ${nutritionCardMarkup114(recipe)}
+        <div class="compact-card-status ${status ? `status-${match.statusTier}` : ""}">
+          <strong>${escapeHtml(status?.title || (isRescue ? "Zufällig für dich gezogen" : "Details und Anleitung im Rezept"))}</strong>
+          <span>${escapeHtml(status?.detail || (matchingMain.length ? `Passt mit ${formatList(matchingMain.slice(0, 3))}` : "Einfach ansehen und entscheiden"))}</span>
+        </div>
+        <div class="recipe-actions compact-actions">
+          <button class="small-button" data-open-recipe="${recipe.id}" type="button">Ansehen</button>
+          <button class="ghost-button" data-add-shopping="${recipe.id}" type="button">Fehlendes einkaufen</button>
+          <button class="ghost-button" data-share-card="${recipe.id}" type="button">Teilen</button>
+        </div>
+      </div>
+    </article>
+  `;
+};
+
+const legacyRenderRecipeResults114 = renderRecipeResults;
+renderRecipeResults = function renderRecipeResults114() {
+  if (rescueModeActive || !hasSubmittedIngredientSearch()) {
+    legacyRenderRecipeResults114();
+    return;
+  }
+  if (!recipeResults || !resultCounter) return;
+  if (hasPendingIngredientSelection()) {
+    legacyRenderRecipeResults114();
+    return;
+  }
+  const matches = getMatches();
+  if (!matches.length) {
+    resultCounter.textContent = "Keine nachvollziehbaren Treffer gefunden.";
+    recipeResults.classList.remove("hidden");
+    recipeResults.innerHTML = `<div class="empty-state">Dazu habe ich gerade keinen sauberen Treffer. Nimm eine Zutat raus oder nutze „Rette mein Abendessen“.</div>`;
+    return;
+  }
+  const groups = [
+    ["all", "Alles da", "Diese Rezepte passen vollständig zu deinen verfügbaren Hauptzutaten."],
+    ["fast", "Fast passend", "Hier fehlt höchstens eine wichtige Zutat."],
+    ["ideas", "Weitere Ideen", "Die gewählte Richtung passt, aber du müsstest deutlicher ergänzen."]
+  ];
+  resultCounter.textContent = `${matches.length} nachvollziehbare Idee${matches.length === 1 ? "" : "n"} gefunden.`;
+  recipeResults.classList.remove("hidden");
+  recipeResults.innerHTML = groups.map(([key,title,text]) => {
+    const list = matches.filter((m) => m.statusTier === key);
+    if (!list.length) return "";
+    return `<section class="match-group match-group-${key}"><div class="match-group-heading"><h4>${title}</h4><p>${text}</p></div><div class="recipe-grid">${list.map((m) => createRecipeCard(m,false)).join("")}</div></section>`;
+  }).join("");
+};
+
+function renderWellnessControls114() {
+  if (wellnessPanel) wellnessPanel.classList.toggle("hidden", activeFilter !== "bewusst & lecker");
+  wellnessSubButtons.forEach((button) => {
+    const active = (button.dataset.wellnessSub || "all") === activeWellnessSub;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  wellnessGoalButtons.forEach((button) => {
+    const active = (button.dataset.wellnessGoal || "") === activeWellnessGoal;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  if (resetWellnessGoalButton) resetWellnessGoalButton.disabled = !activeWellnessGoal;
+}
+
+function loadWellnessGoal114() {
+  const saved = localStorage.getItem(WELLNESS_GOAL_KEY) || "";
+  activeWellnessGoal = ["abnehmen","halten","muskelaufbau","ausgewogen"].includes(saved) ? saved : "";
+}
+
+function setWellnessGoal114(goal) {
+  activeWellnessGoal = goal;
+  if (goal) localStorage.setItem(WELLNESS_GOAL_KEY, goal);
+  else localStorage.removeItem(WELLNESS_GOAL_KEY);
+  cachedDailyRecommendationPool = [];
+  rescueModeActive = false;
+  renderAll();
+}
+
+function bindWellnessEvents114() {
+  wellnessSubButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeWellnessSub = button.dataset.wellnessSub || "all";
+      rescueModeActive = false;
+      moreRecipesVisible = true;
+      renderAll();
+    });
+  });
+  wellnessGoalButtons.forEach((button) => {
+    button.addEventListener("click", () => setWellnessGoal114(button.dataset.wellnessGoal || ""));
+  });
+  resetWellnessGoalButton?.addEventListener("click", () => setWellnessGoal114(""));
+}
+
+const legacySetActiveFilter114 = setActiveFilter;
+setActiveFilter = function setActiveFilter114(filter) {
+  legacySetActiveFilter114(filter);
+  renderWellnessControls114();
+  if (filter === "bewusst & lecker") {
+    moreRecipesVisible = true;
+    setTimeout(() => wellnessPanel?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+  }
+};
+
+function formatNutritionValue114(value, unit = "g") {
+  return `${formatNumber(Math.round((Number(value) || 0) * 10) / 10)} ${unit}`;
+}
+
+function nutritionModalMarkup114(recipe) {
+  const n = recipe.nutrition?.perPortion;
+  if (!n) return "";
+  const totalFactor = currentModalPortions;
+  return `
+    <section id="modalNutritionPanel" class="nutrition-panel">
+      <div class="nutrition-panel-head">
+        <div><span class="eyebrow">Ungefähre Nährwerte</span><h4>Pro Portion</h4></div>
+        <span class="nutrition-note">Optionale Zutaten nicht eingerechnet</span>
+      </div>
+      <div class="nutrition-grid">
+        <div><strong>${Math.round(n.kcal)}</strong><span>kcal</span></div>
+        <div><strong>${formatNumber(n.protein)}</strong><span>g Eiweiß</span></div>
+        <div><strong>${formatNumber(n.carbs)}</strong><span>g Kohlenhydrate</span></div>
+        <div><strong>${formatNumber(n.fat)}</strong><span>g Fett</span></div>
+        <div><strong>${formatNumber(n.fiber)}</strong><span>g Ballaststoffe</span></div>
+      </div>
+      <div id="modalNutritionTotal" class="nutrition-total">Gesamt für ${currentModalPortions} Portionen: ${Math.round(n.kcal * totalFactor)} kcal · ${formatNumber(n.protein * totalFactor)} g Eiweiß · ${formatNumber(n.carbs * totalFactor)} g Kohlenhydrate · ${formatNumber(n.fat * totalFactor)} g Fett · ${formatNumber(n.fiber * totalFactor)} g Ballaststoffe</div>
+      <small>${escapeHtml(recipe.nutrition.basis || "Ungefähre Werte auf Basis der angegebenen Grundmengen.")}</small>
+    </section>
+  `;
+}
+
+function dietModalMarkup114(recipe) {
+  const diet = recipe.diet || {};
+  const labels = [];
+  if (diet.vegan) labels.push("vegan");
+  else if (diet.vegetarian) labels.push("vegetarisch");
+  if (diet.glutenFreePossible) labels.push("glutenfrei möglich");
+  if (diet.lactoseFreePossible) labels.push("laktosefrei möglich");
+  const allergens = diet.allergens || [];
+  if (!labels.length && !allergens.length) return "";
+  return `
+    <section class="diet-panel">
+      <div><strong>Ernährungsweise</strong><p>${labels.length ? labels.map(escapeHtml).join(" · ") : "keine besondere Kennzeichnung"}</p></div>
+      <div><strong>Allergene / Hinweise</strong><p>${allergens.length ? allergens.map(escapeHtml).join(" · ") : "keine der hinterlegten Hauptallergene erkannt"}</p></div>
+    </section>
+  `;
+}
+
+function mealPrepMarkup114(recipe) {
+  const s = recipe.storage;
+  if (!recipe.mealPrep || !s) return "";
+  return `
+    <section class="meal-prep-panel">
+      <div class="meal-prep-title"><span aria-hidden="true">🥡</span><div><strong>Meal-Prep-Hinweise</strong><small>Standardmäßig für ${recipe.portions || 4} Portionen geplant</small></div></div>
+      <dl>
+        <div><dt>Kühlschrank</dt><dd>${escapeHtml(String(s.fridgeDays))} Tage</dd></div>
+        <div><dt>Einfrieren</dt><dd>${s.freezable ? "geeignet" : "nicht empfohlen"}</dd></div>
+        <div><dt>Aufwärmen</dt><dd>${escapeHtml(s.reheat || "vollständig erhitzen")}</dd></div>
+        <div><dt>Getrennt lagern</dt><dd>${escapeHtml(s.separate || "frische Bestandteile separat")}</dd></div>
+      </dl>
+      <p class="meal-prep-warning">${escapeHtml(s.warning || "Nur einmal aufwärmen und bei Auffälligkeiten entsorgen.")}</p>
+    </section>
+  `;
+}
+
+function missingIngredientsMarkup114(recipe) {
+  const missing = getMissingStructuredIngredients114(recipe);
+  if (!hasSubmittedIngredientSearch()) return "";
+  if (!missing.length) return `<section class="missing-panel all-there"><strong>Alles da</strong><p>Für die wichtigen Zutaten ist dein Bestand komplett.</p></section>`;
+  return `<section class="missing-panel"><strong>Dir fehlt noch</strong><ul>${missing.map((i) => `<li>${escapeHtml(i.name)} <span>${escapeHtml(formatIngredientAmount(recipe,i))}</span></li>`).join("")}</ul><button id="addMissingStructuredButton" class="primary-button" type="button">Fehlende Zutaten zum Einkaufszettel</button></section>`;
+}
+
+function substitutionMarkup114(recipe) {
+  const alternatives = recipe.alternatives || [];
+  if (!alternatives.length) return "";
+  return `<section class="substitution-panel"><strong>Geprüfte Austauschmöglichkeiten</strong><ul>${alternatives.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}</ul><small>Nur passende, im Rezept beschriebene Varianten verwenden. Nährwerte verändern sich je nach gewähltem Produkt.</small></section>`;
+}
+
+const legacyRenderRecipeModal114 = renderRecipeModal;
+renderRecipeModal = function renderRecipeModal114(recipe) {
+  legacyRenderRecipeModal114(recipe);
+  const portionPanel = modalContent?.querySelector(".portion-panel");
+  if (portionPanel) portionPanel.insertAdjacentHTML("beforebegin", nutritionModalMarkup114(recipe));
+  const hints = modalContent?.querySelector(".recipe-hints");
+  if (hints) hints.insertAdjacentHTML("afterend", dietModalMarkup114(recipe));
+  else modalContent?.querySelector(".recipe-meta")?.insertAdjacentHTML("afterend", dietModalMarkup114(recipe));
+  portionPanel?.insertAdjacentHTML("afterend", missingIngredientsMarkup114(recipe));
+  const ingredientTitle = Array.from(modalContent?.querySelectorAll(".modal-section-title") || []).find((el) => el.textContent.trim() === "Zutaten");
+  ingredientTitle?.insertAdjacentHTML("beforebegin", mealPrepMarkup114(recipe));
+  const alternativesTitle = Array.from(modalContent?.querySelectorAll(".modal-section-title") || []).find((el) => el.textContent.trim() === "Alternativen");
+  alternativesTitle?.parentElement?.querySelector(".alternative-list")?.insertAdjacentHTML("afterend", substitutionMarkup114(recipe));
+  const addButton = document.getElementById("addMissingStructuredButton");
+  addButton?.addEventListener("click", () => addMissingToShoppingList(recipe.id));
+};
+
+const legacyChangeModalPortions114 = changeModalPortions;
+changeModalPortions = function changeModalPortions114(recipe, direction) {
+  legacyChangeModalPortions114(recipe, direction);
+  const n = recipe.nutrition?.perPortion;
+  const total = document.getElementById("modalNutritionTotal");
+  if (n && total) total.textContent = `Gesamt für ${currentModalPortions} Portionen: ${Math.round(n.kcal * currentModalPortions)} kcal · ${formatNumber(n.protein * currentModalPortions)} g Eiweiß · ${formatNumber(n.carbs * currentModalPortions)} g Kohlenhydrate · ${formatNumber(n.fat * currentModalPortions)} g Fett · ${formatNumber(n.fiber * currentModalPortions)} g Ballaststoffe`;
+  const recipeNow = recipes.find((item) => item.id === recipe.id) || recipe;
+  const existing = modalContent?.querySelector(".missing-panel");
+  if (existing) existing.outerHTML = missingIngredientsMarkup114(recipeNow);
+  document.getElementById("addMissingStructuredButton")?.addEventListener("click", () => addMissingToShoppingList(recipe.id));
+};
+
+getRecipeHints = function getRecipeHints114(recipe) {
+  const hints = [];
+  if (recipe.diet?.vegan) hints.push("vegan");
+  else if (recipe.diet?.vegetarian) hints.push("vegetarisch");
+  if (recipe.nutrition?.labels?.proteinreich) hints.push("proteinreich");
+  if (recipe.nutrition?.labels?.ballaststoffreich) hints.push("ballaststoffreich");
+  if (recipe.nutrition?.labels?.kalorienbewusst) hints.push("kalorienbewusst");
+  if (recipe.mealPrep) hints.push("Meal Prep");
+  if ((recipe.tags || []).includes("zu heiß zum kochen")) hints.push("wenig Herd");
+  return hints.slice(0, 6);
+};
+
+function getMissingStructuredIngredients114(recipe) {
+  const available = getSelectedNames();
+  return (recipe.ingredients || []).filter((ingredient) => {
+    if (ingredient.optional || ingredient.main === false) return false;
+    const canonical = canonicalIngredient(ingredient.canonical || simplifyIngredientName(ingredient.name) || ingredient.name);
+    return !available.some((selected) => isExactIngredientMatch(canonical, selected));
+  });
+}
+
+function scaledIngredient114(recipe, ingredient) {
+  const factor = currentModalRecipeId === recipe.id ? currentModalPortions / (recipe.portions || 2) : 1;
+  return {
+    ...ingredient,
+    amount: Number.isFinite(Number(ingredient.amount)) ? Number(ingredient.amount) * factor : ingredient.amount
+  };
+}
+
+loadShoppingList = function loadShoppingList114() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SHOPPING_LIST_KEY) || "[]");
+    shoppingListItems = Array.isArray(saved) ? saved.map((item) => typeof item === "string" ? { name: canonicalIngredient(item), label: displayIngredientName(item), amount: null, unit: "", done: false } : {
+      name: canonicalIngredient(item.name || item.label),
+      label: item.label || displayIngredientName(item.name),
+      amount: Number.isFinite(Number(item.amount)) ? Number(item.amount) : null,
+      unit: item.unit || "",
+      done: Boolean(item.done)
+    }).filter((item) => item.name) : [];
+  } catch { shoppingListItems = []; }
+};
+
+function addShoppingIngredient114(recipe, ingredient) {
+  const scaled = scaledIngredient114(recipe, ingredient);
+  const name = canonicalIngredient(ingredient.canonical || simplifyIngredientName(ingredient.name) || ingredient.name);
+  const unit = ingredient.unit || "";
+  const existing = shoppingListItems.find((item) => item.name === name && normalize(item.unit) === normalize(unit));
+  if (existing) {
+    if (Number.isFinite(Number(scaled.amount))) existing.amount = (Number(existing.amount) || 0) + Number(scaled.amount);
+    existing.done = false;
+    return false;
+  }
+  shoppingListItems.push({ name, label: ingredient.name, amount: Number.isFinite(Number(scaled.amount)) ? Number(scaled.amount) : null, unit, done: false });
+  return true;
+}
+
+addMissingToShoppingList = function addMissingToShoppingList114(recipeId) {
+  const recipe = recipes.find((item) => item.id === recipeId);
+  if (!recipe) return;
+  const missing = getMissingStructuredIngredients114(recipe);
+  if (!missing.length) { updateBuddyTextOnly("Für dieses Rezept fehlt dir nichts Wichtiges."); return; }
+  let added = 0;
+  missing.forEach((ingredient) => { if (addShoppingIngredient114(recipe, ingredient)) added += 1; });
+  saveShoppingList();
+  renderShoppingList();
+  updateBuddyTextOnly(added ? `${added} fehlende Zutat${added === 1 ? "" : "en"} mit passender Menge ergänzt.` : "Die fehlenden Zutaten wurden mit den vorhandenen Einträgen zusammengeführt.");
+  if (shoppingListSection && "open" in shoppingListSection) shoppingListSection.open = true;
+};
+
+renderShoppingList = function renderShoppingList114() {
+  if (!shoppingListItemsContainer) return;
+  if (shoppingListSection) shoppingListSection.classList.toggle("is-empty", shoppingListItems.length === 0);
+  if (!shoppingListItems.length) {
+    shoppingListItemsContainer.innerHTML = `<div class="empty-state">Noch nichts auf der Liste. Öffne ein Rezept und ergänze nur die fehlenden Zutaten.</div>`;
+  } else {
+    shoppingListItemsContainer.innerHTML = shoppingListItems.map((item, index) => {
+      const amount = item.amount === null ? "" : `${formatNumber(item.amount)} ${item.unit || ""}`.trim();
+      return `<div class="shopping-list-item ${item.done ? "done" : ""}"><label><input type="checkbox" ${item.done ? "checked" : ""} data-toggle-shopping-index="${index}"/><span><strong>${escapeHtml(item.label || displayIngredientName(item.name))}</strong>${amount ? `<small>${escapeHtml(amount)}</small>` : ""}</span></label><button class="chip-button" type="button" data-remove-shopping-index="${index}" aria-label="Eintrag entfernen">×</button></div>`;
+    }).join("");
+  }
+  if (copyShoppingListButton) copyShoppingListButton.disabled = shoppingListItems.length === 0;
+  if (clearShoppingListButton) clearShoppingListButton.disabled = shoppingListItems.length === 0;
+  document.querySelectorAll("[data-toggle-shopping-index]").forEach((input) => input.addEventListener("change", () => { const i=Number(input.dataset.toggleShoppingIndex); if (shoppingListItems[i]) { shoppingListItems[i].done=!shoppingListItems[i].done; saveShoppingList(); renderShoppingList(); } }));
+  document.querySelectorAll("[data-remove-shopping-index]").forEach((button) => button.addEventListener("click", () => { shoppingListItems.splice(Number(button.dataset.removeShoppingIndex),1); saveShoppingList(); renderShoppingList(); }));
+};
+
+copyShoppingList = function copyShoppingList114() {
+  if (!shoppingListItems.length) { updateBuddyTextOnly("Der Einkaufszettel ist leer."); return; }
+  const text = shoppingListItems.map((item) => {
+    const amount = item.amount === null ? "" : `${formatNumber(item.amount)} ${item.unit || ""}`.trim();
+    return `${item.done ? "✓" : "•"} ${amount ? amount + " " : ""}${item.label || displayIngredientName(item.name)}`;
+  }).join("\n");
+  navigator.clipboard?.writeText(text).then(() => updateBuddyTextOnly("Einkaufszettel mit Mengen kopiert.")).catch(() => updateBuddyTextOnly("Kopieren hat leider nicht geklappt."));
+};
+
+const legacyPickRandomRescueRecipes114 = pickRandomRescueRecipes;
+pickRandomRescueRecipes = function pickRandomRescueRecipes114(count = 3) {
+  if (!activeWellnessGoal) return legacyPickRandomRescueRecipes114(count);
+  const previous = new Set(rescueRecipeIds);
+  let pool = recipes.filter((recipe) => !previous.has(recipe.id));
+  if (pool.length < count) pool = [...recipes];
+  return pool.map((recipe) => ({ recipe, rank: Math.pow(Math.random(), 1 / Math.max(1, 1 + getGoalScore114(recipe) / 8)) }))
+    .sort((a,b) => b.rank-a.rank)
+    .slice(0,count)
+    .map((item) => item.recipe);
+};
+
+const legacyRenderAll114 = renderAll;
+renderAll = function renderAll114() {
+  legacyRenderAll114();
+  renderWellnessControls114();
+};
+
+
+
+// Geprüfte Rezeptvarianten für 1.14.0.
+// Es ist immer nur das Original oder genau eine vorab geprüfte Variante aktiv.
+let activeModalVariantId114 = "";
+let activeModalVariantRecipe114 = null;
+
+function getVariantSpecs114(recipeId) {
+  const map = window.KUECHENKUMPEL_RECIPE_VARIANTS || {};
+  return Array.isArray(map[recipeId]) ? map[recipeId] : [];
+}
+
+function normalizeVariantRecipe114(recipe) {
+  return {
+    ...recipe,
+    slug: recipe.slug || createRecipeSlug(recipe.name || recipe.title || `rezept-${recipe.id}`),
+    title: recipe.name || recipe.title,
+    imageAlt: recipe.imageAlt || recipe.name || recipe.title || "Küchenkumpel Rezeptbild",
+    main: extractRecipeMainIngredients(recipe),
+    optional: extractRecipeOptionalIngredients(recipe),
+    tags: buildTags(recipe),
+    time: recipe.timeTotal || recipe.time || "ca. 20 Minuten",
+    dishesText: createDishesText(recipe.dishes),
+    costText: createCostText(recipe.cost),
+    filling: recipe.satiety || recipe.filling || "macht satt",
+    saying: recipe.slogan || recipe.saying || ""
+  };
+}
+
+function buildVariantRecipe114(baseRecipe, specification) {
+  if (!baseRecipe || !specification) return baseRecipe;
+
+  const source = JSON.parse(JSON.stringify(baseRecipe));
+  const replacements = Array.isArray(specification.replacements) ? specification.replacements : [];
+
+  source.ingredients = (source.ingredients || []).map((ingredient) => {
+    const replacement = replacements.find((entry) => normalizeSearchValue(entry.from) === normalizeSearchValue(ingredient.name));
+    if (!replacement || !replacement.to) return ingredient;
+
+    return {
+      ...ingredient,
+      ...replacement.to,
+      canonical: undefined,
+      grams: undefined
+    };
+  });
+
+  source.name = specification.title || source.name || source.title;
+  source.title = source.name;
+  source.steps = Array.isArray(specification.steps) && specification.steps.length
+    ? [...specification.steps]
+    : [...(source.steps || [])];
+  source.variantId = specification.id;
+  source.variantLabel = specification.label;
+  source.variantDescription = specification.description || "";
+
+  for (const flag of ["vegetarian", "vegan", "glutenFreePossible", "lactoseFreePossible"]) {
+    if (typeof specification[flag] === "boolean") source[flag] = specification[flag];
+  }
+
+  delete source.nutrition;
+  delete source.diet;
+  delete source.main;
+  delete source.optional;
+
+  const enriched = typeof window.KUECHENKUMPEL_ENRICH_RECIPES === "function"
+    ? window.KUECHENKUMPEL_ENRICH_RECIPES([source])[0]
+    : source;
+
+  return normalizeVariantRecipe114(enriched);
+}
+
+function getCurrentModalRecipe114(fallbackRecipe = null) {
+  if (activeModalVariantRecipe114 && activeModalVariantRecipe114.id === currentModalRecipeId) {
+    return activeModalVariantRecipe114;
+  }
+  return recipes.find((item) => item.id === currentModalRecipeId) || fallbackRecipe;
+}
+
+function variantMarkup114(baseRecipe) {
+  const variants = getVariantSpecs114(baseRecipe?.id);
+  if (!variants.length) return "";
+
+  return `
+    <section class="verified-variants-panel" aria-labelledby="verifiedVariantsTitle">
+      <div class="verified-variants-head">
+        <div>
+          <span class="eyebrow">Geprüfte Varianten</span>
+          <h4 id="verifiedVariantsTitle">Passend austauschen</h4>
+        </div>
+        <span class="variant-current-label">${escapeHtml(activeModalVariantId114 ? "Variante aktiv" : "Originalrezept")}</span>
+      </div>
+      <div class="variant-button-row" role="group" aria-label="Rezeptvariante auswählen">
+        <button class="variant-button ${activeModalVariantId114 ? "" : "active"}" type="button" data-recipe-variant="" aria-pressed="${activeModalVariantId114 ? "false" : "true"}">Original</button>
+        ${variants.map((variant) => `
+          <button class="variant-button ${activeModalVariantId114 === variant.id ? "active" : ""}" type="button" data-recipe-variant="${escapeHtml(variant.id)}" aria-pressed="${activeModalVariantId114 === variant.id ? "true" : "false"}">${escapeHtml(variant.label)}</button>
+        `).join("")}
+      </div>
+      ${activeModalVariantRecipe114?.variantDescription ? `<p class="variant-description">${escapeHtml(activeModalVariantRecipe114.variantDescription)}</p>` : ""}
+      <small class="variant-note">Zutaten, Nährwerte, Allergene und Zubereitung werden passend zur ausgewählten, geprüften Variante aktualisiert.</small>
+    </section>
+  `;
+}
+
+function selectRecipeVariant114(variantId) {
+  const baseRecipe = recipes.find((item) => item.id === currentModalRecipeId);
+  if (!baseRecipe) return;
+
+  if (!variantId) {
+    activeModalVariantId114 = "";
+    activeModalVariantRecipe114 = null;
+    cookingStepIndex = 0;
+    renderRecipeModal(baseRecipe);
+    return;
+  }
+
+  const specification = getVariantSpecs114(baseRecipe.id).find((variant) => variant.id === variantId);
+  if (!specification) return;
+
+  activeModalVariantId114 = specification.id;
+  activeModalVariantRecipe114 = buildVariantRecipe114(baseRecipe, specification);
+  cookingStepIndex = 0;
+  renderRecipeModal(activeModalVariantRecipe114);
+}
+
+const legacyOpenRecipeModalVariant114 = openRecipeModal;
+openRecipeModal = function openRecipeModalVariant114(recipeId) {
+  activeModalVariantId114 = "";
+  activeModalVariantRecipe114 = null;
+  legacyOpenRecipeModalVariant114(recipeId);
+};
+
+const legacyRenderRecipeModalVariant114 = renderRecipeModal;
+renderRecipeModal = function renderRecipeModalVariant114(recipe) {
+  legacyRenderRecipeModalVariant114(recipe);
+
+  const baseRecipe = recipes.find((item) => item.id === currentModalRecipeId) || recipe;
+  const markup = variantMarkup114(baseRecipe);
+  if (markup) {
+    const nutritionPanel = modalContent?.querySelector("#modalNutritionPanel");
+    const portionPanel = modalContent?.querySelector(".portion-panel");
+    if (nutritionPanel) nutritionPanel.insertAdjacentHTML("beforebegin", markup);
+    else if (portionPanel) portionPanel.insertAdjacentHTML("beforebegin", markup);
+
+    modalContent?.querySelectorAll("[data-recipe-variant]").forEach((button) => {
+      button.addEventListener("click", () => selectRecipeVariant114(button.dataset.recipeVariant || ""));
+    });
+  }
+};
+
+const legacyChangeModalPortionsVariant114 = changeModalPortions;
+changeModalPortions = function changeModalPortionsVariant114(recipe, direction) {
+  const effectiveRecipe = getCurrentModalRecipe114(recipe) || recipe;
+  legacyChangeModalPortionsVariant114(effectiveRecipe, direction);
+
+  const existing = modalContent?.querySelector(".missing-panel");
+  if (existing) existing.outerHTML = missingIngredientsMarkup114(effectiveRecipe);
+  document.getElementById("addMissingStructuredButton")?.addEventListener("click", () => addMissingToShoppingList(effectiveRecipe.id));
+};
+
+const legacyAddMissingToShoppingListVariant114 = addMissingToShoppingList;
+addMissingToShoppingList = function addMissingToShoppingListVariant114(recipeId) {
+  const effectiveRecipe = getCurrentModalRecipe114();
+  if (!effectiveRecipe || effectiveRecipe.id !== recipeId || !activeModalVariantRecipe114) {
+    legacyAddMissingToShoppingListVariant114(recipeId);
+    return;
+  }
+
+  const missing = getMissingStructuredIngredients114(effectiveRecipe);
+  if (!missing.length) {
+    updateBuddyTextOnly("Für diese Variante fehlt dir nichts Wichtiges.");
+    return;
+  }
+
+  let added = 0;
+  missing.forEach((ingredient) => {
+    if (addShoppingIngredient114(effectiveRecipe, ingredient)) added += 1;
+  });
+  saveShoppingList();
+  renderShoppingList();
+  updateBuddyTextOnly(added
+    ? `${added} fehlende Zutat${added === 1 ? "" : "en"} der Variante mit passender Menge ergänzt.`
+    : "Die fehlenden Zutaten der Variante wurden mit den vorhandenen Einträgen zusammengeführt.");
+  if (shoppingListSection && "open" in shoppingListSection) shoppingListSection.open = true;
+};
+
 window.kuechenkumpelStartApp = startApp;
 
 function initApp() {
   refreshRecipes();
 
   bindEvents();
+  bindWellnessEvents114();
+  loadWellnessGoal114();
   loadFavorites();
   loadPantry();
   loadShoppingList();
