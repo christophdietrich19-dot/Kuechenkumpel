@@ -126,6 +126,41 @@
     "falafel": { kcal: 333, protein: 13.3, carbs: 31.8, fat: 17.8, fiber: 9.1, sesamePossible: true, glutenPossible: true },
     "schnitzel paniert": { kcal: 220, protein: 20, carbs: 12, fat: 10, fiber: 0.8, gluten: true, eggPossible: true },
     "zitronensaft": { kcal: 22, protein: 0.4, carbs: 6.9, fat: 0.2, fiber: 0.3 },
+
+    "weizenmehl": { kcal: 348, protein: 10.4, carbs: 72.3, fat: 1.0, fiber: 3.2, gluten: true },
+    "dinkelmehl": { kcal: 339, protein: 11.6, carbs: 68.4, fat: 1.3, fiber: 3.7, gluten: true },
+    "roggenmehl": { kcal: 325, protein: 8.3, carbs: 65.6, fat: 1.4, fiber: 9.0, gluten: true },
+    "vollkornmehl": { kcal: 323, protein: 11.7, carbs: 59.5, fat: 2.4, fiber: 11.0, gluten: true },
+    "brauner zucker": { kcal: 400, protein: 0, carbs: 100, fat: 0, fiber: 0 },
+    "hefe": { kcal: 325, protein: 40.4, carbs: 41.2, fat: 7.6, fiber: 26.9 },
+    "kakao": { kcal: 337, protein: 22.6, carbs: 13.5, fat: 21.7, fiber: 30.0 },
+    "zartbitterschokolade": { kcal: 540, protein: 6.0, carbs: 46.0, fat: 35.0, fiber: 10.0, milkPossible: true },
+    "weisse schokolade": { kcal: 539, protein: 5.9, carbs: 59.0, fat: 32.0, fiber: 0.2, milk: true },
+    "mandeln": { kcal: 579, protein: 21.2, carbs: 5.7, fat: 49.9, fiber: 12.5, nuts: true },
+    "haselnüsse": { kcal: 628, protein: 15.0, carbs: 7.0, fat: 60.8, fiber: 10.0, nuts: true },
+    "sonnenblumenkerne": { kcal: 584, protein: 20.8, carbs: 11.4, fat: 51.5, fiber: 8.6 },
+    "kuerbiskerne": { kcal: 559, protein: 30.2, carbs: 10.7, fat: 49.1, fiber: 6.0 },
+    "rosinen": { kcal: 299, protein: 3.1, carbs: 75.5, fat: 0.5, fiber: 3.7 },
+    "kokosraspel": { kcal: 660, protein: 6.9, carbs: 7.4, fat: 64.5, fiber: 16.3 },
+    "schmand": { kcal: 240, protein: 2.5, carbs: 3.5, fat: 24.0, fiber: 0, milk: true },
+    "staerke": { kcal: 351, protein: 0.3, carbs: 86.0, fat: 0.1, fiber: 0 },
+    "kirschen": { kcal: 63, protein: 1.0, carbs: 13.3, fat: 0.3, fiber: 1.9 },
+    "pflaumen": { kcal: 46, protein: 0.7, carbs: 10.2, fat: 0.3, fiber: 1.4 },
+    "rhabarber": { kcal: 21, protein: 0.9, carbs: 1.4, fat: 0.2, fiber: 3.2 },
+    "heidelbeeren": { kcal: 42, protein: 0.6, carbs: 7.4, fat: 0.6, fiber: 4.9 },
+    "mandarinen": { kcal: 53, protein: 0.8, carbs: 10.1, fat: 0.3, fiber: 1.8 },
+    "mohnfuellung": { kcal: 320, protein: 8.0, carbs: 34.0, fat: 17.0, fiber: 8.0 },
+    "vanillepudding": { kcal: 110, protein: 3.0, carbs: 18.0, fat: 3.0, fiber: 0, milk: true },
+    "konfituere": { kcal: 250, protein: 0.4, carbs: 60.0, fat: 0.1, fiber: 1.0 },
+    "blaetterteig": { kcal: 410, protein: 6.5, carbs: 38.0, fat: 26.0, fiber: 2.0, gluten: true, milkPossible: true },
+    "filoteig": { kcal: 299, protein: 9.0, carbs: 52.0, fat: 6.0, fiber: 2.5, gluten: true },
+    "butterkeks": { kcal: 440, protein: 7.0, carbs: 69.0, fat: 15.0, fiber: 2.5, gluten: true, milkPossible: true },
+    "natron": { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+    "salz": { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+    "pfeffer": { kcal: 251, protein: 10.4, carbs: 38.7, fat: 3.3, fiber: 25.3 },
+    "knoblauch": { kcal: 149, protein: 6.4, carbs: 29.9, fat: 0.5, fiber: 2.1 },
+    "chili": { kcal: 40, protein: 1.9, carbs: 7.3, fat: 0.4, fiber: 1.5 },
+    "bbq sauce": { kcal: 150, protein: 1.0, carbs: 35.0, fat: 0.5, fiber: 1.0 },
     "backpulver": { kcal: 53, protein: 0, carbs: 27.7, fat: 0, fiber: 0 }
   };
 
@@ -150,9 +185,12 @@
     .trim();
 
   function resolveIngredient(name) {
+    const rawText = normalize(String(name));
+    if (/gekochte oder vorgekochte nudel/.test(rawText)) return "nudeln gekocht";
     const text = normalize(String(name).split(/\s+oder\s+|,|\//)[0]);
     const rules = [
-      [/glutenfreie nudel|glutenfreie pasta/, "glutenfreie nudeln"], [/vollkornnudel/, "vollkornnudeln"], [/gekochte? nudel/, "nudeln gekocht"], [/(nudel|pasta|spaghetti|makkaroni)/, "nudeln trocken"],
+      [/paprikapulver/, "paprikapulver"], [/knoblauch/, "knoblauch"], [/pfeffer/, "pfeffer"], [/salz/, "salz"], [/chili/, "chili"],
+      [/glutenfreie nudel|glutenfreie pasta/, "glutenfreie nudeln"], [/vollkornnudel/, "vollkornnudeln"], [/gekocht.*nudel|vorgekocht.*nudel|gekochte oder vorgekochte nudel/, "nudeln gekocht"], [/(nudel|pasta|spaghetti|makkaroni)/, "nudeln trocken"],
       [/gekochter? reis/, "reis gekocht"], [/(reis)/, "reis trocken"], [/couscous/, "couscous"], [/bulgur/, "bulgur"], [/hafer/, "haferflocken"],
       [/vollkornbrot/, "vollkornbrot"], [/toast/, "toast"], [/brotchen/, "brötchen"], [/baguette/, "brot"], [/brot/, "brot"], [/wrap|pita|fladenbrot/, "wrap"],
       [/susskartoffel/, "süßkartoffeln"], [/kartoffel/, "kartoffeln"], [/gnocchi/, "gnocchi"], [/spatzle/, "spätzle"], [/tortellini/, "tortellini"], [/mehl/, "mehl"],
@@ -171,7 +209,7 @@
       [/apfel/, "apfel"], [/banane/, "banane"], [/beere|obst/, "beeren"], [/wassermelone/, "wassermelone"], [/pfirsich|nektarine/, "pfirsich"], [/zitrone|limette/, "zitrone"],
       [/erdnussmus/, "erdnussmus"], [/walnuss/, "walnüsse"], [/nuss|kerne/, "nüsse"], [/chiasamen/, "chiasamen"], [/sesamol/, "sesamöl"], [/sesam/, "sesam"],
       [/olivenol/, "olivenöl"], [/(^|\s)ol($|\s)/, "öl"], [/pesto/, "pesto"], [/hummus/, "hummus"], [/kokosmilch light/, "kokosmilch light"], [/kokosmilch/, "kokosmilch"],
-      [/zitronensaft/, "zitronensaft"], [/falafel/, "falafel"], [/paprikapulver/, "paprikapulver"], [/currypulver|curry/, "currypulver"], [/zimt/, "zimt"], [/muskat/, "muskat"], [/kreuzkummel/, "kreuzkümmel"], [/backpulver/, "backpulver"], [/basilikum|petersilie|dill|minze|oregano|krauter/, "frische kräuter"], [/wasser/, "wasser"],
+      [/speisestarke|starke/, "staerke"], [/zitronensaft/, "zitronensaft"], [/falafel/, "falafel"], [/paprikapulver/, "paprikapulver"], [/currypulver|curry/, "currypulver"], [/zimt/, "zimt"], [/muskat/, "muskat"], [/kreuzkummel/, "kreuzkümmel"], [/backpulver/, "backpulver"], [/basilikum|petersilie|dill|minze|oregano|krauter/, "frische kräuter"], [/wasser/, "wasser"],
       [/honig|sirup/, "honig"], [/zucker/, "zucker"], [/sojasosse/, "sojasoße"], [/senf/, "senf"], [/balsamico|essig/, "balsamico"], [/gemusebruhe/, "gemüsebrühe"], [/bruhe/, "brühe"]
     ];
     for (const [re, key] of rules) if (re.test(text)) return key;
@@ -261,7 +299,7 @@
   }
 
   function structureIngredient(ingredient, index) {
-    let canonical = resolveIngredient(ingredient.name);
+    let canonical = ingredient.canonical || resolveIngredient(ingredient.name);
     const normalizedUnit = normalize(ingredient.unit);
     if (normalizedUnit.includes("gekocht")) {
       if (canonical === "reis trocken") canonical = "reis gekocht";
@@ -273,7 +311,7 @@
       canonical,
       optional,
       main: typeof ingredient.main === "boolean" ? ingredient.main : (!optional && index < 4),
-      grams: gramsFor(ingredient, canonical)
+      grams: Number.isFinite(Number(ingredient.grams)) ? Number(ingredient.grams) : gramsFor(ingredient, canonical)
     };
   }
 

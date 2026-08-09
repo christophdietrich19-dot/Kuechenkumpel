@@ -1,20 +1,20 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "1.14.0",
-  badge: "NEU",
-  title: "Bewusst & lecker ist da",
-  subtitle: "60 neue, alltagstaugliche Rezepte für Meal Prep, Salate & Bowls, proteinreiche sowie leichte und sättigende Gerichte.",
+  version: "2.0.0",
+  badge: "GROSSES UPDATE",
+  title: "Jetzt wird gebacken",
+  subtitle: "Küchenkumpel bekommt einen eigenen Backbereich – mit echten Schritt-für-Schritt-Rezepten und Hilfe, wenn beim Backen etwas hakt.",
   image: "assets/images/themes/standard/kochtopf-idee.png",
-  imageAlt: "Küchenkumpel hat eine neue Rezeptidee",
+  imageAlt: "Küchenkumpel hat eine neue Idee",
   mascot: "assets/images/themes/standard/kochtopf-idee.png",
-  mascotAlt: "Küchenkumpel hat eine neue Rezeptidee",
+  mascotAlt: "Küchenkumpel hat eine neue Idee",
   items: [
-    { icon: "🥗", title: "60 neue Rezepte", text: "Meal Prep, Salate & Bowls, Proteinreich und Leicht & sättigend – mit normalen Zutaten und eigenen Rezeptbildern." },
-    { icon: "📊", title: "Nährwerte für alle 240 Rezepte", text: "Kalorien, Eiweiß, Kohlenhydrate, Fett und Ballaststoffe werden pro Portion nachvollziehbar angezeigt." },
-    { icon: "🥡", title: "Portionen und Meal Prep", text: "Mengen passen sich an die Portionen an. Meal-Prep-Rezepte erklären Lagerung, Aufwärmen und Haltbarkeit." },
-    { icon: "🧺", title: "Intelligentere Zutatenlogik", text: "Alles da, Fast passend und Weitere Ideen zeigen nachvollziehbar, was wirklich zu deinem Bestand passt." },
-    { icon: "🎯", title: "Dein Ziel", text: "Abnehmen, Gewicht halten, Muskelaufbau oder einfach ausgewogen essen beeinflussen die Reihenfolge – lokal und ohne Konto." }
+    { icon: "🥐", title: "100 neue Backrezepte", text: "Kuchen & Blech, Brot & Brötchen, Herzhaft, Kleingebäck und Airfryer-Backen – vom Klassiker bis zur modernen Idee." },
+    { icon: "🔥", title: "Eigener Backmodus", text: "Vorheizen, Heizart, Form, Einschubhöhe, Geh- und Ruhezeiten, Garprobe und bis zu drei Timer bleiben beim Backen im Blick." },
+    { icon: "🛟", title: "Küchenkumpel hilft", text: "Geprüfte lokale Hilfen für klebrigen Teig, nicht aufgehende Hefe, rohe Kuchenmitte, Formfragen, Aufbewahrung und mehr – ohne KI und ohne Backend." },
+    { icon: "🧰", title: "Besser wartbar", text: "Backen, Hilfe und Diagnose sind sauber getrennt aufgebaut. Ein interner Prüfbereich hilft bei späterer Wartung und Fehlersuche." },
+    { icon: "📱", title: "Weiter küchentauglich", text: "Koch- und Backmodus bleiben für Handy, Tablet und schmale Split-Screen-Ansichten ausgelegt." }
   ],
-  footerText: "Kein Diätstress. Einfach gutes Essen, das zu deinem Alltag passt.",
-  footerHighlight: "Bewusst & lecker entdecken",
-  buttonText: "Bewusst & lecker entdecken"
+  footerText: "Mehr Backideen, mehr Hilfe – ohne die Startseite unnötig vollzumachen.",
+  footerHighlight: "Viel Spaß beim Backen!",
+  buttonText: "Los geht’s"
 };

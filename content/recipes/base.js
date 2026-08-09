@@ -413,7 +413,8 @@ const BASE_RECIPES = [
       {
         "name": "Gewürze",
         "amount": null,
-        "unit": "nach Lust"
+        "unit": "nach Lust",
+        "optional": true
       }
     ],
     "steps": [
@@ -681,7 +682,8 @@ const BASE_RECIPES = [
       {
         "name": "Gewürze",
         "amount": null,
-        "unit": "nach Lust"
+        "unit": "nach Lust",
+        "optional": true
       }
     ],
     "steps": [
@@ -1045,7 +1047,8 @@ const BASE_RECIPES = [
       {
         "name": "Gewürze",
         "amount": null,
-        "unit": "nach Lust"
+        "unit": "nach Lust",
+        "optional": true
       }
     ],
     "steps": [

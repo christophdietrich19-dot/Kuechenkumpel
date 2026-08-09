@@ -2327,11 +2327,6 @@ const HEISSLUFTFRITTEUSE_RECIPES = [
         "name": "Pfeffer",
         "amount": null,
         "unit": "nach Geschmack"
-      },
-      {
-        "name": "Muffinförmchen",
-        "amount": 6,
-        "unit": "Stück"
       }
     ],
     "steps": [
@@ -2418,11 +2413,6 @@ const HEISSLUFTFRITTEUSE_RECIPES = [
         "name": "Honig oder Zucker",
         "amount": 1,
         "unit": "TL optional"
-      },
-      {
-        "name": "Muffinförmchen",
-        "amount": 4,
-        "unit": "Stück"
       }
     ],
     "steps": [
