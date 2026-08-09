@@ -43,7 +43,7 @@
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="assets/images/branding/apple-touch-icon.png" />
 
-  <link rel="stylesheet" href="style.css?v=1.14.0" />
+  <link rel="stylesheet" href="style.css?v=2.0.0" />
 </head>
 
 <body data-theme="standard">
@@ -450,6 +450,18 @@
 
       <div id="quickIngredients" class="quick-ingredients"></div>
 
+      <div class="ingredient-expand-row">
+        <button id="toggleMoreIngredientsButton" class="ghost-button ingredient-expand-button" type="button" aria-expanded="false" aria-controls="moreIngredientsPanel">
+          Mehr Zutaten anzeigen
+        </button>
+      </div>
+
+      <div id="moreIngredientsPanel" class="more-ingredients-panel hidden">
+        <label class="ingredient-search-label" for="moreIngredientSearchInput">Weitere Zutaten durchsuchen</label>
+        <input id="moreIngredientSearchInput" class="ingredient-library-search" type="search" placeholder="z. B. Brokkoli, Feta, Thunfisch" autocomplete="off" />
+        <div id="groupedIngredientLibrary" class="grouped-ingredient-library"></div>
+      </div>
+
       <div id="selectedArea" class="selected-area">
         <div class="selected-heading">
           <h4>Ausgewählt</h4>
@@ -589,6 +601,7 @@
       <button class="filter-button" data-filter="heissluftfritteuse" type="button" aria-pressed="false">Heißluftfritteuse</button>
       <button class="filter-button" data-filter="zu heiß zum kochen" type="button" aria-pressed="false">Zu heiß zum Kochen</button>
       <button class="filter-button wellness-main-filter" data-filter="bewusst & lecker" type="button" aria-pressed="false"><span aria-hidden="true">🥗</span> Bewusst & lecker</button>
+      <button class="filter-button baking-main-filter" data-filter="backen" type="button" aria-pressed="false"><span aria-hidden="true">🥐</span> Backen</button>
     </section>
 
     <section id="wellnessPanel" class="card wellness-panel hidden" aria-labelledby="wellnessTitle">
@@ -627,6 +640,51 @@
       </div>
     </section>
 
+
+    <section id="bakingPanel" class="card baking-panel hidden" aria-labelledby="bakingTitle">
+      <div class="baking-heading">
+        <div class="baking-icon" aria-hidden="true">🥐</div>
+        <div>
+          <p class="eyebrow">Backstube</p>
+          <h3 id="bakingTitle">Backen</h3>
+          <p>100 Backideen mit klaren Temperaturen, Formen, Zeiten und Garproben.</p>
+        </div>
+      </div>
+
+      <div class="baking-control-group">
+        <strong>Was möchtest du backen?</strong>
+        <div class="baking-chip-row" role="group" aria-label="Back-Unterbereich auswählen">
+          <button class="baking-chip active" type="button" data-baking-sub="all" aria-pressed="true">Alle</button>
+          <button class="baking-chip" type="button" data-baking-sub="kuchen & blech" aria-pressed="false">Kuchen & Blech</button>
+          <button class="baking-chip" type="button" data-baking-sub="brot & brötchen" aria-pressed="false">Brot & Brötchen</button>
+          <button class="baking-chip" type="button" data-baking-sub="herzhaft" aria-pressed="false">Herzhaft</button>
+          <button class="baking-chip" type="button" data-baking-sub="kleingebäck" aria-pressed="false">Kleingebäck</button>
+          <button class="baking-chip" type="button" data-baking-sub="airfryer-backen" aria-pressed="false">Airfryer-Backen</button>
+        </div>
+      </div>
+
+      <div class="baking-control-group">
+        <strong>Optional filtern</strong>
+        <div class="baking-chip-row baking-tag-row" role="group" aria-label="Backeigenschaften auswählen">
+          <button class="baking-chip" type="button" data-baking-tag="ohne hefe" aria-pressed="false">Ohne Hefe</button>
+          <button class="baking-chip" type="button" data-baking-tag="ohne ei" aria-pressed="false">Ohne Ei</button>
+          <button class="baking-chip" type="button" data-baking-tag="vegan" aria-pressed="false">Vegan</button>
+          <button class="baking-chip" type="button" data-baking-tag="glutenfrei möglich" aria-pressed="false">Glutenfrei möglich</button>
+        </div>
+      </div>
+
+      <div class="baking-select-grid">
+        <label><span>Schwierigkeit</span><select id="bakingDifficultySelect"><option value="all">Alle</option><option value="Einfach">Einfach</option><option value="Etwas Übung">Etwas Übung</option><option value="Für Geübte">Für Geübte</option></select></label>
+        <label><span>Zeit</span><select id="bakingTimeSelect"><option value="all">Egal</option><option value="30">Bis 30 Min.</option><option value="60">Bis 60 Min.</option></select></label>
+      </div>
+
+      <div class="baking-actions">
+        <button id="todayBakeButton" class="primary-button" type="button">Heute backen</button>
+        <button id="openBakingHelpButton" class="ghost-button" type="button">Küchenkumpel hilft</button>
+      </div>
+      <div id="todayBakeResult" class="today-bake-result hidden" aria-live="polite"></div>
+    </section>
+
     <section class="card recipe-sort-card" aria-label="Rezeptvorschläge sortieren">
       <div class="sort-row">
         <div>
@@ -657,18 +715,21 @@
         </div>
       </div>
 
-      <div class="input-row search-row">
+      <div class="input-row search-row recipe-search-input-wrap">
         <input
           id="recipeSearchInput"
           type="search"
           placeholder="Rezept, Zutat oder Kategorie suchen"
           autocomplete="off"
+          aria-autocomplete="list"
+          aria-controls="recipeSearchSuggestions"
         />
 
         <button id="clearRecipeSearchButton" class="ghost-button" type="button">
           Suche löschen
         </button>
       </div>
+      <div id="recipeSearchSuggestions" class="recipe-search-suggestions hidden" role="listbox" aria-label="Rezeptvorschläge"></div>
     </section>
 
     <section id="airfryerSpecial" class="airfryer-special-card card">
@@ -878,6 +939,10 @@
             Datenschutz
           </a>
 
+          <button id="openHelpButton" class="footer-reset-button" type="button">
+            Küchenkumpel hilft
+          </button>
+
           <button id="showWelcomeButton" class="footer-reset-button" type="button">
             Begrüßung wieder anzeigen
           </button>
@@ -908,6 +973,26 @@
     </a>
   </nav>
 
+
+  <div id="helpModal200" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle200" aria-hidden="true">
+    <div id="helpBackdrop200" class="modal-backdrop" aria-hidden="true"></div>
+    <article class="modal-card help-modal-card-200" role="document">
+      <button id="closeHelpButton200" class="close-button" type="button" aria-label="Hilfe schließen">×</button>
+      <div class="help-head-200">
+        <p class="eyebrow">Lokal & geprüft</p>
+        <h3 id="helpTitle200">Küchenkumpel hilft</h3>
+        <p id="helpContext200">Such nach einem Problem oder wähle ein Hilfethema aus.</p>
+      </div>
+      <label class="help-search-label-200">
+        <span class="visually-hidden">Hilfethemen durchsuchen</span>
+        <input id="helpSearch200" type="search" placeholder="z. B. Hefeteig geht nicht auf" autocomplete="off">
+      </label>
+      <div id="helpResults200" class="help-results-200"></div>
+      <div id="helpDetail200" class="help-detail-200 hidden" aria-live="polite"></div>
+    </article>
+  </div>
+  <section id="adminPanel200" class="admin-panel-200 hidden" aria-label="Küchenkumpel Diagnose"></section>
+
   <div id="recipeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalRecipeTitle" aria-hidden="true">
     <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true"></div>
 
@@ -917,22 +1002,28 @@
     </article>
   </div>
 
-  <script src="content/recipes/base.js"></script>
-  <script src="content/recipes/kein-bock.js"></script>
-  <script src="content/recipes/muss-weg.js"></script>
-  <script src="content/recipes/guenstig.js"></script>
-  <script src="content/recipes/satt-herzhaft.js"></script>
-  <script src="content/recipes/schnell-feierabend.js"></script>
-  <script src="content/recipes/leicht-sommerlich.js"></script>
-  <script src="content/recipes/fruehstueck-snack.js"></script>
-  <script src="content/recipes/heissluftfritteuse.js"></script>
-  <script src="content/recipes/zu-heiss-zum-kochen.js"></script>
-  <script src="content/recipes/bewusst-lecker.js"></script>
-  <script src="content/nutrition.js?v=1.14.0"></script>
-  <script src="content/recipes/index.js?v=1.14.0"></script>
-  <script src="content/variants.js?v=1.14.0"></script>
-  <script src="content/updates.js?v=1.14.0"></script>
-  <script src="content/version.js?v=1.14.0"></script>
-  <script src="app.js?v=1.14.0"></script>
+  <script src="content/recipes/base.js?v=2.0.0"></script>
+  <script src="content/recipes/kein-bock.js?v=2.0.0"></script>
+  <script src="content/recipes/muss-weg.js?v=2.0.0"></script>
+  <script src="content/recipes/guenstig.js?v=2.0.0"></script>
+  <script src="content/recipes/satt-herzhaft.js?v=2.0.0"></script>
+  <script src="content/recipes/schnell-feierabend.js?v=2.0.0"></script>
+  <script src="content/recipes/leicht-sommerlich.js?v=2.0.0"></script>
+  <script src="content/recipes/fruehstueck-snack.js?v=2.0.0"></script>
+  <script src="content/recipes/heissluftfritteuse.js?v=2.0.0"></script>
+  <script src="content/recipes/zu-heiss-zum-kochen.js?v=2.0.0"></script>
+  <script src="content/recipes/bewusst-lecker.js?v=2.0.0"></script>
+  <script src="content/recipes/backen.js?v=2.0.0"></script>
+  <script src="content/help.js?v=2.0.0"></script>
+  <script src="content/nutrition.js?v=2.0.0"></script>
+  <script src="content/quality.js?v=2.0.0"></script>
+  <script src="content/recipes/index.js?v=2.0.0"></script>
+  <script src="content/variants.js?v=2.0.0"></script>
+  <script src="content/updates.js?v=2.0.0"></script>
+  <script src="content/version.js?v=2.0.0"></script>
+  <script src="app.js?v=2.0.0"></script>
+  <script src="modules/help.js?v=2.0.0"></script>
+  <script src="modules/baking.js?v=2.0.0"></script>
+  <script src="modules/admin.js?v=2.0.0"></script>
 </body>
 </html>

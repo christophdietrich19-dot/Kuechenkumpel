@@ -1,6 +1,6 @@
 # Küchenkumpel – Hinweise zu Nährwerten und Portionsberechnung
 
-Stand: Version 1.14.0
+Stand: Version 2.0.0
 
 ## Berechnungsprinzip
 
