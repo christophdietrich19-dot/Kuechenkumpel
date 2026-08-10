@@ -2346,3 +2346,29 @@ html {
   #updateFlyer .update-pinup-title-area h2{font-size:clamp(1.78rem,9vw,2.35rem)!important}
   #updateFlyer .update-real-image-button{min-height:52px!important}
 }
+
+
+/* 2.0.4 Update-Flyer Feinschliff */
+#updateFlyer .update-pinup-title-area p:empty{display:none!important}
+#updateFlyer .update-pinup-header{grid-template-columns:minmax(0,1fr) 132px!important;gap:14px!important;margin:0 0 14px!important}
+#updateFlyer .update-pinup-title-area{padding-top:22px!important}
+#updateFlyer .update-pinup-title-area h2{margin:0!important;font-size:clamp(1.95rem,8vw,2.85rem)!important;line-height:.98!important}
+#updateFlyer .update-pinup-mascot-box{width:132px!important;height:132px!important}
+#updateFlyer .update-pinup-kumpel{width:118px!important}
+#updateFlyer .update-pinup-list{gap:10px!important;margin:8px 0 18px!important}
+#updateFlyer .update-pinup-item{padding:14px 14px!important;border-radius:22px!important;background:rgba(255,255,255,.82)!important}
+#updateFlyer .update-pinup-item strong{font-size:1.14rem!important}
+#updateFlyer .update-pinup-item p{font-size:1rem!important;line-height:1.42!important}
+@media (max-width:620px){
+  #updateFlyer .update-pinup-header{grid-template-columns:minmax(0,1fr) 106px!important;gap:10px!important}
+  #updateFlyer .update-pinup-title-area{padding-top:16px!important}
+  #updateFlyer .update-pinup-title-area h2{font-size:clamp(1.9rem,10vw,2.55rem)!important}
+  #updateFlyer .update-pinup-mascot-box{width:106px!important;height:106px!important}
+  #updateFlyer .update-pinup-kumpel{width:96px!important}
+}
+@media (max-width:390px){
+  #updateFlyer .update-pinup-header{grid-template-columns:minmax(0,1fr) 98px!important}
+  #updateFlyer .update-pinup-title-area h2{font-size:clamp(1.8rem,9vw,2.3rem)!important}
+  #updateFlyer .update-pinup-mascot-box{width:98px!important;height:98px!important}
+  #updateFlyer .update-pinup-kumpel{width:88px!important}
+}
