@@ -1,7 +1,7 @@
 window.KUECHENKUMPEL_UPDATE = {
-  version: "2.0.2",
+  version: "2.0.3",
   badge: "NEU BEI KÜCHENKUMPEL",
-  title: "Die Backstube ist eröffnet 🍰",
+  title: "Die Backstube ist eröffnet",
   subtitle: "100 neue Backrezepte sind dazugekommen. Von Kuchen und Brot bis zu herzhaften Rezepten und Airfryer-Ideen.",
   image: "assets/images/themes/standard/kochtopf-idee.png",
   imageAlt: "Küchenkumpel hat eine neue Idee",
